@@ -7,6 +7,9 @@ cdef class World:
     def __cinit__(self):
         self.thisptr = new b2World(b2Vec2(0.0, 0.0))
 
+    def __dealloc__(self):
+        del self.thisptr
+
     def __init__(self, gravity=None):
         if gravity is None:
             gravity = (0, -10)
@@ -19,3 +22,6 @@ cdef class World:
 
         def __set__(self, value):
             self.thisptr.SetGravity(to_b2vec2(value))
+
+    def step(self, float time_step, int vel_iters, int pos_iters):
+        self.thisptr.Step(time_step, vel_iters, pos_iters)

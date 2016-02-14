@@ -6,6 +6,9 @@ cdef class CircleShape:
     def __cinit__(self):
         self.thisptr = new b2CircleShape()
 
+    def __dealloc__(self):
+        del self.thisptr
+
     def __init__(self, radius=0.0, center=None):
         if center is None:
             center = (0.0, 0.0)
