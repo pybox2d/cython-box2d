@@ -1,0 +1,13 @@
+include "common.pyd"
+include "settings.pyd"
+include "allocator.pyd"
+include "collision.pyd"
+include "broadphase.pyd"
+include "math.pyd"
+include "shape.pyd"
+include "fixture.pyd"
+include "body.pyd"
+include "joint.pyd"
+include "world.pyd"
+
+include "math.pyx"
