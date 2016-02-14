@@ -13,18 +13,18 @@ cdef class Vec2:
         return self.thisptr.IsValid()
 
     @property
-    def x(self):
+    def _x(self):
         return self.thisptr.x
 
-    @x.setter
+    @_x.setter
     def x(self, x):
         self.thisptr.x = x
 
     @property
-    def y(self):
+    def _y(self):
         return self.thisptr.y
 
-    @y.setter
+    @_y.setter
     def y(self, y):
         self.thisptr.y = y
 
@@ -42,3 +42,11 @@ cdef class Vec2:
 
     def __mul__(self, other):
         return Vec2(self.x * other, self.y * other)
+
+    def __iter__(self):
+        return (self.x, self.y)
+
+    def __str__(self):
+        return '{0.__class__.__name__}({0.x}, {0.y})'.format(self)
+
+    __repr__ = __str__

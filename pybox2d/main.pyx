@@ -11,3 +11,4 @@ include "joint.pyd"
 include "world.pyd"
 
 include "math.pyx"
+include "shape.pyx"
