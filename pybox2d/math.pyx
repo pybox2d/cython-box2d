@@ -2,8 +2,11 @@ include "math.pyd"
 
 cdef class Vec2:
     cdef b2Vec2 *thisptr
-    def __cinit__(self, float32 x=0.0, float32 y=0.0):
-        self.thisptr = new b2Vec2(x, y)
+    def __cinit__(self, x=0.0, y=0.0):
+        if isinstance(x, Vec2):
+            self.thisptr = new b2Vec2(x.x, x.y)
+        else:
+            self.thisptr = new b2Vec2(x, y)
 
     def __dealloc__(self):
         del self.thisptr

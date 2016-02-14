@@ -10,5 +10,6 @@ include "body.pyd"
 include "joint.pyd"
 include "world.pyd"
 
+include "world.pyx"
 include "math.pyx"
 include "shape.pyx"

@@ -23,27 +23,29 @@ cdef extern from "b2World.h":
         # const b2Joint* GetJointList() const
         # b2Contact* GetContactList()
         # const b2Contact* GetContactList() const
-        # void SetAllowSleeping(bool flag)
-        # bool GetAllowSleeping() const
-        # void SetWarmStarting(bool flag)
-        # bool GetWarmStarting() const
-        # void SetContinuousPhysics(bool flag)
-        # bool GetContinuousPhysics() const
-        # void SetSubStepping(bool flag)
-        # bool GetSubStepping() const
-        # int32 GetProxyCount() const
-        # int32 GetBodyCount() const
-        # int32 GetJointCount() const
-        # int32 GetContactCount() const
-        # int32 GetTreeHeight() const
-        # int32 GetTreeBalance() const
-        # float32 GetTreeQuality() const
-        # void SetGravity(const b2Vec2& gravity)
-        # b2Vec2 GetGravity() const
-        # bool IsLocked() const
-        # void SetAutoClearForces(bool flag)
-        # bool GetAutoClearForces() const
-        # void ShiftOrigin(const b2Vec2& newOrigin)
+        void SetAllowSleeping(bool flag)
+        bool GetAllowSleeping() const
+        void SetWarmStarting(bool flag)
+        bool GetWarmStarting() const
+        void SetContinuousPhysics(bool flag)
+        bool GetContinuousPhysics() const
+        void SetSubStepping(bool flag)
+        bool GetSubStepping() const
+        int32 GetProxyCount() const
+        int32 GetBodyCount() const
+        int32 GetJointCount() const
+        int32 GetContactCount() const
+        int32 GetTreeHeight() const
+        int32 GetTreeBalance() const
+        float32 GetTreeQuality() const
+
+        void SetGravity(const b2Vec2& gravity)
+        b2Vec2 GetGravity() const
+
+        bool IsLocked() const
+        void SetAutoClearForces(bool flag)
+        bool GetAutoClearForces() const
+        void ShiftOrigin(const b2Vec2& newOrigin)
         # const b2ContactManager& GetContactManager() const
         # const b2Profile& GetProfile() const
-        # void Dump()
+        void Dump()
