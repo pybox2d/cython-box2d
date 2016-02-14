@@ -15,21 +15,19 @@ cdef class Vec2:
     def is_valid(self):
         return self.thisptr.IsValid()
 
-    @property
-    def _x(self):
-        return self.thisptr.x
+    property x:
+        def __get__(self):
+            return self.thisptr.x
 
-    @_x.setter
-    def x(self, x):
-        self.thisptr.x = x
+        def __set__(self, x):
+            self.thisptr.x = x
 
-    @property
-    def _y(self):
-        return self.thisptr.y
+    property y:
+        def __get__(self):
+            return self.thisptr.y
 
-    @_y.setter
-    def y(self, y):
-        self.thisptr.y = y
+        def __set__(self, y):
+            self.thisptr.y = y
 
     def __getitem__(self, idx):
         return (self.x, self.y)[idx]

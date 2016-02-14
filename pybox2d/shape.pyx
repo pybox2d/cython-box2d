@@ -13,23 +13,21 @@ cdef class CircleShape:
         self.thisptr.m_radius = radius
         self.center = center
 
-    @property
-    def radius(self):
-        return self.thisptr.m_radius
+    property radius:
+        def __get__(self):
+            return self.thisptr.m_radius
 
-    @radius.setter
-    def radius(self, value):
-        self.thisptr.m_radius = value
+        def __set__(self, value):
+            self.thisptr.m_radius = value
 
-    @property
-    def _center(self):
-        return Vec2(self.thisptr.m_p.x, self.thisptr.m_p.y)
+    property center:
+        def __get__(self):
+            return Vec2(self.thisptr.m_p.x, self.thisptr.m_p.y)
 
-    @_center.setter
-    def center(self, center):
-        cx, cy = center
-        self.thisptr.m_p.x = cx
-        self.thisptr.m_p.y = cy
+        def __set__(self, center):
+            cx, cy = center
+            self.thisptr.m_p.x = cx
+            self.thisptr.m_p.y = cy
 
     def __str__(self):
         return ('{0.__class__.__name__}(radius={0.radius}, center={0.center})'

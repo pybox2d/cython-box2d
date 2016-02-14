@@ -1,12 +1,5 @@
 include "world.pyd"
-
-
-cdef to_vec2(b2Vec2 vec):
-    return Vec2(vec.x, vec.y)
-
-
-cdef b2Vec2 to_b2vec2(iterable):
-    return b2Vec2(iterable[0], iterable[1])
+include "util.pyd"
 
 
 cdef class World:
@@ -20,10 +13,9 @@ cdef class World:
 
         self.gravity = gravity
 
-    @property
-    def _gravity(self):
-        return to_vec2(self.thisptr.GetGravity())
+    property gravity:
+        def __get__(self):
+            return to_vec2(self.thisptr.GetGravity())
 
-    @_gravity.setter
-    def set_gravity(self, gravity):
-        self.thisptr.SetGravity(to_b2vec2(gravity))
+        def __set__(self, value):
+            self.thisptr.SetGravity(to_b2vec2(value))
