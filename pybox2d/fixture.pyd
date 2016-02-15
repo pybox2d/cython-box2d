@@ -5,7 +5,7 @@ cdef extern from "b2Fixture.h":
         uint16 maskBits
         int16 groupIndex
 
-    cdef struct b2FixtureDef:
+    cdef cppclass b2FixtureDef:
         b2FixtureDef()
         const b2Shape* shape
         void* userData

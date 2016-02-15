@@ -1,5 +1,4 @@
 include "world.pyd"
-include "util.pyd"
 
 
 cdef class World:
@@ -25,3 +24,8 @@ cdef class World:
 
     def step(self, float time_step, int vel_iters, int pos_iters):
         self.thisptr.Step(time_step, vel_iters, pos_iters)
+
+    def create_body(self, BodyDef body_defn):
+        body = Body()
+        body.thisptr = self.thisptr.CreateBody(body_defn.thisptr)
+        return body

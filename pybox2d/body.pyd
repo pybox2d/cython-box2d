@@ -4,7 +4,7 @@ cdef extern from "b2Body.h":
         b2_kinematicBody
         b2_dynamicBody
 
-    cdef struct b2BodyDef:
+    cdef cppclass b2BodyDef:
         b2BodyDef()
         b2BodyType type
         b2Vec2 position
