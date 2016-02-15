@@ -80,3 +80,4 @@ cdef extern from "b2Math.h":
         float32 a0, a;
         float32 alpha0;
 
+    inline b2Vec2 b2Mul(const b2Transform& T, const b2Vec2& v)

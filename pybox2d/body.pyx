@@ -50,3 +50,17 @@ cdef class Body:
                 yield fixture
 
                 b2fixture = b2fixture.GetNext()
+
+    property transform:
+        def __get__(self):
+            ret = Transform()
+            ret.from_b2Transform(self.thisptr.GetTransform())
+            return ret
+            # return Transform(position=to_vec2(transform.p),
+            #                  rotation=Rotation(sine=transform.q.s,
+            #                                    cosine=transform.q.c)
+            #                  )
+
+    property type:
+        def __get__(self):
+            return self.thisptr.GetType()

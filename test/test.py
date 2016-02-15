@@ -53,7 +53,7 @@ print(body.world_center)
 print('-')
 
 for i, body in enumerate(world.bodies):
-    print(i, body, body.world_center)
+    print(i, body, body.world_center, body.transform)
     for j, fixture in enumerate(body.fixtures):
         print('\t', j, fixture, fixture.shape)
 # pybox2d.Fixture()

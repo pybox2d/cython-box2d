@@ -1,4 +1,6 @@
 include "math.pyd"
+import math
+
 
 cdef class Vec2:
     cdef b2Vec2 *thisptr
@@ -45,9 +47,81 @@ cdef class Vec2:
         return Vec2(self.x * other, self.y * other)
 
     def __iter__(self):
-        return (self.x, self.y)
+        return iter((self.x, self.y))
 
-    def __str__(self):
+    def __repr__(self):
         return '{0.__class__.__name__}({0.x}, {0.y})'.format(self)
 
-    __repr__ = __str__
+
+cdef class Rotation:
+    cdef float sine
+    cdef float cosine
+
+    def __init__(self, sine=0.0, cosine=1.0, angle=None):
+        if angle is not None:
+            self.angle = angle
+        else:
+            self.sine = sine
+            self.cosine = cosine
+
+    def set_identity(self):
+        self.sine = 0.0
+        self.cosine = 1.0
+
+    property angle:
+        def __get__(self):
+            return math.atan2(self.sine, self.cosine)
+
+        def __set__(self, angle):
+            self.sine = math.sin(angle)
+            self.cosine = math.cos(angle)
+
+    @property
+    def x_axis(self):
+        return math.atan2(self.cosine, self.sine)
+
+    @property
+    def y_axis(self):
+        return math.atan2(-self.sine, self.cosine)
+
+    def __repr__(self):
+        return '{0.__class__.__name__}(angle={0.angle})'.format(self)
+
+
+cdef class Transform:
+    cdef b2Transform transform;
+
+    def __init__(self, position=None, rotation=None):
+        if position is not None:
+            self.position = position
+
+        if rotation is not None:
+            self.rotation = rotation
+
+    cdef from_b2Transform(self, b2Transform b2t):
+        self.transform.p = b2t.p
+        self.transform.q.s = b2t.q.s
+        self.transform.q.c = b2t.q.c
+
+    property position:
+        def __get__(self):
+            return to_vec2(self.transform.p)
+
+        def __set__(self, position):
+            self.transform.p = to_b2vec2(position)
+
+    property rotation:
+        def __get__(self):
+            return Rotation(sine=self.transform.q.s,
+                            cosine=self.transform.q.c)
+
+        def __set__(self, rotation):
+            self.transform.q.s = rotation[0]
+            self.transform.q.c = rotation[1]
+
+    def __mul__(Transform xf, other):
+        return to_vec2(b2Mul(xf.transform, to_b2vec2(other)))
+
+    def __repr__(self):
+        return ('{0.__class__.__name__}({0.position}, {0.rotation})'
+                ''.format(self))
