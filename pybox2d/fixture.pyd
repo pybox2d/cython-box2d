@@ -23,16 +23,16 @@ cdef extern from "b2Fixture.h":
 
     cdef cppclass b2Fixture:
         b2ShapeType GetType() const
-        b2Shape* GetShape()
+        # b2Shape* GetShape()
         const b2Shape* GetShape() const
         void SetSensor(bool sensor)
         bool IsSensor() const
         void SetFilterData(const b2Filter& filter)
         const b2Filter& GetFilterData() const
         void Refilter()
-        b2Body* GetBody()
+        # b2Body* GetBody()
         const b2Body* GetBody() const
-        b2Fixture* GetNext()
+        # b2Fixture* GetNext()
         const b2Fixture* GetNext() const
         void* GetUserData() const
         void SetUserData(void* data)

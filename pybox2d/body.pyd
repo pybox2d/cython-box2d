@@ -69,13 +69,13 @@ cdef extern from "b2Body.h":
         bool IsActive() const
         void SetFixedRotation(bool flag)
         bool IsFixedRotation() const
-        b2Fixture* GetFixtureList()
+        # b2Fixture* GetFixtureList()
         const b2Fixture* GetFixtureList() const
         # b2JointEdge* GetJointList()
         # const b2JointEdge* GetJointList() const
         # b2ContactEdge* GetContactList()
         # const b2ContactEdge* GetContactList() const
-        b2Body* GetNext()
+        # b2Body* GetNext()
         const b2Body* GetNext() const
         void* GetUserData() const
         void SetUserData(void* data)

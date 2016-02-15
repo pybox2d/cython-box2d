@@ -30,7 +30,10 @@ cdef class FixtureDef:
 
         def __set__(self, Shape shape):
             self._shape = shape
-            self.thisptr.shape = shape.pshape
+
+            self.thisptr.shape = shape.shape
+            # cdef b2Shape *b2shape = shape.shape
+            # self.thisptr.shape = <b2Shape*>shape.upcasted_shape
 
     property density:
         def __get__(self):
@@ -63,6 +66,11 @@ cdef class FixtureDef:
 
 cdef class Fixture:
     cdef b2Fixture *thisptr
+
+    property shape:
+        def __get__(self):
+            shape = self.thisptr.GetShape()
+            return Shape.upcast(shape)
 
     property density:
         def __get__(self):

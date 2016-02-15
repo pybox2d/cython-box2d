@@ -22,6 +22,18 @@ cdef class World:
         def __set__(self, value):
             self.thisptr.SetGravity(to_b2vec2(value))
 
+    property bodies:
+        def __get__(self):
+            cdef b2Body *b2body
+            b2body = self.thisptr.GetBodyList()
+
+            while b2body:
+                body = Body()
+                body.thisptr = b2body
+                yield body
+
+                b2body = b2body.GetNext()
+
     def step(self, float time_step, int vel_iters, int pos_iters):
         self.thisptr.Step(time_step, vel_iters, pos_iters)
 

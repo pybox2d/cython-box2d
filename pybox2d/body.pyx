@@ -38,3 +38,15 @@ cdef class Body:
         fixture = Fixture()
         fixture.thisptr = self.thisptr.CreateFixture(df)
         return fixture
+
+    property fixtures:
+        def __get__(self):
+            cdef b2Fixture *b2fixture
+            b2fixture = self.thisptr.GetFixtureList()
+
+            while b2fixture:
+                fixture = Fixture()
+                fixture.thisptr = b2fixture
+                yield fixture
+
+                b2fixture = b2fixture.GetNext()

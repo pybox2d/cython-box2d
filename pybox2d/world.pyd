@@ -17,7 +17,7 @@ cdef extern from "b2World.h":
         # void QueryAABB(b2QueryCallback* callback, const b2AABB& aabb) const
         # void RayCast(b2RayCastCallback* callback, const b2Vec2& point1, 
         #              const b2Vec2& point2) const
-        b2Body* GetBodyList()
+        # b2Body* GetBodyList()
         const b2Body* GetBodyList() const
         # b2Joint* GetJointList()
         # const b2Joint* GetJointList() const

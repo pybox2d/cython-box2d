@@ -13,7 +13,7 @@ v.y = 2
 print('v', v)
 copy = pybox2d.Vec2(v)
 print('copy', copy)
-shape = pybox2d.CircleShape(radius=1.0, center=(0, 1))
+shape = pybox2d.CircleShape(radius=1.0, center=(0, 0.1))
 print(shape.radius)
 print(shape.center)
 
@@ -22,7 +22,7 @@ print('gravity', world.gravity)
 world.gravity = (0, -10)
 print('gravity', world.gravity)
 
-shape = pybox2d.CircleShape(radius=1.0, center=(0, 0))
+shape = pybox2d.CircleShape(radius=1.0, center=(0, 0.2))
 fixture_defn = pybox2d.FixtureDef(shape=shape, density=0.1)
 print(fixture_defn.shape, fixture_defn.density, fixture_defn.sensor,
       type(fixture_defn.sensor))
@@ -49,4 +49,11 @@ for i in range(10):
     print(body.world_center)
     world.step(0.01, 8, 8)
 
-pybox2d.Fixture()
+print(body.world_center)
+print('-')
+
+for i, body in enumerate(world.bodies):
+    print(i, body, body.world_center)
+    for j, fixture in enumerate(body.fixtures):
+        print('\t', j, fixture, fixture.shape)
+# pybox2d.Fixture()

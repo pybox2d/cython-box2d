@@ -4,12 +4,12 @@ cdef extern from "b2Shape.h":
         b2Vec2 center
         float32 I
 
-    cdef enum b2ShapeType:
-        e_circle = 0
-        e_edge = 1
-        e_polygon = 2
-        e_chain = 3
-        e_typeCount = 4
+    ctypedef enum b2ShapeType "b2Shape::Type":
+        ShapeType_circle "b2Shape::Type::e_circle"
+        ShapeType_edge "b2Shape::Type::e_edge"
+        ShapeType_polygon "b2Shape::Type::e_polygon"
+        ShapeType_chain "b2Shape::Type::e_chain"
+        ShapeType_typeCount "b2Shape::Type::e_typeCount"
 
     cdef cppclass b2Shape:
         # virtual ~b2Shape()
