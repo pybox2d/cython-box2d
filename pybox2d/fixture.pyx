@@ -1,4 +1,11 @@
-cdef class FixtureDef:
+import collections
+
+FilterTuple = collections.namedtuple('FilterTuple',
+                                     'category_bits mask_bits group_index')
+default_filter = FilterTuple(category_bits=0x0001, mask_bits=0xFFFF,
+                             group_index=0)
+
+cdef class FixtureDef(Base):
     cdef b2FixtureDef *thisptr
     cdef Shape _shape
     cdef public object data
@@ -10,7 +17,7 @@ cdef class FixtureDef:
         del self.thisptr
 
     def __init__(self, shape=None, friction=0.2, restitution=0.0,
-                 density=0.0, sensor=False, data=None):
+                 density=0.0, sensor=False, data=None, filter_=None):
         self._shape = None
         self.friction = friction
         self.restitution = restitution
@@ -18,10 +25,26 @@ cdef class FixtureDef:
         self.sensor = sensor
         self.data = data
 
+        if filter_ is None:
+            filter_ = default_filter
+
+        self.filter_ = filter_
+
         if shape is not None:
             self.shape = shape
 
-    # TODO filter, userdata
+    property filter_:
+        def __get__(self):
+            return FilterTuple(self.thisptr.filter.categoryBits,
+                               self.thisptr.filter.maskBits,
+                               self.thisptr.filter.groupIndex)
+
+        def __set__(self, filter_info):
+            ft = FilterTuple(*filter_info)
+            self.thisptr.filter.categoryBits = ft.category_bits
+            self.thisptr.filter.maskBits = ft.mask_bits
+            self.thisptr.filter.groupIndex = ft.group_index
+
     property shape:
         def __get__(self):
             return self._shape
@@ -60,6 +83,15 @@ cdef class FixtureDef:
 
         def __set__(self, sensor):
             self.thisptr.isSensor = sensor
+
+    def _get_repr_info(self):
+        yield ('friction', self.friction)
+        yield ('restitution', self.restitution)
+        yield ('density', self.density)
+        yield ('sensor', self.sensor)
+        yield ('data', self.data)
+        yield ('filter_', self.filter_)
+        yield ('shape', self.shape)
 
 
 cdef class Fixture(Base):

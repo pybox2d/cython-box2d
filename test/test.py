@@ -34,8 +34,7 @@ print('gravity', world.gravity)
 
 shape = pybox2d.CircleShape(radius=1.0, center=(0, 0.2))
 fixture_defn = pybox2d.FixtureDef(shape=shape, density=0.1)
-print(fixture_defn.shape, fixture_defn.density, fixture_defn.sensor,
-      type(fixture_defn.sensor))
+print(fixture_defn)
 
 
 # bdef = pybox2d.StaticBodyDef()
