@@ -8,6 +8,7 @@ include "shape.pyd"
 include "fixture.pyd"
 include "body.pyd"
 include "joint.pyd"
+include "world_callbacks.pyd"
 include "world.pyd"
 
 include "util.pyx"

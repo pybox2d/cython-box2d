@@ -1,5 +1,10 @@
 include "body.pyd"
 
+cdef body_from_b2Body(b2Body *b2body):
+    body = Body()
+    body.thisptr = b2body
+    return body
+
 
 cdef class Body:
     cdef b2Body *thisptr
