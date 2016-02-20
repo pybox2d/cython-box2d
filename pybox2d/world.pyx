@@ -60,7 +60,7 @@ cdef class World:
     def step(self, float time_step, int vel_iters, int pos_iters):
         self.world.Step(time_step, vel_iters, pos_iters)
 
-    cpdef create_body(self, BodyDef body_defn, body_class=None):
+    def create_body_from_def(self, BodyDef body_defn, body_class=None):
         if body_defn is None:
             raise ValueError('Body definition must be specified')
 
@@ -82,6 +82,18 @@ cdef class World:
             body.data = body_defn.data
 
         return body
+
+    def create_static_body(self, body_class=None, **kwargs):
+        defn = StaticBodyDef(**kwargs)
+        return self.create_body_from_def(defn, body_class)
+
+    def create_dynamic_body(self, body_class=None, **kwargs):
+        defn = DynamicBodyDef(**kwargs)
+        return self.create_body_from_def(defn, body_class)
+
+    def create_kinematic_body(self, body_class=None, **kwargs):
+        defn = KinematicBodyDef(**kwargs)
+        return self.create_body_from_def(defn, body_class)
 
     def destroy_body(self, Body body not None):
         cdef b2Body *bptr = body.thisptr

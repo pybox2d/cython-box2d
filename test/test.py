@@ -45,11 +45,13 @@ bdef.position = (0, 1.0)
 print(bdef.position)
 print(bdef.data)
 
-body = world.create_body(bdef)
+body = world.create_body_from_def(bdef)
 fixture = body.create_fixture(fixture_defn)
 
 # body = world.create_body(None)
-body = world.create_body(bdef, body_class=pybox2d.Body)
+body = world.create_body_from_def(bdef, body_class=pybox2d.Body)
+bdef = world.create_static_body(position=(0, 2.0), data='test')
+
 print(body)
 fixture = body.create_fixture(fixture_defn)
 print(fixture)
@@ -72,7 +74,7 @@ for i, body in enumerate(world.bodies):
 
 # body.linear_velocity = None
 # body.linear_velocity = 0.1
-body = world.bodies[1]
+body = world.bodies[-1]
 body.print_position()
 
 body.linear_velocity = Vec2(0, 1)

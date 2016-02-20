@@ -123,14 +123,14 @@ cdef class BodyDef:
 
 cdef class StaticBodyDef(BodyDef):
     def __init__(self, **kwargs):
-        super().__init__(self, type_=b2_staticBody, **kwargs)
+        super().__init__(type_=b2_staticBody, **kwargs)
 
 
 cdef class KinematicBodyDef(BodyDef):
     def __init__(self, **kwargs):
-        BodyDef.__init__(self, type_=b2_kinematicBody, **kwargs)
+        super().__init__(type_=b2_kinematicBody, **kwargs)
 
 
 cdef class DynamicBodyDef(BodyDef):
     def __init__(self, **kwargs):
-        BodyDef.__init__(self, type_=b2_dynamicBody, **kwargs)
+        super().__init__(type_=b2_dynamicBody, **kwargs)
