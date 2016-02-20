@@ -5,7 +5,7 @@ include "world.pyd"
 #     # def SayGoodbye(self, b2Joint* joint):
 #     #     pass
 #
-#     cdef SayGoodbye(b2Fixture* fixture):
+#     cdef SayGoodbye(self, b2Fixture* fixture):
 #         pass
 
 
@@ -39,8 +39,7 @@ cdef class World:
             b2body = self.thisptr.GetBodyList()
 
             while b2body:
-                body = body_from_b2Body(b2body)
-                yield body
+                yield Body.from_b2Body(b2body)
 
                 b2body = b2body.GetNext()
 
@@ -48,6 +47,4 @@ cdef class World:
         self.thisptr.Step(time_step, vel_iters, pos_iters)
 
     def create_body(self, BodyDef body_defn):
-        body = Body()
-        body.thisptr = self.thisptr.CreateBody(body_defn.thisptr)
-        return body
+        return Body.from_b2Body(self.thisptr.CreateBody(body_defn.thisptr))
