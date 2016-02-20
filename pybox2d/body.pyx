@@ -2,9 +2,16 @@ include "body.pyd"
 
 cdef class Body:
     cdef b2Body *thisptr
+    cdef public object data
+
+    def __cinit__(self):
+        self.data = None
 
     def __init__(self):
         pass
+
+    def __hash__(self):
+        return pointer_as_key(self.thisptr)
 
     @staticmethod
     cdef from_b2Body(b2Body *b2body):
