@@ -76,6 +76,8 @@ cdef class World:
 
         self._bodies[pointer_as_key(bptr)] = body
 
+        # userdata is never passed along to the Box2D-level objects, so it
+        # exists only in pybox2d
         if body_defn.data is not None:
             body.data = body_defn.data
 
