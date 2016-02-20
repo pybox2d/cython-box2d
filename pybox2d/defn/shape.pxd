@@ -22,7 +22,7 @@ cdef extern from "b2Shape.h":
         # virtual ~b2Shape()
         # virtual b2Shape* Clone(b2BlockAllocator* allocator) const
         b2ShapeType GetType() const
-        # virtual int32 GetChildCount() const
+        int32 GetChildCount() const
         # virtual bool TestPoint(const b2Transform& xf, const b2Vec2& p) const
         # virtual bool RayCast(b2RayCastOutput* output, const b2RayCastInput& input,
         # const b2Transform& transform, int32 childIndex) const

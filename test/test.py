@@ -55,6 +55,8 @@ fixture = body.create_fixture_from_def(fixture_defn)
 # body = world.create_body(None)
 body = world.create_body_from_def(bdef, body_class=pybox2d.Body)
 fixture = body.create_fixture(shape=shape, density=0.1)
+fixture = body.create_circle_fixture(radius=0.1, center=(1, 2),
+                                     density=0.1)
 
 body = world.create_static_body(position=(0, 2.0), data='test',
                                 fixtures=[fixture_defn,

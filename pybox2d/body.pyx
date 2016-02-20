@@ -106,6 +106,22 @@ cdef class Body(Base):
         return self.create_fixture_from_def(defn)
 
     @safe_method
+    def create_polygon_fixture(self, box=None, vertices=None, **fx_kwargs):
+        if 'shape' in fx_kwargs:
+            raise ValueError('Shape is implicit in this method')
+
+        shape = PolygonShape(box=box, vertices=vertices)
+        return self.create_fixture(shape=shape, **fx_kwargs)
+
+    @safe_method
+    def create_circle_fixture(self, radius=0.0, center=None, **fx_kwargs):
+        if 'shape' in fx_kwargs:
+            raise ValueError('Shape is implicit in this method')
+
+        shape = CircleShape(radius=radius, center=center)
+        return self.create_fixture(shape=shape, **fx_kwargs)
+
+    @safe_method
     def destroy_fixture(self, Fixture fixture not None):
         cdef b2Fixture *fptr = fixture.thisptr
         del self._fixtures[pointer_as_key(fptr)]
