@@ -40,14 +40,22 @@ cdef class World:
         def __set__(self, value):
             self.world.SetGravity(to_b2vec2(value))
 
+    def _iter_bodies(self):
+        '''Iterate over Bodies in the world
+
+        Note: can't control whether users attempt to delete or add bodies
+        during iteration, so the exposed property returns a full list.
+        '''
+        cdef b2Body *bptr
+        bptr = self.world.GetBodyList()
+
+        while bptr:
+            yield self._bodies[pointer_as_key(bptr)]
+            bptr = bptr.GetNext()
+
     property bodies:
         def __get__(self):
-            cdef b2Body *bptr
-            bptr = self.world.GetBodyList()
-
-            while bptr:
-                yield self._bodies[pointer_as_key(bptr)]
-                bptr = bptr.GetNext()
+            return list(self._iter_bodies())
 
     def step(self, float time_step, int vel_iters, int pos_iters):
         self.world.Step(time_step, vel_iters, pos_iters)

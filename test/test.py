@@ -71,17 +71,17 @@ for i, body in enumerate(world.bodies):
 
 # body.linear_velocity = None
 # body.linear_velocity = 0.1
-body = list(world.bodies)[1]
+body = world.bodies[1]
 body.print_position()
 
 body.linear_velocity = Vec2(0, 1)
 body.angular_velocity = 0.345
 print(body.angular_velocity)
-fixture = list(body.fixtures)[0]
-print('fixtures', list(body.fixtures), fixture.valid)
+fixture = body.fixtures[0]
+print('fixtures', body.fixtures, fixture.valid)
 
 body.destroy_fixture(fixture)
-print('fixtures', list(body.fixtures), fixture.valid)
+print('fixtures', body.fixtures, fixture.valid)
 
 print(body, body.valid, body.angle)
 print(body, body.linear_velocity)

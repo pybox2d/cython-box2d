@@ -77,14 +77,23 @@ cdef class Body:
 
         self.thisptr.DestroyFixture(fptr)
 
-    @safe_property
-    def fixtures(self):
+    @safe_method
+    def _iter_fixtures(self):
+        '''Iterate over Fixtures in the body
+
+        Note: users may attempt to delete or add fixtures during iteration, so
+        the exposed property returns a full list.
+        '''
         cdef b2Fixture *fptr
         fptr = self.thisptr.GetFixtureList()
 
         while fptr:
             yield self._fixtures[pointer_as_key(fptr)]
             fptr = fptr.GetNext()
+
+    @property
+    def fixtures(self):
+        return list(self._iter_fixtures())
 
     @safe_property
     def transform(self):
