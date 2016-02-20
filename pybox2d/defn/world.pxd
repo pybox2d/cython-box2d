@@ -4,7 +4,7 @@ from defn.world_callbacks cimport b2DestructionListener
 from defn.shape cimport *
 
 
-cdef extern from "b2World.h":
+cdef extern from "b2World.h" nogil:
     cdef cppclass b2World:
         b2World(const b2Vec2& gravity)
         void SetDestructionListener(b2DestructionListener* listener)
