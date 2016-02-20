@@ -39,10 +39,11 @@ print(fixture_defn.shape, fixture_defn.density, fixture_defn.sensor,
 # print('body type', body.type)
 #
 #
-bdef = pybox2d.DynamicBodyDef(position=(0, 2.0))
+bdef = pybox2d.DynamicBodyDef(position=(0, 2.0), data='test')
 print(bdef.position)
 bdef.position = (0, 1.0)
 print(bdef.position)
+print(bdef.data)
 
 body = world.create_body(bdef)
 fixture = body.create_fixture(fixture_defn)

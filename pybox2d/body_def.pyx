@@ -1,6 +1,6 @@
 cdef class BodyDef:
     cdef b2BodyDef *thisptr
-    cdef object user_data
+    cdef public object data
 
     def __cinit__(self):
         self.thisptr = new b2BodyDef()
@@ -27,7 +27,7 @@ cdef class BodyDef:
         self.bullet = bullet
         self.active = active
         self.gravity_scale = gravity_scale
-        self.user_data = data
+        self.data = data
 
     property position:
         def __get__(self):

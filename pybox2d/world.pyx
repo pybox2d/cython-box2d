@@ -76,8 +76,8 @@ cdef class World:
 
         self._bodies[pointer_as_key(bptr)] = body
 
-        if body_defn.user_data is not None:
-            body.data = body_defn.user_data
+        if body_defn.data is not None:
+            body.data = body_defn.data
 
         return body
 
