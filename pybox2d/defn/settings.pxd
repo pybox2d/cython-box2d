@@ -1,7 +1,11 @@
+from defn.common cimport *
+
 # TODO some structures are defined using these values. They need to match
 # up with what the b2Settings.h definitions say:
-DEF b2_maxManifoldPoints = 2
-DEF b2_maxPolygonVertices = 8
+# TODO this is defined in collision.pxd as cimport on DEF does not work?
+# DEF b2_maxManifoldPoints = 2
+# TODO this is defined in shape.pxd as cimport on DEF does not work?
+# DEF b2_maxPolygonVertices = 8
 
 
 cdef extern from "b2Settings.h":

@@ -1,3 +1,9 @@
+from defn.math cimport *
+from defn.shape cimport (b2Shape, b2ShapeType, b2MassData)
+from defn.collision cimport (b2RayCastInput, b2RayCastOutput, b2AABB)
+from defn.body cimport b2Body
+
+
 cdef extern from "b2Fixture.h":
     cdef struct b2Filter:
         b2Filter()

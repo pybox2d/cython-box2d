@@ -1,5 +1,5 @@
-include "shape.pyd"
-include "fixture.pyd"
+# include "shape.pyd"
+# include "fixture.pyd"
 
 
 cdef class FixtureDef:

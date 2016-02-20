@@ -1,4 +1,4 @@
-include "shape.pyd"
+# include "shape.pyd"
 
 
 cdef class Shape:

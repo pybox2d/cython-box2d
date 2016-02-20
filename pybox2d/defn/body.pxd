@@ -1,3 +1,9 @@
+from defn.math cimport *
+from defn.fixture cimport b2Fixture, b2FixtureDef
+from defn.shape cimport (b2Shape, b2ShapeType, b2MassData)
+from defn.world cimport b2World
+
+
 cdef extern from "b2Body.h":
     cdef enum b2BodyType:
         b2_staticBody = 0
@@ -79,6 +85,6 @@ cdef extern from "b2Body.h":
         const b2Body* GetNext() const
         void* GetUserData() const
         void SetUserData(void* data)
-        b2World* GetWorld()
-        const b2World* GetWorld() const
+        # b2World* GetWorld()
+        # const b2World* GetWorld() const
         void Dump()

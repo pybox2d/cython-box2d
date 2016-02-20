@@ -1,4 +1,5 @@
-include "body.pyd"
+from defn.body cimport b2Body
+from defn.common cimport *
 
 
 cdef class Body:

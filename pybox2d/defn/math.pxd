@@ -1,3 +1,5 @@
+from defn.common cimport *
+
 cdef extern from "b2Math.h":
     cdef cppclass b2Vec2:
         b2Vec2()

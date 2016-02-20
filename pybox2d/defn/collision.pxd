@@ -1,3 +1,10 @@
+from defn.math cimport *
+from defn.settings cimport *
+from defn.shape cimport (b2Shape, b2CircleShape, b2PolygonShape, b2EdgeShape)
+
+DEF b2_maxManifoldPoints = 2
+
+
 cdef extern from "b2Collision.h":
     cdef enum b2ContactFeatureType:
         e_vertex = 0
@@ -36,8 +43,8 @@ cdef extern from "b2Collision.h":
                         const b2Transform& xfB, float32 radiusB)
 
         b2Vec2 normal
-        b2Vec2 points[b2_maxManifoldPoints]
-        float32 separations[b2_maxManifoldPoints]
+        b2Vec2 *points  # [b2_maxManifoldPoints]
+        float32 *separations  # [b2_maxManifoldPoints]
 
 
     cdef enum b2PointState:
@@ -47,9 +54,10 @@ cdef extern from "b2Collision.h":
         b2_removeState
 
 
-    cdef void b2GetPointStates(b2PointState state1[b2_maxManifoldPoints],
-                               b2PointState state2[b2_maxManifoldPoints], const
-                               b2Manifold* manifold1, const b2Manifold* manifold2)
+    cdef void b2GetPointStates(b2PointState *state1, # [b2_maxManifoldPoints],
+                               b2PointState *state2, # [b2_maxManifoldPoints],
+                               const b2Manifold* manifold1,
+                               const b2Manifold* manifold2)
 
 
     cdef struct b2ClipVertex:

@@ -1,4 +1,4 @@
-include "body.pyd"
+# include "body.pyd"
 
 
 cdef class BodyDef:

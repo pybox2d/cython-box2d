@@ -1,3 +1,10 @@
+from defn.math cimport *
+from defn.collision cimport (b2RayCastInput, b2RayCastOutput, b2AABB)
+
+
+DEF b2_maxPolygonVertices = 8
+
+
 cdef extern from "b2Shape.h":
     cdef struct b2MassData:
         float32 mass

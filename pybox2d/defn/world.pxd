@@ -1,7 +1,12 @@
+from defn.math cimport *
+from defn.body cimport (b2BodyDef, b2Body)
+from defn.world_callbacks cimport b2DestructionListener
+from defn.shape cimport *
+
+
 cdef extern from "b2World.h":
     cdef cppclass b2World:
         b2World(const b2Vec2& gravity)
-        # ~b2World() # <-- cython destructors?
         void SetDestructionListener(b2DestructionListener* listener)
         # void SetContactFilter(b2ContactFilter* filter)
         # void SetContactListener(b2ContactListener* listener)
@@ -10,12 +15,12 @@ cdef extern from "b2World.h":
         void DestroyBody(b2Body* body)
         # b2Joint* CreateJoint(const b2JointDef* def)
         # void DestroyJoint(b2Joint* joint)
-        void Step(float32 timeStep, int32 velocityIterations, 
+        void Step(float32 timeStep, int32 velocityIterations,
                   int32 positionIterations)
         void ClearForces()
         void DrawDebugData()
         # void QueryAABB(b2QueryCallback* callback, const b2AABB& aabb) const
-        # void RayCast(b2RayCastCallback* callback, const b2Vec2& point1, 
+        # void RayCast(b2RayCastCallback* callback, const b2Vec2& point1,
         #              const b2Vec2& point2) const
         # b2Body* GetBodyList()
         const b2Body* GetBodyList() const

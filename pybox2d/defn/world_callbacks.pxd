@@ -1,3 +1,5 @@
+from defn.fixture cimport b2Fixture
+
 cdef extern from "b2WorldCallbacks.h":
     cdef cppclass b2DestructionListener:
         # virtual ~b2DestructionListener()
