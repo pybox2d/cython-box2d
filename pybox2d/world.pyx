@@ -83,7 +83,11 @@ cdef class World:
 
         if body_defn.fixtures is not None:
             for fixture in body_defn.fixtures:
-                body.create_fixture(fixture)
+                if isinstance(fixture, dict):
+                    fixture_dict = fixture
+                    body.create_fixture(**fixture_dict)
+                else:
+                    body.create_fixture_from_def(fixture)
 
         return body
 

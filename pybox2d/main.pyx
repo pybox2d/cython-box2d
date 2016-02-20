@@ -12,6 +12,7 @@ include "defn/world_callbacks.pxd"
 include "defn/world.pxd"
 
 include "util.pyx"
+include "base.pyx"
 include "shape.pyx"
 include "fixture.pyx"
 include "body_def.pyx"

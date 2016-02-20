@@ -1,7 +1,3 @@
-# include "shape.pyd"
-# include "fixture.pyd"
-
-
 cdef class FixtureDef:
     cdef b2FixtureDef *thisptr
     cdef Shape _shape
@@ -66,7 +62,7 @@ cdef class FixtureDef:
             self.thisptr.isSensor = sensor
 
 
-cdef class Fixture:
+cdef class Fixture(Base):
     cdef b2Fixture *thisptr
     cdef public object data
 
@@ -116,3 +112,13 @@ cdef class Fixture:
             return self.thisptr.IsSensor()
 
         self.thisptr.SetSensor(sensor)
+
+    def _get_repr_info(self):
+        yield ('shape', self.shape)
+        yield ('friction', self.friction)
+        yield ('restitution', self.restitution)
+        yield ('sensor', self.sensor)
+        yield ('density', self.density)
+
+        if self.data is not None:
+            yield ('data', self.data)

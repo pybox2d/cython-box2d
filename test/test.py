@@ -21,6 +21,11 @@ class BodyClass(pybox2d.Body):
     def print_position(self):
         print(self.world_center)
 
+    # TODO will not work, can't use 'cpdef' with generators
+    # def _repr_info(self):
+    #     yield from super()._repr_info()
+    #     yield ('test', 'a')
+
 
 world = pybox2d.World(default_body_class=BodyClass)
 print('gravity', world.gravity)
@@ -46,12 +51,15 @@ print(bdef.position)
 print(bdef.data)
 
 body = world.create_body_from_def(bdef)
-fixture = body.create_fixture(fixture_defn)
+fixture = body.create_fixture_from_def(fixture_defn)
 
 # body = world.create_body(None)
 body = world.create_body_from_def(bdef, body_class=pybox2d.Body)
+fixture = body.create_fixture(shape=shape, density=0.1)
+
 body = world.create_static_body(position=(0, 2.0), data='test',
-                                fixtures=[fixture_defn])
+                                fixtures=[fixture_defn,
+                                          dict(shape=shape, density=0.2)])
 
 print(body)
 
@@ -65,7 +73,7 @@ print('-')
 for i, body in enumerate(world.bodies):
     print(i, body, id(body), body.world_center, body.transform)
     for j, fixture in enumerate(body.fixtures):
-        print('\t', j, fixture, fixture.shape)
+        print('\t', j, fixture)
 
     body.data = {}
     body.data['a'] = 1

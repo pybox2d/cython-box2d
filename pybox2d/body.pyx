@@ -2,7 +2,7 @@ from defn.body cimport b2Body
 from defn.common cimport *
 
 
-cdef class Body:
+cdef class Body(Base):
     cdef b2Body *thisptr
     cdef public object data
     cdef dict _fixtures
@@ -61,7 +61,7 @@ cdef class Body:
         self.thisptr.SetAngularVelocity(angular_velocity)
 
     @safe_method
-    def create_fixture(self, FixtureDef fixture_defn not None):
+    def create_fixture_from_def(self, FixtureDef fixture_defn not None):
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
         fixture = Fixture.from_b2Fixture(fptr)
         self._fixtures[pointer_as_key(fptr)] = fixture
@@ -70,6 +70,11 @@ cdef class Body:
             fixture.data = fixture_defn.data
 
         return fixture
+
+    @safe_method
+    def create_fixture(self, **kwargs):
+        defn = FixtureDef(**kwargs)
+        return self.create_fixture_from_def(defn)
 
     @safe_method
     def destroy_fixture(self, Fixture fixture not None):
@@ -107,8 +112,13 @@ cdef class Body:
     def type(self):
         return self.thisptr.GetType()
 
-    def __repr__(self):
-        # TODO more comprehensive repr
-        return ('{0}(transform={1.transform}, type={1.type}, '
-                'fixtures={1.fixtures})'
-                ''.format(self.__class__.__name__, self))
+    # TODO can't use cpdef with generators?
+    def _get_repr_info(self):
+        yield ('angle', self.angle)
+        yield ('world_center', self.world_center)
+        yield ('local_center', self.local_center)
+        yield ('linear_velocity', self.linear_velocity)
+        yield ('angular_velocity', self.angular_velocity)
+        yield ('transform', self.transform)
+        yield ('type', self.type)
+        # fixtures
