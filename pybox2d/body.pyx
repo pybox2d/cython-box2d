@@ -114,6 +114,14 @@ cdef class Body(Base):
         return self.create_fixture(shape=shape, **fx_kwargs)
 
     @safe_method
+    def create_edge_fixture(self, vertices=None, **fx_kwargs):
+        if 'shape' in fx_kwargs:
+            raise ValueError('Shape is implicit in this method')
+
+        shape = EdgeShape(vertices=vertices)
+        return self.create_fixture(shape=shape, **fx_kwargs)
+
+    @safe_method
     def create_circle_fixture(self, radius=0.0, center=None, **fx_kwargs):
         if 'shape' in fx_kwargs:
             raise ValueError('Shape is implicit in this method')

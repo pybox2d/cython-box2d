@@ -57,7 +57,15 @@ body = world.create_body_from_def(bdef, body_class=pybox2d.Body)
 fixture = body.create_fixture(shape=shape, density=0.1)
 fixture = body.create_circle_fixture(radius=0.1, center=(1, 2),
                                      density=0.1)
+fixture = body.create_polygon_fixture(box=(3, 3), density=0.1)
+print('created polygon fixture with box settings', fixture)
+fixture = body.create_polygon_fixture(vertices=[(-3.0, -3.0), (3.0, -3.0),
+                                                (3.0, 3.0), (-3.0, 3.0)],
+                                      density=0.1)
+fixture = body.create_edge_fixture(vertices=[(-3.0, -3.0), (3.0, -3.0)],
+                                   density=0.1)
 
+print('created polygon fixture with vertices', fixture)
 body = world.create_static_body(position=(0, 2.0), data='test',
                                 fixtures=[fixture_defn,
                                           dict(shape=shape, density=0.2)])

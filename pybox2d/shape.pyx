@@ -1,7 +1,7 @@
 # include "shape.pyd"
 
 
-cdef class Shape:
+cdef class Shape(Base):
     # cppclass inheritance not working so cleanly in Cython - or what am I
     # doing wrong?
     cdef b2Shape *shape
@@ -10,6 +10,13 @@ cdef class Shape:
     def __cinit__(self):
         self.shape = NULL
         self.owner = False
+
+    cdef from_existing(self, b2Shape *shape, owner=True):
+        if self.owner:
+            del self.shape
+
+        self.shape = shape
+        self.owner = owner
 
     def compute_mass(self, mass_data, density):
         pass
@@ -24,20 +31,26 @@ cdef class Shape:
     def child_count(self):
         return self.shape.GetChildCount()
 
+    @property
+    def radius(self):
+        return self.shape.m_radius
+
     @staticmethod
     cdef upcast(const b2Shape *shape):
         # TODO copies for now
         if shape.GetType() == ShapeType_circle:
             sh = CircleShape()
-            sh.from_existing(<b2CircleShape*>shape, owner=False)
-            return sh
         elif shape.GetType() == ShapeType_polygon:
-            return PolygonShape()
+            sh = PolygonShape()
         elif shape.GetType() == ShapeType_edge:
-            return EdgeShape()
+            sh = EdgeShape()
         # elif shape.GetType() == ShapeType_chain:
         #     return ChainShape()
-        raise RuntimeError('Unknown shape type')
+        else:
+            raise RuntimeError('Unknown shape type')
+
+        sh.from_existing(<b2Shape*>shape, owner=False)
+        return sh
 
 
 cdef class CircleShape(Shape):
@@ -49,26 +62,19 @@ cdef class CircleShape(Shape):
         if self.owner:
             del self.shape
 
-    cdef from_existing(self, b2CircleShape *shape, owner=True):
-        if self.owner:
-            del self.shape
-
-        self.shape = shape
-        self.owner = owner
-
     def __init__(self, radius=0.0, center=None):
         if center is None:
             center = (0.0, 0.0)
 
-        (<b2CircleShape *>self.shape).m_radius = radius
+        self.shape.m_radius = radius
         self.center = center
 
     property radius:
         def __get__(self):
-            return (<b2CircleShape *>self.shape).m_radius
+            return self.shape.m_radius
 
         def __set__(self, value):
-            (<b2CircleShape *>self.shape).m_radius = value
+            self.shape.m_radius = value
 
     property center:
         def __get__(self):
@@ -80,11 +86,9 @@ cdef class CircleShape(Shape):
             (<b2CircleShape *>self.shape).m_p.x = cx
             (<b2CircleShape *>self.shape).m_p.y = cy
 
-    def __str__(self):
-        return ('{0.__class__.__name__}(radius={0.radius}, center={0.center})'
-                '' .format(self))
-
-    __repr__ = __str__
+    def _get_repr_info(self):
+        yield ('radius', self.radius)
+        yield ('center', self.center)
 
 
 cdef class PolygonShape(Shape):
@@ -92,19 +96,16 @@ cdef class PolygonShape(Shape):
     cdef object box_settings
 
     def __cinit__(self):
-        self.polygon = new b2PolygonShape()
-        self.polygon.m_count = 0
-        self.shape = self.polygon
+        cdef b2PolygonShape *polygon = new b2PolygonShape()
+        polygon.m_count = 0
+
+        self.shape = <b2Shape*>polygon
         self.owner = True
 
-    cdef from_existing(self, b2PolygonShape *shape, owner=True):
-        if self.owner:
-            del self.shape
-
-        self.shape = shape
-        self.owner = owner
-
     def __init__(self, vertices=None, box=None):
+        if vertices is not None and box is not None:
+            raise ValueError('Cannot specify both box and vertices')
+
         if vertices is not None:
             self.vertices = vertices
 
@@ -113,34 +114,44 @@ cdef class PolygonShape(Shape):
 
     property vertices:
         def __get__(self):
-            if self.polygon.GetVertexCount() > b2_maxPolygonVertices:
+            cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
+            if (polygon.GetVertexCount() > b2_maxPolygonVertices):
                 raise ValueError('Invalid state '
                                  '(more vertices than supported?)')
 
-            return [to_vec2(self.polygon.m_vertices[vertex])
-                    for vertex in range(self.polygon.GetVertexCount())]
+            return [to_vec2(polygon.m_vertices[vertex])
+                    for vertex in range(polygon.GetVertexCount())]
 
         def __set__(self, vertices):
+            cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
             vertices = list(vertices)
             if len(vertices) > b2_maxPolygonVertices:
                 raise ValueError('Exceeded maximum polygon vertices {} '
                                  '(max={})'.format(len(vertices),
                                                    b2_maxPolygonVertices))
 
-            for i, vertex in enumerate(vertices):
-                self.polygon.m_vertices[i] = to_b2vec2(vertex)
+            cdef b2Vec2 b2v[b2_maxPolygonVertices]
 
-            self.polygon.m_count = len(vertices)
+            for i, vertex in enumerate(vertices):
+                b2v[i] = to_b2vec2(vertex)
+
+            polygon.Set(b2v, len(vertices))
+
+            # for i, vertex in enumerate(vertices):
+            #     polygon.m_vertices[i] = to_b2vec2(vertex)
+            # polygon.m_count = len(vertices)
+
             self.box_settings = None
 
     property normals:
         def __get__(self):
-            if self.polygon.GetVertexCount() > b2_maxPolygonVertices:
+            cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
+            if polygon.GetVertexCount() > b2_maxPolygonVertices:
                 raise ValueError('Invalid state '
                                  '(more vertices than supported?)')
 
-            return [to_vec2(self.polygon.m_normals[vertex])
-                    for vertex in range(self.polygon.GetVertexCount())]
+            return [to_vec2(polygon.m_normals[vertex])
+                    for vertex in range(polygon.GetVertexCount())]
 
         def __set__(self, normals):
             normals = list(normals)
@@ -149,28 +160,32 @@ cdef class PolygonShape(Shape):
                                  '(max={})'.format(len(normals),
                                                    b2_maxPolygonVertices))
 
+            cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
             for i, vertex in enumerate(normals):
-                self.polygon.m_normals[i] = to_b2vec2(vertex)
+                polygon.m_normals[i] = to_b2vec2(vertex)
 
-            self.polygon.m_count = len(normals)
+            polygon.m_count = len(normals)
             self.box_settings = None
 
     property centroid:
         def __get__(self):
-            return to_vec2(self.polygon.m_centroid)
+            cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
+            return to_vec2(polygon.m_centroid)
 
         def __set__(self, centroid):
-            self.polygon.m_centroid = to_b2vec2(centroid)
+            cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
+            polygon.m_centroid = to_b2vec2(centroid)
 
     @property
     def valid(self):
-        return self.polygon.Validate()
+        return (<b2PolygonShape *>self.shape).Validate()
 
     def set_as_box(self, float hx, float hy, center=None, angle=0.0):
         if center is None:
             center = (0, 0)
 
-        self.polygon.SetAsBox(hx, hy, to_b2vec2(center), angle)
+        cdef b2PolygonShape *polygon = <b2PolygonShape *>self.shape
+        polygon.SetAsBox(hx, hy, to_b2vec2(center), angle)
         self.box_settings = (hx, hy, center, angle)
 
     property box:
@@ -187,16 +202,66 @@ cdef class PolygonShape(Shape):
             yield ('vertices', self.vertices)
 
     def compute_mass(self, mass_data, density):
-        if self.polygon.m_count < 3:
+        if (<b2PolygonShape *>self.shape).m_count < 3:
             raise ValueError('Must have at least 3 vertices to compute mass')
 
-        # self.polygon.ComputeMass(mass_data, density)
+        # (<b2PolygonShape *>self.shape).ComputeMass(mass_data, density)
 
 
 cdef class EdgeShape(Shape):
-    cdef b2EdgeShape *edge
 
     def __cinit__(self):
-        self.edge = new b2EdgeShape()
-        self.shape = self.edge
+        cdef b2EdgeShape *edge = new b2EdgeShape()
+        # edge.m_hasVertex0 = False
+        # edge.m_hasVertex3 = False
+
+        self.shape = <b2Shape*>edge
         self.owner = True
+
+    def __init__(self, vertices=None):
+        if vertices is not None:
+            self.vertices = vertices
+
+    property vertices:
+        def __get__(self):
+            cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape
+
+            vertices = []
+            if edge.m_hasVertex0:
+                vertices.append(to_vec2(edge.m_vertex0))
+
+            vertices.append(to_vec2(edge.m_vertex1))
+            vertices.append(to_vec2(edge.m_vertex2))
+
+            if edge.m_hasVertex3:
+                vertices.append(to_vec2(edge.m_vertex3))
+
+            return vertices
+
+        def __set__(self, vertices):
+            vertices = list(vertices)
+            if len(vertices) not in (2, 4):
+                raise ValueError('Unknown number of vertices (expected 2 or 4)'
+                                 )
+
+            cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape
+            if len(vertices) == 2:
+                v1, v2 = vertices
+                edge.m_vertex1 = to_b2vec2(v1)
+                edge.m_vertex2 = to_b2vec2(v2)
+
+                edge.m_hasVertex0 = False
+                edge.m_hasVertex3 = False
+            else:
+                v0, v1, v2, v3 = vertices
+                edge.m_vertex0 = to_b2vec2(v0)
+                edge.m_vertex1 = to_b2vec2(v1)
+                edge.m_vertex2 = to_b2vec2(v2)
+                edge.m_vertex3 = to_b2vec2(v3)
+
+                edge.m_hasVertex0 = True
+                edge.m_hasVertex3 = True
+
+    def _get_repr_info(self):
+        cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape
+        yield ('vertices', self.vertices)
