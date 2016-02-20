@@ -89,6 +89,6 @@ cdef class Body:
     def transform(self):
         return Transform.from_b2Transform(self.thisptr.GetTransform())
 
-    property type:
-        def __get__(self):
-            return self.thisptr.GetType()
+    @safe_property
+    def type(self):
+        return self.thisptr.GetType()
