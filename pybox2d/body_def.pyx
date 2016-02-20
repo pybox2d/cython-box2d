@@ -1,8 +1,6 @@
-# include "body.pyd"
-
-
 cdef class BodyDef:
     cdef b2BodyDef *thisptr
+    cdef object user_data
 
     def __cinit__(self):
         self.thisptr = new b2BodyDef()
@@ -10,12 +8,11 @@ cdef class BodyDef:
     def __dealloc__(self):
         del self.thisptr
 
-    # TODO userData
-
     def __init__(self, type_=b2_staticBody, position=None, angle=0.0,
                  angular_velocity=0.0, linear_damping=0.0, angular_damping=0.0,
                  allow_sleep=True, awake=True, fixed_rotation=False,
-                 bullet=False, active=True, gravity_scale=1.0):
+                 bullet=False, active=True, gravity_scale=1.0,
+                 data=None):
 
         self.type = type_
         if position is not None:
@@ -30,6 +27,7 @@ cdef class BodyDef:
         self.bullet = bullet
         self.active = active
         self.gravity_scale = gravity_scale
+        self.user_data = data
 
     property position:
         def __get__(self):
@@ -124,15 +122,15 @@ cdef class BodyDef:
 
 
 cdef class StaticBodyDef(BodyDef):
-    def __init__(self):
-        BodyDef.__init__(self, type_=b2_staticBody)
+    def __init__(self, **kwargs):
+        super().__init__(self, type_=b2_staticBody, **kwargs)
 
 
 cdef class KinematicBodyDef(BodyDef):
-    def __init__(self):
-        BodyDef.__init__(self, type_=b2_kinematicBody)
+    def __init__(self, **kwargs):
+        BodyDef.__init__(self, type_=b2_kinematicBody, **kwargs)
 
 
 cdef class DynamicBodyDef(BodyDef):
-    def __init__(self):
-        BodyDef.__init__(self, type_=b2_dynamicBody)
+    def __init__(self, **kwargs):
+        BodyDef.__init__(self, type_=b2_dynamicBody, **kwargs)

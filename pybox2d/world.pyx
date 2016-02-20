@@ -43,8 +43,8 @@ cdef class World:
     def _iter_bodies(self):
         '''Iterate over Bodies in the world
 
-        Note: can't control whether users attempt to delete or add bodies
-        during iteration, so the exposed property returns a full list.
+        Note: users may attempt to delete or add bodies during iteration, so
+        the exposed property returns a full list.
         '''
         cdef b2Body *bptr
         bptr = self.world.GetBodyList()
@@ -75,6 +75,10 @@ cdef class World:
         (<Body>body).thisptr = bptr
 
         self._bodies[pointer_as_key(bptr)] = body
+
+        if body_defn.user_data is not None:
+            body.data = body_defn.user_data
+
         return body
 
     def destroy_body(self, Body body not None):
