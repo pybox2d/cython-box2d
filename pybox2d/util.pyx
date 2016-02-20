@@ -33,3 +33,12 @@ cdef safe_rw_property(prop_wrap):
         prop_wrap(self, value)
 
     return property(fget, fset)
+
+
+cdef safe_method(method):
+    def wrapped(self, *args, **kwargs):
+        if not self.valid:
+            raise RuntimeError('Underlying C++ object has been deleted')
+        return method(self, *args, **kwargs)
+
+    return wrapped

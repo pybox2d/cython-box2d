@@ -54,33 +54,28 @@ cdef class Body:
 
         self.thisptr.SetAngularVelocity(angular_velocity)
 
+    @safe_method
     def create_fixture(self, FixtureDef userdef):
         df = userdef.thisptr
         fixture = Fixture()
         fixture.thisptr = self.thisptr.CreateFixture(df)
         return fixture
 
-    property fixtures:
-        def __get__(self):
-            cdef b2Fixture *b2fixture
-            b2fixture = self.thisptr.GetFixtureList()
+    @safe_property
+    def fixtures(self):
+        cdef b2Fixture *b2fixture
+        b2fixture = self.thisptr.GetFixtureList()
 
-            while b2fixture:
-                fixture = Fixture()
-                fixture.thisptr = b2fixture
-                yield fixture
+        while b2fixture:
+            fixture = Fixture()
+            fixture.thisptr = b2fixture
+            yield fixture
 
-                b2fixture = b2fixture.GetNext()
+            b2fixture = b2fixture.GetNext()
 
-    property transform:
-        def __get__(self):
-            ret = Transform()
-            ret.from_b2Transform(self.thisptr.GetTransform())
-            return ret
-            # return Transform(position=to_vec2(transform.p),
-            #                  rotation=Rotation(sine=transform.q.s,
-            #                                    cosine=transform.q.c)
-            #                  )
+    @safe_property
+    def transform(self):
+        return Transform.from_b2Transform(self.thisptr.GetTransform())
 
     property type:
         def __get__(self):

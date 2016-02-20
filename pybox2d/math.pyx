@@ -98,10 +98,13 @@ cdef class Transform:
         if rotation is not None:
             self.rotation = rotation
 
-    cdef from_b2Transform(self, b2Transform b2t):
-        self.transform.p = b2t.p
-        self.transform.q.s = b2t.q.s
-        self.transform.q.c = b2t.q.c
+    @staticmethod
+    cdef from_b2Transform(b2Transform b2t):
+        xf = Transform()
+        xf.transform.p = b2t.p
+        xf.transform.q.s = b2t.q.s
+        xf.transform.q.c = b2t.q.c
+        return xf
 
     property position:
         def __get__(self):
