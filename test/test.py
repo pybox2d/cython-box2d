@@ -64,7 +64,7 @@ body = world.create_static_body(position=(0, 2.0), data='test',
 print(body)
 
 for i in range(10):
-    print(body.world_center)
+    print([body.world_center for body in world.bodies])
     world.step(0.01, 8, 8)
 
 print(body.world_center)

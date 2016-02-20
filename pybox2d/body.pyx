@@ -121,4 +121,4 @@ cdef class Body(Base):
         yield ('angular_velocity', self.angular_velocity)
         yield ('transform', self.transform)
         yield ('type', self.type)
-        # fixtures
+        yield ('fixtures', self.fixtures)
