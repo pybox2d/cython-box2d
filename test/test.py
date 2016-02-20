@@ -17,7 +17,12 @@ shape = pybox2d.CircleShape(radius=1.0, center=(0, 0.1))
 print(shape.radius)
 print(shape.center)
 
-world = pybox2d.World()
+class BodyClass(pybox2d.Body):
+    def print_position(self):
+        print(self.world_center)
+
+
+world = pybox2d.World(default_body_class=BodyClass)
 print('gravity', world.gravity)
 world.gravity = (0, -10)
 print('gravity', world.gravity)
@@ -40,7 +45,10 @@ bdef.position = (0, 2.0)
 print(bdef.position)
 
 body = world.create_body(bdef)
+fixture = body.create_fixture(fixture_defn)
+
 # body = world.create_body(None)
+body = world.create_body(bdef, body_class=pybox2d.Body)
 print(body)
 fixture = body.create_fixture(fixture_defn)
 print(fixture)
@@ -63,6 +71,9 @@ for i, body in enumerate(world.bodies):
 
 # body.linear_velocity = None
 # body.linear_velocity = 0.1
+body = list(world.bodies)[1]
+body.print_position()
+
 body.linear_velocity = Vec2(0, 1)
 body.angular_velocity = 0.345
 print(body.angular_velocity)
