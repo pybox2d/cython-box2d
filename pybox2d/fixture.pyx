@@ -67,6 +67,20 @@ cdef class FixtureDef:
 cdef class Fixture:
     cdef b2Fixture *thisptr
 
+    @staticmethod
+    cdef from_b2Fixture(b2Fixture *fixture):
+        fx = Fixture()
+        fx.thisptr = fixture
+        return fx
+
+    @property
+    def valid(self):
+        return (self.thisptr != NULL)
+
+    def invalidate(self):
+        # TODO shapes need some rethinking
+        self.thisptr = NULL
+
     property shape:
         def __get__(self):
             shape = self.thisptr.GetShape()

@@ -68,6 +68,9 @@ cdef class Rotation:
         self.sine = 0.0
         self.cosine = 1.0
 
+    def __iter__(self):
+        return iter((self.sine, self.cosine))
+
     property angle:
         def __get__(self):
             return math.atan2(self.sine, self.cosine)
