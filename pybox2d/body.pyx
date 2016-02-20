@@ -46,14 +46,14 @@ cdef class Body:
         return to_vec2(self.thisptr.GetLocalCenter())
 
     @safe_rw_property
-    def linear_velocity(self, Vec2 linear_velocity):
+    def linear_velocity(self, linear_velocity):
         if linear_velocity is None:
             return to_vec2(self.thisptr.GetLinearVelocity())
 
         self.thisptr.SetLinearVelocity(to_b2vec2(linear_velocity))
 
     @safe_rw_property
-    def angular_velocity(self, float angular_velocity):
+    def angular_velocity(self, angular_velocity):
         if angular_velocity is None:
             return self.thisptr.GetAngularVelocity()
 

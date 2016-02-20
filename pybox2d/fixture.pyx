@@ -81,35 +81,35 @@ cdef class Fixture:
         # TODO shapes need some rethinking
         self.thisptr = NULL
 
-    property shape:
-        def __get__(self):
-            shape = self.thisptr.GetShape()
-            return Shape.upcast(shape)
+    @safe_property
+    def shape(self):
+        shape = self.thisptr.GetShape()
+        return Shape.upcast(shape)
 
-    property density:
-        def __get__(self):
+    @safe_rw_property
+    def density(self, density):
+        if density is None:
             return self.thisptr.GetDensity()
 
-        def __set__(self, density):
-            self.thisptr.SetDensity(density)
+        self.thisptr.SetDensity(density)
 
-    property friction:
-        def __get__(self):
+    @safe_rw_property
+    def friction(self, friction):
+        if friction is None:
             return self.thisptr.GetFriction()
 
-        def __set__(self, friction):
-            self.thisptr.SetFriction(friction)
+        self.thisptr.SetFriction(friction)
 
-    property restitution:
-        def __get__(self):
+    @safe_rw_property
+    def restitution(self, restitution):
+        if restitution is None:
             return self.thisptr.GetRestitution()
 
-        def __set__(self, restitution):
-            self.thisptr.SetRestitution(restitution)
+        self.thisptr.SetRestitution(restitution)
 
-    property sensor:
-        def __get__(self):
+    @safe_rw_property
+    def sensor(self, sensor):
+        if sensor is None:
             return self.thisptr.IsSensor()
 
-        def __set__(self, sensor):
-            self.thisptr.SetSensor(sensor)
+        self.thisptr.SetSensor(sensor)

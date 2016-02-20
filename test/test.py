@@ -64,6 +64,8 @@ for i, body in enumerate(world.bodies):
 # body.linear_velocity = None
 # body.linear_velocity = 0.1
 body.linear_velocity = Vec2(0, 1)
+body.angular_velocity = 0.345
+print(body.angular_velocity)
 fixture = list(body.fixtures)[0]
 print('fixtures', list(body.fixtures), fixture.valid)
 
