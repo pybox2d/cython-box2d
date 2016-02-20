@@ -81,6 +81,10 @@ cdef class World:
         if body_defn.data is not None:
             body.data = body_defn.data
 
+        if body_defn.fixtures is not None:
+            for fixture in body_defn.fixtures:
+                body.create_fixture(fixture)
+
         return body
 
     def create_static_body(self, body_class=None, **kwargs):

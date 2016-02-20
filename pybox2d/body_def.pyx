@@ -1,6 +1,7 @@
 cdef class BodyDef:
     cdef b2BodyDef *thisptr
     cdef public object data
+    cdef public list fixtures
 
     def __cinit__(self):
         self.thisptr = new b2BodyDef()
@@ -12,7 +13,7 @@ cdef class BodyDef:
                  angular_velocity=0.0, linear_damping=0.0, angular_damping=0.0,
                  allow_sleep=True, awake=True, fixed_rotation=False,
                  bullet=False, active=True, gravity_scale=1.0,
-                 data=None):
+                 data=None, fixtures=None):
 
         self.type = type_
         if position is not None:
@@ -28,6 +29,7 @@ cdef class BodyDef:
         self.active = active
         self.gravity_scale = gravity_scale
         self.data = data
+        self.fixtures = fixtures
 
     property position:
         def __get__(self):

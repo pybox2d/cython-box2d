@@ -5,6 +5,7 @@
 cdef class FixtureDef:
     cdef b2FixtureDef *thisptr
     cdef Shape _shape
+    cdef public object data
 
     def __cinit__(self):
         self.thisptr = new b2FixtureDef()
@@ -13,12 +14,13 @@ cdef class FixtureDef:
         del self.thisptr
 
     def __init__(self, shape=None, friction=0.2, restitution=0.0,
-                 density=0.0, sensor=False):
+                 density=0.0, sensor=False, data=None):
         self._shape = None
         self.friction = friction
         self.restitution = restitution
         self.density = density
         self.sensor = sensor
+        self.data = data
 
         if shape is not None:
             self.shape = shape
@@ -66,6 +68,7 @@ cdef class FixtureDef:
 
 cdef class Fixture:
     cdef b2Fixture *thisptr
+    cdef public object data
 
     @staticmethod
     cdef from_b2Fixture(b2Fixture *fixture):

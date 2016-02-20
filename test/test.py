@@ -50,12 +50,10 @@ fixture = body.create_fixture(fixture_defn)
 
 # body = world.create_body(None)
 body = world.create_body_from_def(bdef, body_class=pybox2d.Body)
-bdef = world.create_static_body(position=(0, 2.0), data='test')
+body = world.create_static_body(position=(0, 2.0), data='test',
+                                fixtures=[fixture_defn])
 
 print(body)
-fixture = body.create_fixture(fixture_defn)
-print(fixture)
-print(fixture.density)
 
 for i in range(10):
     print(body.world_center)

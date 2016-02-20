@@ -65,6 +65,10 @@ cdef class Body:
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
         fixture = Fixture.from_b2Fixture(fptr)
         self._fixtures[pointer_as_key(fptr)] = fixture
+
+        if fixture_defn.data is not None:
+            fixture.data = fixture_defn.data
+
         return fixture
 
     @safe_method
@@ -102,3 +106,9 @@ cdef class Body:
     @safe_property
     def type(self):
         return self.thisptr.GetType()
+
+    def __repr__(self):
+        # TODO more comprehensive repr
+        return ('{0}(transform={1.transform}, type={1.type}, '
+                'fixtures={1.fixtures})'
+                ''.format(self.__class__.__name__, self))
