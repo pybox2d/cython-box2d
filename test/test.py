@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, 'build/lib.macosx-10.5-x86_64-3.4')
 
 import pybox2d
-
+from pybox2d import Vec2
 
 v = pybox2d.Vec2()
 print(v)
@@ -40,6 +40,7 @@ bdef.position = (0, 2.0)
 print(bdef.position)
 
 body = world.create_body(bdef)
+# body = world.create_body(None)
 print(body)
 fixture = body.create_fixture(fixture_defn)
 print(fixture)
@@ -59,3 +60,12 @@ for i, body in enumerate(world.bodies):
 
     body.data = {}
     body.data['a'] = 1
+
+# body.linear_velocity = None
+# body.linear_velocity = 0.1
+body.linear_velocity = Vec2(0, 1)
+print(body, body.valid, body.angle)
+print(body, body.linear_velocity)
+world.destroy_body(body)
+print(body, body.linear_velocity)
+print(body, body.valid, body.angle)

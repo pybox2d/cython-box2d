@@ -1,5 +1,6 @@
 include "body.pyd"
 
+
 cdef class Body:
     cdef b2Body *thisptr
     cdef public object data
@@ -13,37 +14,45 @@ cdef class Body:
     def __hash__(self):
         return pointer_as_key(self.thisptr)
 
+    cdef invalidate(self):
+        # underlying b2Body has been destroyed
+        self.thisptr = NULL
+
+    @property
+    def valid(self):
+        return (self.thisptr != NULL)
+
     @staticmethod
     cdef from_b2Body(b2Body *b2body):
         body = Body()
         body.thisptr = b2body
         return body
 
-    property angle:
-        def __get__(self):
-            return self.thisptr.GetAngle()
+    @safe_property
+    def angle(self):
+        return self.thisptr.GetAngle()
 
-    property world_center:
-        def __get__(self):
-            return to_vec2(self.thisptr.GetWorldCenter())
+    @safe_property
+    def world_center(self):
+        return to_vec2(self.thisptr.GetWorldCenter())
 
-    property local_center:
-        def __get__(self):
-            return to_vec2(self.thisptr.GetLocalCenter())
+    @safe_property
+    def local_center(self):
+        return to_vec2(self.thisptr.GetLocalCenter())
 
-    property linear_velocity:
-        def __get__(self):
+    @safe_rw_property
+    def linear_velocity(self, Vec2 linear_velocity):
+        if linear_velocity is None:
             return to_vec2(self.thisptr.GetLinearVelocity())
 
-        def __set__(self, linear_velocity):
-            self.thisptr.SetLinearVelocity(to_b2vec2(linear_velocity))
+        self.thisptr.SetLinearVelocity(to_b2vec2(linear_velocity))
 
-    property angular_velocity:
-        def __get__(self):
+    @safe_rw_property
+    def angular_velocity(self, float angular_velocity):
+        if angular_velocity is None:
             return self.thisptr.GetAngularVelocity()
 
-        def __set__(self, angular_velocity):
-            self.thisptr.SetAngularVelocity(angular_velocity)
+        self.thisptr.SetAngularVelocity(angular_velocity)
 
     def create_fixture(self, FixtureDef userdef):
         df = userdef.thisptr
