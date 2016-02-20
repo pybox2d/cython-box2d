@@ -76,7 +76,7 @@ for i, body in enumerate(world.bodies):
         print('\t', j, fixture)
 
     body.data = {}
-    body.data['a'] = 1
+    body.data['a'] = i
 
 # body.linear_velocity = None
 # body.linear_velocity = 0.1

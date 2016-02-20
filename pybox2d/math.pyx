@@ -91,15 +91,14 @@ cdef class Rotation:
         return '{0.__class__.__name__}(angle={0.angle})'.format(self)
 
 
-cdef class Transform:
+cdef class Transform(Base):
     cdef b2Transform transform;
 
-    def __init__(self, position=None, rotation=None):
+    def __init__(self, position=None, angle=0.0):
         if position is not None:
             self.position = position
 
-        if rotation is not None:
-            self.rotation = rotation
+        self.angle = angle
 
     @staticmethod
     cdef from_b2Transform(b2Transform b2t):
@@ -125,9 +124,16 @@ cdef class Transform:
             self.transform.q.s = rotation[0]
             self.transform.q.c = rotation[1]
 
+    property angle:
+        def __get__(self):
+            return self.transform.q.GetAngle()
+
+        def __set__(self, angle):
+            self.transform.q.Set(angle)
+
     def __mul__(Transform xf, other):
         return to_vec2(b2Mul(xf.transform, to_b2vec2(other)))
 
-    def __repr__(self):
-        return ('{0.__class__.__name__}({0.position}, {0.rotation})'
-                ''.format(self))
+    def _get_repr_info(self):
+        yield ('position', self.position)
+        yield ('angle', self.angle)

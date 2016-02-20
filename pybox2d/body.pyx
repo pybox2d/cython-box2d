@@ -60,6 +60,35 @@ cdef class Body(Base):
 
         self.thisptr.SetAngularVelocity(angular_velocity)
 
+    @safe_rw_property
+    def gravity_scale(self, gravity_scale):
+        if gravity_scale is None:
+            return self.thisptr.GetGravityScale()
+
+        self.thisptr.SetGravityScale(gravity_scale)
+
+    @safe_rw_property
+    def bullet(self, bullet):
+        if bullet is None:
+            return self.thisptr.IsBullet()
+
+        self.thisptr.SetBullet(bullet)
+
+    @safe_rw_property
+    def linear_damping(self, linear_damping):
+        if linear_damping is None:
+            return self.thisptr.GetLinearDamping()
+
+        self.thisptr.SetLinearDamping(linear_damping)
+
+    @safe_rw_property
+    def angular_damping(self, angular_damping):
+        if angular_damping is None:
+            return self.thisptr.GetAngularDamping()
+
+        self.thisptr.SetAngularDamping(angular_damping)
+
+
     @safe_method
     def create_fixture_from_def(self, FixtureDef fixture_defn not None):
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
@@ -104,16 +133,81 @@ cdef class Body(Base):
     def fixtures(self):
         return list(self._iter_fixtures())
 
-    @safe_property
-    def transform(self):
-        return Transform.from_b2Transform(self.thisptr.GetTransform())
+    @safe_rw_property
+    def transform(self, Transform transform):
+        if transform is None:
+            return Transform.from_b2Transform(self.thisptr.GetTransform())
+
+        cdef b2Transform *xf = &transform.transform
+        self.thisptr.SetTransform(xf.p, xf.q.GetAngle())
 
     @safe_property
     def type(self):
         return self.thisptr.GetType()
 
+    @safe_property
+    def mass(self):
+        return self.thisptr.GetMass()
+
+    @safe_property
+    def inertia(self):
+        return self.thisptr.GetInertia()
+
+    @safe_property
+    def position(self):
+        return to_vec2(self.thisptr.GetPosition())
+
+    @safe_method
+    def apply_force(self, force, point, bool wake):
+        self.thisptr.ApplyForce(to_b2vec2(force), to_b2vec2(point), wake)
+
+    @safe_method
+    def apply_linear_impulse(self, impulse, point, bool wake):
+        self.thisptr.ApplyLinearImpulse(to_b2vec2(impulse), to_b2vec2(point),
+                                        wake)
+
+    @safe_method
+    def apply_angular_impulse(self, float impulse, bool wake):
+        self.thisptr.ApplyAngularImpulse(impulse, wake)
+
+    @safe_method
+    def apply_torque(self, float torque, bool wake):
+        self.thisptr.ApplyTorque(torque, wake)
+
+    @safe_rw_property
+    def sleeping_allowed(self, sleeping_allowed):
+        if sleeping_allowed is None:
+            return self.thisptr.IsSleepingAllowed()
+
+        self.thisptr.SetSleepingAllowed(sleeping_allowed)
+
+    @safe_rw_property
+    def awake(self, awake):
+        if awake is None:
+            return self.thisptr.IsAwake()
+
+        self.thisptr.SetAwake(awake)
+
+    @safe_rw_property
+    def active(self, active):
+        if active is None:
+            return self.thisptr.IsActive()
+
+        self.thisptr.SetActive(active)
+
+    @safe_rw_property
+    def fixed_rotation(self, fixed_rotation):
+        if fixed_rotation is None:
+            return self.thisptr.IsFixedRotation()
+
+        self.thisptr.SetFixedRotation(fixed_rotation)
+
     # TODO can't use cpdef with generators?
     def _get_repr_info(self):
+        if self.data is not None:
+            yield ('data', self.data)
+
+        yield ('position', self.position)
         yield ('angle', self.angle)
         yield ('world_center', self.world_center)
         yield ('local_center', self.local_center)
@@ -122,3 +216,9 @@ cdef class Body(Base):
         yield ('transform', self.transform)
         yield ('type', self.type)
         yield ('fixtures', self.fixtures)
+        yield ('gravity_scale', self.gravity_scale)
+        yield ('linear_damping', self.linear_damping)
+        yield ('angular_damping', self.angular_damping)
+        yield ('inertia', self.inertia)
+        yield ('mass', self.mass)
+        # yield ('mass_data', self.mass_data)
