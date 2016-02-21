@@ -1,4 +1,9 @@
-# include "shape.pyd"
+# from pybox2d cimport Base
+# ^-- this is apparently the correct syntax, which is useless...
+# from .base cimport Base
+# ^-- assumes pybox2d.base.Base exists
+# TODO: what am I doing wrong, package hierarchy-wise?
+# ref: https://github.com/cython/cython/wiki/PackageHierarchy
 
 
 cdef class Shape(Base):
@@ -18,12 +23,9 @@ cdef class Shape(Base):
         self.shape = shape
         self.owner = owner
 
-    def compute_mass(self, mass_data, density):
-        pass
-
-    def compute_aabb(self, aabb, transform, child_index):
-        pass
-
+    # TODO:
+    # def compute_mass(self, mass_data, density):
+    # def compute_aabb(self, aabb, transform, child_index):
     # def raycast(self, output, input, transform, child_index):
     # def test_point(self, transform, point):
 

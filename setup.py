@@ -26,7 +26,7 @@ ext = Extension(
     "pybox2d",
     ["pybox2d/main.pyx"] + cpp_source_files,
     language="c++",
-    include_dirs=[box2d_source_top] + box2d_dirs,
+    include_dirs=['.', box2d_source_top] + box2d_dirs,
     libraries=[],
     extra_compile_args=['-Wno-unneeded-internal-declaration',
                         '-Wno-unused-function'],
