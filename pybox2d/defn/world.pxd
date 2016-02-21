@@ -1,6 +1,7 @@
 from defn.math cimport *
 from defn.body cimport (b2BodyDef, b2Body)
 from defn.world_callbacks cimport b2DestructionListener
+from defn.joint cimport (b2Joint, b2JointDef)
 from defn.shape cimport *
 
 
@@ -13,8 +14,8 @@ cdef extern from "b2World.h" nogil:
         # void SetDebugDraw(b2Draw* debugDraw)
         b2Body* CreateBody(const b2BodyDef* defn)
         void DestroyBody(b2Body* body)
-        # b2Joint* CreateJoint(const b2JointDef* def)
-        # void DestroyJoint(b2Joint* joint)
+        b2Joint* CreateJoint(const b2JointDef* defn)
+        void DestroyJoint(b2Joint* joint)
         void Step(float32 timeStep, int32 velocityIterations,
                   int32 positionIterations)
         void ClearForces()
