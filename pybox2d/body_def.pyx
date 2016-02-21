@@ -1,4 +1,4 @@
-cdef class BodyDef:
+cdef class BodyDef(Base):
     cdef b2BodyDef *thisptr
     cdef public object data
     cdef public list fixtures
@@ -29,6 +29,10 @@ cdef class BodyDef:
         self.active = active
         self.gravity_scale = gravity_scale
         self.data = data
+
+        if isinstance(fixtures, FixtureDef):
+            fixtures = [fixtures]
+
         self.fixtures = fixtures
 
     property position:
@@ -121,6 +125,25 @@ cdef class BodyDef:
 
         def __set__(self, type_):
             self.thisptr.type = type_
+
+    def _get_repr_info(self):
+        if self.data is not None:
+            yield ('data', self.data)
+
+        yield ('type', self.type)
+        yield ('position', self.position)
+        yield ('angular_velocity', self.angular_velocity)
+        yield ('linear_damping', self.linear_damping)
+        yield ('angular_damping', self.angular_damping)
+        yield ('allow_sleep', self.allow_sleep)
+        yield ('awake', self.awake)
+        yield ('fixed_rotation', self.fixed_rotation)
+        yield ('bullet', self.bullet)
+        yield ('active', self.active)
+        yield ('gravity_scale', self.gravity_scale)
+
+        if self.fixtures:
+            yield ('fixtures', self.fixtures)
 
 
 cdef class StaticBodyDef(BodyDef):

@@ -44,10 +44,9 @@ print(fixture_defn)
 #
 #
 bdef = pybox2d.DynamicBodyDef(position=(0, 2.0), data='test')
-print(bdef.position)
+print(bdef)
 bdef.position = (0, 1.0)
-print(bdef.position)
-print(bdef.data)
+print(bdef)
 
 body = world.create_body_from_def(bdef)
 fixture = body.create_fixture_from_def(fixture_defn)
