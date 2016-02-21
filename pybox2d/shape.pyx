@@ -224,6 +224,25 @@ cdef class EdgeShape(Shape):
         if vertices is not None:
             self.vertices = vertices
 
+    property main_vertices:
+        def __get__(self):
+            cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape
+
+            return [to_vec2(edge.m_vertex1), to_vec2(edge.m_vertex2)]
+
+        def __set__(self, vertices):
+            vertices = list(vertices)
+            if len(vertices) != 2:
+                raise ValueError('Unknown number of vertices (expected 2)')
+
+            cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape
+            v1, v2 = vertices
+            edge.m_vertex1 = to_b2vec2(v1)
+            edge.m_vertex2 = to_b2vec2(v2)
+
+            edge.m_hasVertex0 = False
+            edge.m_hasVertex3 = False
+
     property vertices:
         def __get__(self):
             cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape

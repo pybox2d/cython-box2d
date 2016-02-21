@@ -7,9 +7,7 @@ pygame_sdl2.import_as_pygame()
 import pygame
 from pygame.locals import (QUIT, KEYDOWN, K_ESCAPE)
 
-import pybox2d
-from pybox2d import (World, CircleShape, FixtureDef, DynamicBodyDef,
-                     StaticBodyDef)
+from pybox2d import (World, CircleShape, FixtureDef, StaticBodyDef)
 
 # --- constants ---
 # Box2D deals with meters, but we want to display pixels,
@@ -36,16 +34,14 @@ shape = CircleShape(radius=8)
 fdef = FixtureDef(shape=shape, density=1, friction=0.3)
 
 # Create a couple dynamic bodies
-body = world.create_body(gdef)
+body = world.create_body_from_def(gdef)
 
-ground_circle = body.create_fixture(fdef)
+ground_circle = body.create_fixture_from_def(fdef)
 
-dbdef = DynamicBodyDef()
-dbdef.position = (10, 10)
-dbody = world.create_body(dbdef)
+dbody = world.create_dynamic_body(position=(10, 10))
 
 shape.radius = 1
-dbody.create_fixture(fdef)
+dbody.create_fixture_from_def(fdef)
 
 
 colors = {
