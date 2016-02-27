@@ -1,14 +1,4 @@
-# from pybox2d cimport Base
-# ^-- this is apparently the correct syntax, which is useless...
-# from .base cimport Base
-# ^-- assumes pybox2d.base.Base exists
-# TODO: what am I doing wrong, package hierarchy-wise?
-# ref: https://github.com/cython/cython/wiki/PackageHierarchy
-
-
 cdef class Shape(Base):
-    # cppclass inheritance not working so cleanly in Cython - or what am I
-    # doing wrong?
     cdef b2Shape *shape
     cdef bool owner
 
