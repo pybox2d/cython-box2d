@@ -47,7 +47,7 @@ cdef safe_method(method):
     return wrapped
 
 
-class EnumBase:
+class EnumBase(object):
     @classmethod
     def to_enum(cls, value):
         try:
