@@ -102,6 +102,12 @@ print('fixtures', body.fixtures, fixture.valid)
 
 print(body, body.valid, body.angle)
 print(body, body.linear_velocity)
+
+print('pre-destroy, body.valid=', body.valid)
 world.destroy_body(body)
-print(body, body.linear_velocity)
-print(body, body.valid, body.angle)
+try:
+    print(body, body.linear_velocity)
+except RuntimeError as ex:
+    print('pybox2d will no longer crash when the underlying c++ object is destroyed')
+
+print('post-destroy, body.valid=', body.valid)
