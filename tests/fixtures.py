@@ -37,6 +37,13 @@ def dynamic_body(state, world, gravity=None, position=None):
 
 
 @pytest.fixture(scope='function')
+def ground(world):
+    vertices = [(-40, 0), (40, 0)]
+    fixture = pybox2d.FixtureDef(shape=pybox2d.EdgeShape(vertices=vertices))
+    return world.create_static_body(fixtures=fixture)
+
+
+@pytest.fixture(scope='function')
 def circle(radius=0.2, center=None):
     if center is None:
         center = (0, 0)

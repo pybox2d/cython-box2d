@@ -4,18 +4,18 @@ from defn.body cimport b2Body
 
 cdef extern from "b2Joint.h":
     cdef enum b2JointType:
-        e_unknownJoint
-        e_revoluteJoint
-        e_prismaticJoint
-        e_distanceJoint
-        e_pulleyJoint
-        e_mouseJoint
-        e_gearJoint
-        e_wheelJoint
-        e_weldJoint
-        e_frictionJoint
-        e_ropeJoint
-        e_motorJoint
+        JointType_unknown "b2JointType::e_unknownJoint"
+        JointType_revolute "b2JointType::e_revoluteJoint"
+        JointType_prismatic "b2JointType::e_prismaticJoint"
+        JointType_distance "b2JointType::e_distanceJoint"
+        JointType_pulley "b2JointType::e_pulleyJoint"
+        JointType_mouse "b2JointType::e_mouseJoint"
+        JointType_gear "b2JointType::e_gearJoint"
+        JointType_wheel "b2JointType::e_wheelJoint"
+        JointType_weld "b2JointType::e_weldJoint"
+        JointType_friction "b2JointType::e_frictionJoint"
+        JointType_rope "b2JointType::e_ropeJoint"
+        JointType_motor "b2JointType::e_motorJoint"
 
     cdef enum b2LimitState:
         e_inactiveLimit
@@ -67,3 +67,26 @@ cdef extern from "b2RevoluteJoint.h":
         float32 motorSpeed
         float32 maxMotorTorque
 
+    cdef cppclass b2RevoluteJoint(b2Joint):
+        b2Vec2 GetAnchorA() const
+        b2Vec2 GetAnchorB() const
+        const b2Vec2& GetLocalAnchorA() const
+        const b2Vec2& GetLocalAnchorB() const
+        float32 GetReferenceAngle() const
+        float32 GetJointAngle() const
+        float32 GetJointSpeed() const
+        bool IsLimitEnabled() const
+        void EnableLimit(bool flag)
+        float32 GetLowerLimit() const
+        float32 GetUpperLimit() const
+        void SetLimits(float32 lower, float32 upper)
+        bool IsMotorEnabled() const
+        void EnableMotor(bool flag)
+        void SetMotorSpeed(float32 speed)
+        float32 GetMotorSpeed() const
+        void SetMaxMotorTorque(float32 torque)
+        float32 GetMaxMotorTorque() const
+        b2Vec2 GetReactionForce(float32 inv_dt) const
+        float32 GetReactionTorque(float32 inv_dt) const
+        float32 GetMotorTorque(float32 inv_dt) const
+        void Dump()

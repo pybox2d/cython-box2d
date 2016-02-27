@@ -113,36 +113,41 @@ cdef class World:
         del body
         self.world.DestroyBody(bptr)
 
-    # def create_joint_from_def(self, JointDef joint_defn):
-    #     if body_defn is None:
-    #         raise ValueError('Body definition must be specified')
-    #
-    #     if body_class is None:
-    #         body_class = self.default_body_class
-    #
-    #     if not issubclass(body_class, Body):
-    #         raise TypeError('body_class must be a subclass of Body')
-    #
-    #     bptr = self.world.CreateBody(body_defn.thisptr)
-    #     body = body_class()
-    #     (<Body>body).thisptr = bptr
-    #
-    #     self._bodies[pointer_as_key(bptr)] = body
-    #
-    #     # userdata is never passed along to the Box2D-level objects, so it
-    #     # exists only in pybox2d
-    #     if body_defn.data is not None:
-    #         body.data = body_defn.data
-    #
-    #     if body_defn.fixtures is not None:
-    #         for fixture in body_defn.fixtures:
-    #             if isinstance(fixture, dict):
-    #                 fixture_dict = fixture
-    #                 body.create_fixture(**fixture_dict)
-    #             else:
-    #                 body.create_fixture_from_def(fixture)
-    #
-    #     return body
+    def create_revolute_joint(self, bodies, anchor=None,
+                              reference_angle=None, local_anchors=None,
+                              collide_connected=False):
+        cdef b2RevoluteJointDef defn
+        body_a, body_b = bodies
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        if anchor is None:
+            if reference_angle is None or local_anchors is None:
+                raise ValueError('If specifying reference angles or local '
+                                 'anchors, both are required')
+
+            anchora, anchorb = local_anchors
+            defn.bodyA = ba
+            defn.bodyB = bb
+            defn.localAnchorA = to_b2vec2(anchora)
+            defn.localAnchorB = to_b2vec2(anchorb)
+            defn.referenceAngle = reference_angle
+        else:
+            defn.Initialize(ba, bb, to_b2vec2(anchor))
+
+        defn.collideConnected = collide_connected
+        return self.create_joint_from_defn(defn, body_a, body_b)
+
+    cdef create_joint_from_defn(self, b2JointDef defn, Body body_a, Body
+                                body_b):
+        joint = Joint.upcast(self.world.CreateJoint(&defn))
+        (<Joint>joint).body_a = body_a
+        (<Joint>joint).body_b = body_b
+        return joint
 
     def create_revolute_joint(self, bodies, anchor=None,
                               reference_angle=None, local_anchors=None):

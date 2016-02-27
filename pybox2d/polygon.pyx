@@ -1,5 +1,4 @@
 cdef class PolygonShape(Shape):
-    cdef b2PolygonShape *polygon
     cdef object box_settings
 
     def __cinit__(self):

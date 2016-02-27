@@ -4,8 +4,6 @@ import pybox2d
 from .util import assert_almost_equal
 from .fixtures import *
 
-basic_circle = pybox2d.CircleShape(radius=1.0, center=(0, 0.1))
-
 
 class BodyClass(pybox2d.Body):
     name = None
