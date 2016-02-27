@@ -34,16 +34,28 @@ cdef class Vec2:
     def __getitem__(self, idx):
         return (self.x, self.y)[idx]
 
-    def __add__(self, other):
+    def __len__(self):
+        return 2
+
+    def __richcmp__(Vec2 self, other, operation):
+        otherx, othery = other
+        if operation == 2:  # eq
+            return (self.x == otherx) and (self.y == othery)
+        elif operation == 3:  # ne
+            return (self.x != otherx) or (self.y != othery)
+        else:
+            raise ValueError('Can only compare equality of a Vec2')
+
+    def __add__(Vec2 self, other):
         return Vec2(self.x + other[0], self.y + other[1])
 
-    def __sub__(self, other):
+    def __sub__(Vec2 self, other):
         return Vec2(self.x - other[0], self.y - other[1])
 
-    def __div__(self, other):
+    def __div__(Vec2 self, other):
         return Vec2(self.x / other, self.y / other)
 
-    def __mul__(self, other):
+    def __mul__(Vec2 self, other):
         return Vec2(self.x * other, self.y * other)
 
     def __iter__(self):
