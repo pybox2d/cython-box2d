@@ -237,6 +237,22 @@ cdef class World:
         joint.invalidate()
         self.world.DestroyJoint(jptr)
 
+    cdef create_joint_from_defn(self, b2JointDef* defn, Body body_a,
+                                Body body_b):
+
+        cdef b2Joint *jptr = self.world.CreateJoint(defn)
+        joint = Joint.upcast(jptr)
+        if body_a is not None:
+            (<Joint>joint).body_a = body_a
+            body_a._joints.append(joint)
+
+        if body_b is not None:
+            (<Joint>joint).body_b = body_b
+            body_b._joints.append(joint)
+
+        self._joints[pointer_as_key(jptr)] = joint
+        return joint
+
     def create_revolute_joint(self, bodies, *, anchor=None,
                               reference_angle=None, local_anchors=None,
                               collide_connected=False, angle_limit=None,
@@ -261,6 +277,8 @@ cdef class World:
         ----------
         bodies : (body_a, body_b), Body instances
             The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
         anchor : Vec2, optional
             The world anchor point where the bodies will be joined
             If unspecified, reference_angle and local_anchors must be specified.
@@ -270,8 +288,6 @@ cdef class World:
         local_anchors : (anchor_a, anchor_b), Vec2, optional
             Local anchor points relative to (body_a, body_b).
             Required if 'anchor' is unspecified.
-        collide_connected : bool, optional
-            Allow collision between connected bodies (default: False)
         motor : bool, optional
             Enable the joint motor (default: False)
         motor_speed : float, optional
@@ -315,19 +331,210 @@ cdef class World:
         defn.enableLimit = enable_limit
         defn.lowerAngle = angle_limit[0]
         defn.upperAngle = angle_limit[1]
-        return self.create_joint_from_defn(defn, body_a, body_b)
+        return self.create_joint_from_defn(&defn, body_a, body_b)
 
-    cdef create_joint_from_defn(self, b2JointDef defn, Body body_a,
-                                Body body_b):
+    def create_distance_joint(self, bodies, *, collide_connected=False,
+                              damping_ratio=0.0, frequency_hz=0.0, length=1.0,
+                              local_anchor_a=None, local_anchor_b=None):
+        '''Create a distance joint between two bodies
 
-        cdef b2Joint *jptr = self.world.CreateJoint(&defn)
+        A distance joint constrains two points on two bodies to remain at a
+        fixed distance from each other. You can view this as a massless, rigid
+        rod.
 
-        joint = Joint.upcast(jptr)
-        (<Joint>joint).body_a = body_a
-        (<Joint>joint).body_b = body_b
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        damping_ratio : float, optional
+            The damping ratio. 0 = no damping, 1 = critical damping.
+        frequency_hz : float, optional
+            The mass-spring-damper frequency in Hertz. A value of 0 disables softness.
+        length : float, optional
+            The natural length between the anchor points.
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        '''
+        body_a, body_b = bodies
 
-        body_a._joints.append(joint)
-        body_b._joints.append(joint)
+        if local_anchor_a is None:
+            local_anchor_a = (0.0, 0.0)
+        if local_anchor_b is None:
+            local_anchor_b = (0.0, 0.0)
 
-        self._joints[pointer_as_key(jptr)] = joint
-        return joint
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2DistanceJointDef defn
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchorA, const b2Vec2& anchorB)
+        # Initialize the bodies, anchors, and length using the world anchors.
+
+        defn.collideConnected = collide_connected
+        defn.dampingRatio = damping_ratio
+        defn.frequencyHz = frequency_hz
+        defn.length = length
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+    def create_friction_joint(self, bodies, *, collide_connected=False,
+                              local_anchor_a=None, local_anchor_b=None,
+                              max_force=0.0, max_torque=0.0):
+        '''Create a friction joint between two bodies
+
+        Friction joint. This is used for top-down friction. It provides 2D
+        translational friction and angular friction.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        max_force : float, optional
+            The maximum friction force in N.
+        max_torque : float, optional
+            The maximum friction torque in N-m.
+        '''
+        body_a, body_b = bodies
+
+        if local_anchor_a is None:
+            local_anchor_a = (0., 0.)
+        if local_anchor_b is None:
+            local_anchor_b = (0., 0.)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2FrictionJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor)
+        # Initialize the bodies, anchors, axis, and reference angle using the
+        # world anchor and world axis.
+
+        defn.collideConnected = collide_connected
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        defn.maxForce = max_force
+        defn.maxTorque = max_torque
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+    def create_gear_joint(self, joints, *, collide_connected=False,
+                          ratio=1.0):
+        '''Create a gear joint between two revolute/prismatic joints
+
+        A gear joint is used to connect two joints together. Either joint can
+        be a revolute or prismatic joint. You specify a gear ratio to bind the
+        motions together:
+
+        coordinate1 + ratio * coordinate2 = constant
+
+        The ratio can be negative or positive. If one joint is a revolute joint
+        and the other joint is a prismatic joint, then the ratio will have
+        units of length or units of 1/length.
+
+        Warning: You have to manually destroy the gear joint if joint1 or
+        joint2 is destroyed. (#TODO)
+
+        Parameters
+        ----------
+        joints : (joint_a, joint_b), Joint instances
+            The first revolute/prismatic joint attached to the gear joint.
+            Requires two existing revolute or prismatic joints (any combination
+            will work).
+        ratio : float, optional
+            The gear ratio.
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        '''
+        joint_a, joint_b = joints
+        if (not isinstance(joint_a, (RevoluteJoint, PrismaticJoint)) or
+                not isinstance(joint_b, (RevoluteJoint, PrismaticJoint))):
+            raise TypeError('Joints must either be revolute or prismatic')
+
+        cdef b2Joint *ja=(<Joint>joint_a).joint
+        cdef b2Joint *jb=(<Joint>joint_b).joint
+
+        # TODO  joint linking is going to cause problems, i forgot about this
+        cdef b2GearJointDef defn
+        defn.joint1 = ja
+        defn.joint2 = jb
+        defn.ratio = ratio
+        defn.collideConnected = collide_connected
+        return self.create_joint_from_defn((<b2JointDef*>&defn), None, None)
+
+    def create_motor_joint(self, bodies, *, collide_connected=False,
+                           angular_offset=0.0, correction_factor=0.3,
+                           linear_offset=None, max_force=1.0, max_torque=1.0):
+        '''Create a motor joint between two bodies
+
+        A motor joint is used to control the relative motion between two
+        bodies. A typical usage is to control the movement of a dynamic body
+        with respect to the ground.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        angular_offset : float, optional
+            The bodyB angle minus bodyA angle in radians.
+        correction_factor : float, optional
+            Position correction factor in the range [0,1].
+        linear_offset : Vec2, optional
+            Position of bodyB minus the position of bodyA, in bodyA's frame, in
+            meters.
+        max_force : float, optional
+            The maximum motor force in N.
+        max_torque : float, optional
+            The maximum motor torque in N-m.
+        '''
+        body_a, body_b = bodies
+
+        if linear_offset is None:
+            linear_offset = (0, 0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2MotorJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB)
+        # Initialize the bodies and offsets using the current transforms.
+
+        defn.collideConnected = collide_connected
+        defn.angularOffset = angular_offset
+        defn.correctionFactor = correction_factor
+        defn.linearOffset = to_b2vec2(linear_offset)
+        defn.maxForce = max_force
+        defn.maxTorque = max_torque
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)

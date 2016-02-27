@@ -60,6 +60,10 @@ def test_revolute_joint(world, ground):
     assert j0.bodies == (ground, bodies[0])
 
 
+def test_distance_joint(world, ground, dynamic_body):
+    world.create_distance_joint((ground, dynamic_body))
+
+
 def test_joint_deletion(world, ground):
     bodies, joints = create_bridge(world, ground, size=(1.0, 0.25),
                                    offset=(-14.5, 5), plank_count=30,

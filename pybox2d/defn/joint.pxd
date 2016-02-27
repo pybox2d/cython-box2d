@@ -93,6 +93,15 @@ cdef extern from "b2RevoluteJoint.h":
 
 
 cdef extern from "b2DistanceJoint.h":
+    cdef cppclass b2DistanceJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchorA,
+                        const b2Vec2& anchorB)
+        float32 dampingRatio
+        float32 frequencyHz
+        float32 length
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+
     cdef cppclass b2DistanceJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()
@@ -109,6 +118,13 @@ cdef extern from "b2DistanceJoint.h":
 
 
 cdef extern from "b2FrictionJoint.h":
+    cdef cppclass b2FrictionJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor)
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+        float32 maxForce
+        float32 maxTorque
+
     cdef cppclass b2FrictionJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()
@@ -123,6 +139,11 @@ cdef extern from "b2FrictionJoint.h":
 
 
 cdef extern from "b2GearJoint.h":
+    cdef cppclass b2GearJointDef(b2JointDef):
+        b2Joint* joint1
+        b2Joint* joint2
+        float32 ratio
+
     cdef cppclass b2GearJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()
@@ -133,6 +154,14 @@ cdef extern from "b2GearJoint.h":
 
 
 cdef extern from "b2MotorJoint.h":
+    cdef cppclass b2MotorJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB)
+        float32 angularOffset
+        float32 correctionFactor
+        b2Vec2 linearOffset
+        float32 maxForce
+        float32 maxTorque
+
     cdef cppclass b2MotorJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()
