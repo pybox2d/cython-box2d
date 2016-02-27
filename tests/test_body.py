@@ -1,8 +1,8 @@
 import pytest
 import pybox2d
 
-from .util import (assert_almost_equal, world_with_static_body,
-                   world_with_body_circle)
+from .util import assert_almost_equal
+from .fixtures import *
 
 basic_circle = pybox2d.CircleShape(radius=1.0, center=(0, 0.1))
 
@@ -14,8 +14,7 @@ class BodyClass(pybox2d.Body):
         print("{}'s position is: {}".format(self.name, self.position))
 
 
-def test_body_subclass():
-    world = pybox2d.World()
+def test_body_subclass(world):
     body = world.create_dynamic_body(position=(0, 2.0), data='test',
                                      body_class=BodyClass)
     body.name = 'body1'
@@ -53,14 +52,15 @@ def test_body_subclass():
         body.data['name'] = body.name
 
 
-def test_body_destroyed():
-    with world_with_body_circle() as (world, body, fixture):
-        assert body.valid
+def test_body_destroyed(state, dynamic_body):
+    world = state['world']
 
-        world.destroy_body(body)
-        with pytest.raises(RuntimeError):
-            body.linear_velocity
-            # pybox2d will no longer crash when the underlying c++ object is
-            # destroyed
+    assert dynamic_body.valid
 
-        assert not body.valid
+    world.destroy_body(dynamic_body)
+    with pytest.raises(RuntimeError):
+        dynamic_body.linear_velocity
+        # pybox2d will no longer crash when the underlying c++ object is
+        # destroyed
+
+    assert not dynamic_body.valid
