@@ -304,6 +304,7 @@ cdef class World:
         else:
             defn.Initialize(ba, bb, to_b2vec2(anchor))
 
+        enable_limit = (angle_limit is not None)
         if angle_limit is None:
             angle_limit = (0, 0)
 
@@ -311,6 +312,7 @@ cdef class World:
         defn.enableMotor = motor
         defn.motorSpeed = motor_speed
         defn.maxMotorTorque = max_motor_torque
+        defn.enableLimit = enable_limit
         defn.lowerAngle = angle_limit[0]
         defn.upperAngle = angle_limit[1]
         return self.create_joint_from_defn(defn, body_a, body_b)
