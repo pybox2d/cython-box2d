@@ -28,12 +28,13 @@ ext = Extension(
     language="c++",
     include_dirs=['.', box2d_source_top] + box2d_dirs,
     libraries=[],
-    extra_compile_args=['-Wno-unneeded-internal-declaration',
-                        '-Wno-unused-function'],
-    extra_link_args=['-v'],
+    # extra_compile_args=['-Wno-unneeded-internal-declaration',
+    #                     '-Wno-unused-function'],
+    # extra_link_args=['-v'],
 )
 
 
-setup(ext_modules=[ext],
+setup(name='pybox2d',
+      ext_modules=[ext],
       cmdclass={'build_ext': build_ext},
       )

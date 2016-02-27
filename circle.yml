@@ -1,0 +1,15 @@
+# vi: sw=2 ts=2 sts=2 smarttab expandtab
+
+machine:
+  python:
+    version: '3.5.0'
+  environment:
+    TOX_PY27: '2.7.10'
+    TOX_PY34: '3.4.3'
+    TOX_PY35: '3.5.0'
+
+dependencies:
+  override:
+    - pip install --upgrade pip
+    - pip install tox tox-pyenv
+    - pyenv local $TOX_PY35 $TOX_PY34 $TOX_PY27
