@@ -4,18 +4,18 @@ from defn.body cimport b2Body
 
 cdef extern from "b2Joint.h":
     cdef enum b2JointType:
-        JointType_unknown "b2JointType::e_unknownJoint"
-        JointType_revolute "b2JointType::e_revoluteJoint"
-        JointType_prismatic "b2JointType::e_prismaticJoint"
-        JointType_distance "b2JointType::e_distanceJoint"
-        JointType_pulley "b2JointType::e_pulleyJoint"
-        JointType_mouse "b2JointType::e_mouseJoint"
-        JointType_gear "b2JointType::e_gearJoint"
-        JointType_wheel "b2JointType::e_wheelJoint"
-        JointType_weld "b2JointType::e_weldJoint"
-        JointType_friction "b2JointType::e_frictionJoint"
-        JointType_rope "b2JointType::e_ropeJoint"
-        JointType_motor "b2JointType::e_motorJoint"
+        JointType_unknown "e_unknownJoint"
+        JointType_revolute "e_revoluteJoint"
+        JointType_prismatic "e_prismaticJoint"
+        JointType_distance "e_distanceJoint"
+        JointType_pulley "e_pulleyJoint"
+        JointType_mouse "e_mouseJoint"
+        JointType_gear "e_gearJoint"
+        JointType_wheel "e_wheelJoint"
+        JointType_weld "e_weldJoint"
+        JointType_friction "e_frictionJoint"
+        JointType_rope "e_ropeJoint"
+        JointType_motor "e_motorJoint"
 
     cdef enum b2LimitState:
         e_inactiveLimit
@@ -43,7 +43,7 @@ cdef extern from "b2Joint.h":
         b2Vec2 GetAnchorB() const
         b2Vec2 GetReactionForce(float32 inv_dt) const
         float32 GetReactionTorque(float32 inv_dt) const
-        b2Joint* GetNext()
+        # b2Joint* GetNext()
         const b2Joint* GetNext() const
         void* GetUserData() const
         void SetUserData(void* data)

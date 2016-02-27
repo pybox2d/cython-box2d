@@ -6,32 +6,42 @@ cdef class Joint(Base):
     def __cinit__(self):
         self.joint = NULL
 
+    cdef invalidate(self):
+        self.joint = NULL
+
     @property
+    def valid(self):
+        return (self.joint != NULL)
+
+    @safe_property
     def bodies(self):
         return (self.body_a, self.body_b)
 
-    @property
+    @safe_property
     def anchor_a(self):
         return to_vec2(self.joint.GetAnchorA())
 
-    @property
+    @safe_property
     def anchor_b(self):
         return to_vec2(self.joint.GetAnchorB())
 
+    @safe_method
     def get_reaction_force(self, inv_dt):
         return to_vec2(self.joint.GetReactionForce(inv_dt))
 
+    @safe_method
     def get_reaction_torque(self, inv_dt):
         return self.joint.GetReactionTorque(inv_dt)
 
-    @property
+    @safe_property
     def active(self):
         return self.joint.IsActive()
 
-    @property
+    @safe_property
     def collide_connected(self):
         return self.joint.GetCollideConnected()
 
+    @safe_method
     def shift_origin(self, new_origin):
         self.joint.ShiftOrigin(to_b2vec2(new_origin))
 
@@ -68,15 +78,15 @@ cdef class Joint(Base):
 
 
 cdef class RevoluteJoint(Joint):
-    @property
+    @safe_property
     def reference_angle(self):
         return (<b2RevoluteJoint *>self.joint).GetReferenceAngle()
 
-    @property
+    @safe_property
     def joint_angle(self):
         return (<b2RevoluteJoint *>self.joint).GetJointAngle()
 
-    @property
+    @safe_property
     def joint_speed(self):
         return (<b2RevoluteJoint *>self.joint).GetJointSpeed()
 

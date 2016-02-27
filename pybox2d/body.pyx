@@ -6,10 +6,12 @@ cdef class Body(Base):
     cdef b2Body *thisptr
     cdef public object data
     cdef dict _fixtures
+    cdef list _joints
 
     def __cinit__(self):
         self.data = None
         self._fixtures = {}
+        self._joints = []
 
     def __init__(self):
         pass
@@ -88,7 +90,6 @@ cdef class Body(Base):
 
         self.thisptr.SetAngularDamping(angular_damping)
 
-
     @safe_method
     def create_fixture_from_def(self, FixtureDef fixture_defn not None):
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
@@ -153,9 +154,13 @@ cdef class Body(Base):
             yield self._fixtures[pointer_as_key(fptr)]
             fptr = fptr.GetNext()
 
-    @property
+    @property  # safety check comes in _iter_fixtures
     def fixtures(self):
         return list(self._iter_fixtures())
+
+    @safe_property
+    def joints(self):
+        return list(self._joints)
 
     @safe_rw_property
     def transform(self, Transform transform):

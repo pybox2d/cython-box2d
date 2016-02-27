@@ -5,11 +5,13 @@ from defn.joint cimport (b2Joint, b2JointDef, b2RevoluteJointDef)
 cdef class World:
     cdef b2World *world
     cdef dict _bodies
+    cdef dict _joints
     cdef object _default_body_class
 
     def __cinit__(self):
         self.world = new b2World(b2Vec2(0.0, 0.0))
         self._bodies = {}
+        self._joints = {}
 
     def __dealloc__(self):
         del self.world
@@ -47,8 +49,7 @@ cdef class World:
         Note: users may attempt to delete or add bodies during iteration, so
         the exposed property returns a full list.
         '''
-        cdef b2Body *bptr
-        bptr = self.world.GetBodyList()
+        cdef b2Body *bptr = self.world.GetBodyList()
 
         while bptr:
             yield self._bodies[pointer_as_key(bptr)]
@@ -57,6 +58,22 @@ cdef class World:
     property bodies:
         def __get__(self):
             return list(self._iter_bodies())
+
+    def _iter_joints(self):
+        '''Iterate over Joints in the world
+
+        Note: users may attempt to delete or add joints during iteration, so
+        the exposed property returns a full list.
+        '''
+        cdef b2Joint *jptr = self.world.GetJointList()
+
+        while jptr:
+            yield self._joints[pointer_as_key(jptr)]
+            jptr = jptr.GetNext()
+
+    property joints:
+        def __get__(self):
+            return list(self._iter_joints())
 
     def step(self, float time_step, int vel_iters, int pos_iters):
         self.world.Step(time_step, vel_iters, pos_iters)
@@ -105,13 +122,25 @@ cdef class World:
         return self.create_body_from_def(defn, body_class)
 
     def destroy_body(self, Body body not None):
-        cdef b2Body *bptr = body.thisptr
+        for joint in list(body._joints):
+            self.destroy_joint(joint)
 
+        cdef b2Body *bptr = body.thisptr
         del self._bodies[pointer_as_key(bptr)]
 
         body.invalidate()
         del body
         self.world.DestroyBody(bptr)
+
+    def destroy_joint(self, Joint joint):
+        cdef b2Joint *jptr = joint.joint
+        del self._joints[pointer_as_key(jptr)]
+
+        joint.body_a._joints.remove(joint)
+        joint.body_b._joints.remove(joint)
+
+        joint.invalidate()
+        self.world.DestroyJoint(jptr)
 
     def create_revolute_joint(self, bodies, anchor=None,
                               reference_angle=None, local_anchors=None,
@@ -144,9 +173,16 @@ cdef class World:
 
     cdef create_joint_from_defn(self, b2JointDef defn, Body body_a, Body
                                 body_b):
-        joint = Joint.upcast(self.world.CreateJoint(&defn))
+        cdef b2Joint *jptr = self.world.CreateJoint(&defn)
+
+        joint = Joint.upcast(jptr)
         (<Joint>joint).body_a = body_a
         (<Joint>joint).body_b = body_b
+
+        body_a._joints.append(joint)
+        body_b._joints.append(joint)
+
+        self._joints[pointer_as_key(jptr)] = joint
         return joint
 
     def create_revolute_joint(self, bodies, anchor=None,

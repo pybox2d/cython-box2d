@@ -58,3 +58,26 @@ def test_revolute_joint(world, ground):
     j0 = joints[0]
     assert isinstance(j0, pybox2d.RevoluteJoint)
     assert j0.bodies == (ground, bodies[0])
+
+
+def test_joint_deletion(world, ground):
+    bodies, joints = create_bridge(world, ground, size=(1.0, 0.25),
+                                   offset=(-14.5, 5), plank_count=30,
+                                   friction=0.2, density=20)
+    j0 = joints[0]
+    assert isinstance(j0, pybox2d.RevoluteJoint)
+    assert j0.bodies == (ground, bodies[0])
+    assert j0 in ground.joints
+
+    assert all(j.valid for j in joints)
+
+    assert j0.valid
+    world.destroy_joint(j0)
+    assert not j0.valid
+    assert j0 not in ground.joints
+
+    for body in bodies:
+        world.destroy_body(body)
+
+    assert all(not j.valid for j in joints)
+    assert all(not body.valid for body in bodies)

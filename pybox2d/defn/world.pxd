@@ -26,7 +26,7 @@ cdef extern from "b2World.h" nogil:
         # b2Body* GetBodyList()
         const b2Body* GetBodyList() const
         # b2Joint* GetJointList()
-        # const b2Joint* GetJointList() const
+        const b2Joint* GetJointList() const
         # b2Contact* GetContactList()
         # const b2Contact* GetContactList() const
         void SetAllowSleeping(bool flag)
