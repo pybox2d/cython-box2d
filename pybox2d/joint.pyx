@@ -1,7 +1,7 @@
 cdef class Joint(Base):
     cdef b2Joint *joint
-    cdef Body body_a
-    cdef Body body_b
+    cdef readonly Body body_a
+    cdef readonly Body body_b
 
     def __cinit__(self):
         self.joint = NULL
@@ -15,35 +15,56 @@ cdef class Joint(Base):
 
     @safe_property
     def bodies(self):
+        '''The bodies attached to this joint'''
         return (self.body_a, self.body_b)
+
+    @property
+    def anchors(self):
+        return (self.anchor_a, self.anchor_b)
 
     @safe_property
     def anchor_a(self):
+        '''Get the anchor point on bodyA in world coordinates.'''
         return to_vec2(self.joint.GetAnchorA())
 
     @safe_property
     def anchor_b(self):
+        '''Get the anchor point on bodyB in world coordinates.'''
         return to_vec2(self.joint.GetAnchorB())
 
     @safe_method
     def get_reaction_force(self, inv_dt):
+        '''Get the reaction force on bodyB at the joint anchor in Newtons.'''
         return to_vec2(self.joint.GetReactionForce(inv_dt))
 
     @safe_method
     def get_reaction_torque(self, inv_dt):
+        '''Get the reaction torque on bodyB in N*m.'''
         return self.joint.GetReactionTorque(inv_dt)
 
     @safe_property
     def active(self):
+        '''Is either body active?'''
         return self.joint.IsActive()
 
     @safe_property
     def collide_connected(self):
+        '''Collide connected bodies?'''
         return self.joint.GetCollideConnected()
 
     @safe_method
-    def shift_origin(self, new_origin):
+    def shift_origin(self, new_origin not None):
+        '''Shift the origin for any points stored in world coordinates.'''
         self.joint.ShiftOrigin(to_b2vec2(new_origin))
+
+    def _get_repr_info(self):
+        yield ('valid', self.valid)
+        yield ('body_a', self.body_a)
+        yield ('anchor_a', self.anchor_a)
+        yield ('body_b', self.body_b)
+        yield ('anchor_b', self.anchor_b)
+        yield ('active', self.active)
+        yield ('collide_connected', self.collide_connected)
 
     @staticmethod
     cdef upcast(b2Joint *joint):

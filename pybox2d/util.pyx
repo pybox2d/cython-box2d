@@ -1,3 +1,5 @@
+from functools import wraps
+
 cdef to_vec2(b2Vec2 vec):
     return Vec2(vec.x, vec.y)
 
@@ -16,7 +18,7 @@ cdef safe_property(getter):
             raise RuntimeError('Underlying C++ object has been deleted')
         return getter(self)
 
-    return property(fget)
+    return property(fget, doc=getter.__doc__)
 
 
 cdef safe_rw_property(prop_wrap):
@@ -32,10 +34,11 @@ cdef safe_rw_property(prop_wrap):
             raise RuntimeError('Underlying C++ object has been deleted')
         prop_wrap(self, value)
 
-    return property(fget, fset)
+    return property(fget, fset, doc=prop_wrap.__doc__)
 
 
 cdef safe_method(method):
+    @wraps(method)
     def wrapped(self, *args, **kwargs):
         if not self.valid:
             raise RuntimeError('Underlying C++ object has been deleted')

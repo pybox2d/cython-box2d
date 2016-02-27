@@ -90,24 +90,24 @@ for i, body in enumerate(world.bodies):
 # body.linear_velocity = 0.1
 body = world.bodies[-1]
 body.print_position()
-
-body.linear_velocity = Vec2(0, 1)
-body.angular_velocity = 0.345
-print(body.angular_velocity)
-fixture = body.fixtures[0]
-print('fixtures', body.fixtures, fixture.valid)
-
-body.destroy_fixture(fixture)
-print('fixtures', body.fixtures, fixture.valid)
-
-print(body, body.valid, body.angle)
-print(body, body.linear_velocity)
-
-print('pre-destroy, body.valid=', body.valid)
-world.destroy_body(body)
-try:
-    print(body, body.linear_velocity)
-except RuntimeError as ex:
-    print('pybox2d will no longer crash when the underlying c++ object is destroyed')
-
-print('post-destroy, body.valid=', body.valid)
+#
+# body.linear_velocity = Vec2(0, 1)
+# body.angular_velocity = 0.345
+# print(body.angular_velocity)
+# fixture = body.fixtures[0]
+# print('fixtures', body.fixtures, fixture.valid)
+#
+# body.destroy_fixture(fixture)
+# print('fixtures', body.fixtures, fixture.valid)
+#
+# print(body, body.valid, body.angle)
+# print(body, body.linear_velocity)
+#
+# print('pre-destroy, body.valid=', body.valid)
+# world.destroy_body(body)
+# try:
+#     print(body, body.linear_velocity)
+# except RuntimeError as ex:
+#     print('pybox2d will no longer crash when the underlying c++ object is destroyed')
+#
+# print('post-destroy, body.valid=', body.valid)
