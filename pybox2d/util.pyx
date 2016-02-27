@@ -45,3 +45,39 @@ cdef safe_method(method):
         return method(self, *args, **kwargs)
 
     return wrapped
+
+
+class EnumBase:
+    @classmethod
+    def to_enum(cls, value):
+        try:
+            return cls._to_enum[value]
+        except KeyError:
+            raise ValueError('Invalid {}: {}'.format(cls.__name__, value))
+
+    @classmethod
+    def to_string(cls, value):
+        try:
+            return cls._to_string[value]
+        except KeyError:
+            raise ValueError('Invalid {}: {}'.format(cls.__name__, value))
+
+
+cdef new_enum_type(name, type_map):
+    to_string = dict(type_map)
+    to_string.update({str_: str_
+                      for enum_val, str_ in type_map.items()})
+
+    to_enum = {str_: enum_val
+               for enum_val, str_ in type_map.items()}
+    to_enum.update({enum_val: enum_val
+                    for enum_val, str_ in type_map.items()})
+    return type(name, (EnumBase, ), dict(_to_string=to_string,
+                                         _to_enum=to_enum))
+
+
+BodyType = new_enum_type('BodyType', {b2_staticBody: 'static',
+                                      b2_kinematicBody: 'kinematic',
+                                      b2_dynamicBody: 'dynamic'
+                                      }
+                         )

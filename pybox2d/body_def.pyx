@@ -9,7 +9,7 @@ cdef class BodyDef(Base):
     def __dealloc__(self):
         del self.thisptr
 
-    def __init__(self, type_=b2_staticBody, position=None, angle=0.0,
+    def __init__(self, type_='static', position=None, angle=0.0,
                  angular_velocity=0.0, linear_damping=0.0, angular_damping=0.0,
                  allow_sleep=True, awake=True, fixed_rotation=False,
                  bullet=False, active=True, gravity_scale=1.0,
@@ -121,10 +121,10 @@ cdef class BodyDef(Base):
 
     property type:
         def __get__(self):
-            return self.thisptr.type
+            return BodyType.to_string(self.thisptr.type)
 
         def __set__(self, type_):
-            self.thisptr.type = type_
+            self.thisptr.type = BodyType.to_enum(type_)
 
     def _get_repr_info(self):
         if self.data is not None:
@@ -148,14 +148,14 @@ cdef class BodyDef(Base):
 
 cdef class StaticBodyDef(BodyDef):
     def __init__(self, **kwargs):
-        super().__init__(type_=b2_staticBody, **kwargs)
+        super().__init__(type_='static', **kwargs)
 
 
 cdef class KinematicBodyDef(BodyDef):
     def __init__(self, **kwargs):
-        super().__init__(type_=b2_kinematicBody, **kwargs)
+        super().__init__(type_='kinematic', **kwargs)
 
 
 cdef class DynamicBodyDef(BodyDef):
     def __init__(self, **kwargs):
-        super().__init__(type_=b2_dynamicBody, **kwargs)
+        super().__init__(type_='dynamic', **kwargs)

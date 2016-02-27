@@ -28,6 +28,7 @@ cdef class Body(Base):
 
     @property
     def valid(self):
+        '''If the underlying Box2D Body is still valid'''
         return (self.thisptr != NULL)
 
     @staticmethod
@@ -38,18 +39,22 @@ cdef class Body(Base):
 
     @safe_property
     def angle(self):
+        '''The current world rotation angle in radians.'''
         return self.thisptr.GetAngle()
 
     @safe_property
     def world_center(self):
+        '''The world position of the center of mass.'''
         return to_vec2(self.thisptr.GetWorldCenter())
 
     @safe_property
     def local_center(self):
+        '''The local position of the center of mass.'''
         return to_vec2(self.thisptr.GetLocalCenter())
 
     @safe_rw_property
     def linear_velocity(self, linear_velocity):
+        '''The linear velocity of the center of mass.'''
         if linear_velocity is None:
             return to_vec2(self.thisptr.GetLinearVelocity())
 
@@ -57,6 +62,7 @@ cdef class Body(Base):
 
     @safe_rw_property
     def angular_velocity(self, angular_velocity):
+        '''The angular velocity in radians/second.'''
         if angular_velocity is None:
             return self.thisptr.GetAngularVelocity()
 
@@ -64,6 +70,7 @@ cdef class Body(Base):
 
     @safe_rw_property
     def gravity_scale(self, gravity_scale):
+        '''The gravity scale of the body.'''
         if gravity_scale is None:
             return self.thisptr.GetGravityScale()
 
@@ -71,6 +78,7 @@ cdef class Body(Base):
 
     @safe_rw_property
     def bullet(self, bullet):
+        '''Body treated like a bullet for continuous collision detection?'''
         if bullet is None:
             return self.thisptr.IsBullet()
 
@@ -78,6 +86,11 @@ cdef class Body(Base):
 
     @safe_rw_property
     def linear_damping(self, linear_damping):
+        '''Linear damping is use to reduce the linear velocity.
+
+        The damping parameter can be larger than 1.0 but the damping effect
+        becomes sensitive to the time step when the damping parameter is large.
+        '''
         if linear_damping is None:
             return self.thisptr.GetLinearDamping()
 
@@ -85,6 +98,11 @@ cdef class Body(Base):
 
     @safe_rw_property
     def angular_damping(self, angular_damping):
+        '''Angular damping is use to reduce the angular velocity.
+
+        The damping parameter can be larger than 1.0 but the damping effect
+        becomes sensitive to the time step when the damping parameter is large.
+        '''
         if angular_damping is None:
             return self.thisptr.GetAngularDamping()
 
@@ -92,6 +110,8 @@ cdef class Body(Base):
 
     @safe_method
     def create_fixture_from_def(self, FixtureDef fixture_defn not None):
+        '''Create a fixture from a FixtureDef'''
+
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
         fixture = Fixture.from_b2Fixture(fptr)
         self._fixtures[pointer_as_key(fptr)] = fixture
@@ -103,11 +123,36 @@ cdef class Body(Base):
 
     @safe_method
     def create_fixture(self, **kwargs):
+        '''Create a fixture without first creating a FixtureDef
+
+        Parameters
+        ----------
+        kwargs : dict
+            Keyword arguments are all passed to a temporary FixtureDef
+            definition.
+        '''
         defn = FixtureDef(**kwargs)
         return self.create_fixture_from_def(defn)
 
     @safe_method
     def create_polygon_fixture(self, box=None, vertices=None, **fx_kwargs):
+        '''Create a fixture and attach a polygon shape to it
+
+        There are two ways to specify the vertices:
+        1. as the 'box' parameter, which specifies the half-width and
+           half-height of the generated rectangle
+        2. as a list of vertices
+
+        Parameters
+        ----------
+        vertices : list of Vec2, optional
+            Create a polygon with the vertices given.  If specified, there must
+            be at least 3 vertices.
+        box : (half-width, half-height), float, optional
+            Creates a box with these half-dimensions
+        kwargs : dict, optional
+            Additional keyword arguments are set on the FixtureDef
+        '''
         if 'shape' in fx_kwargs:
             raise ValueError('Shape is implicit in this method')
 
@@ -115,7 +160,26 @@ cdef class Body(Base):
         return self.create_fixture(shape=shape, **fx_kwargs)
 
     @safe_method
-    def create_edge_fixture(self, vertices=None, **fx_kwargs):
+    def create_edge_fixture(self, vertices, **fx_kwargs):
+        '''Create a fixture and attach an edge shape to it
+
+        There are two ways to specify the vertices:
+            vertices = (vertex1, vertex2)
+            where the edge shape goes from vertex1 to vertex2
+        and
+            vertices = (vertex0, vertex1, vertex2, vertex3)
+            where the edge shape goes from vertex1 to vertex2, but vertex0 and
+            vertex3 are adjacent vertices. These are used for smooth collision.
+            Chances are you don't need this option.
+
+        Parameters
+        ----------
+        vertices : list of Vec2
+            Create an edge fixture with the vertices given. Must be either 2 or
+            4 vertices.
+        kwargs : dict, optional
+            Additional keyword arguments are set on the FixtureDef
+        '''
         if 'shape' in fx_kwargs:
             raise ValueError('Shape is implicit in this method')
 
@@ -123,7 +187,19 @@ cdef class Body(Base):
         return self.create_fixture(shape=shape, **fx_kwargs)
 
     @safe_method
-    def create_circle_fixture(self, radius=0.0, center=None, **fx_kwargs):
+    def create_circle_fixture(self, radius, center=None, **fx_kwargs):
+        '''Create a fixture and attach a circle shape to it
+
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle
+        center : Vec2
+            The center position of the circle
+        kwargs : dict, optional
+            Additional keyword arguments are set on the FixtureDef
+        '''
         if 'shape' in fx_kwargs:
             raise ValueError('Shape is implicit in this method')
 
@@ -132,6 +208,13 @@ cdef class Body(Base):
 
     @safe_method
     def destroy_fixture(self, Fixture fixture not None):
+        '''Destroy (remove) a fixture from this body
+
+        Parameters
+        ----------
+        fixture : Fixture
+            The fixture to remove
+        '''
         cdef b2Fixture *fptr = fixture.thisptr
         del self._fixtures[pointer_as_key(fptr)]
 
@@ -156,23 +239,36 @@ cdef class Body(Base):
 
     @property  # safety check comes in _iter_fixtures
     def fixtures(self):
+        '''The fixtures attached to the body'''
         return list(self._iter_fixtures())
 
     @safe_property
     def joints(self):
+        '''The joints which attach this body to another'''
         return list(self._joints)
 
     @safe_rw_property
     def transform(self, Transform transform):
+        '''The world transform of the body's origin.
+
+        This is the position of the body's origin and rotation.
+
+        Manipulating a body's transform may cause non-physical behavior.
+        Note: contacts are updated on the next call to World.step.
+        '''
         if transform is None:
             return Transform.from_b2Transform(self.thisptr.GetTransform())
 
         cdef b2Transform *xf = &transform.transform
         self.thisptr.SetTransform(xf.p, xf.q.GetAngle())
 
-    @safe_property
-    def type(self):
-        return self.thisptr.GetType()
+    @safe_rw_property
+    def type(self, body_type):
+        if body_type is None:
+            return BodyType.to_string(self.thisptr.GetType())
+
+        body_type = BodyType.to_enum(body_type)
+        self.thisptr.SetType(body_type)
 
     @safe_property
     def mass(self):
