@@ -99,6 +99,15 @@ cdef class Joint(Base):
 
 
 cdef class RevoluteJoint(Joint):
+    '''
+    A revolute joint constrains two bodies to share a common point while they
+    are free to rotate about the point. The relative rotation about the shared
+    point is the joint angle. You can limit the relative rotation with a joint
+    limit that specifies a lower and upper angle. You can use a motor to drive
+    the relative rotation about the shared point. A maximum motor torque is
+    provided so that infinite forces are not generated.
+    '''
+
     @safe_property
     def reference_angle(self):
         return (<b2RevoluteJoint *>self.joint).GetReferenceAngle()
