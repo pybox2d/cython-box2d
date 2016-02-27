@@ -1,0 +1,3 @@
+pybox2d/*.cpp
+*.so
+__pycache__
