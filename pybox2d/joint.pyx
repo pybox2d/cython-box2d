@@ -172,32 +172,400 @@ cdef class RevoluteJoint(Joint):
         (<b2RevoluteJoint *>self.joint).SetMaxMotorTorque(max_motor_torque)
 
 
-cdef class PrismaticJoint(Joint):
-    pass
-
 cdef class DistanceJoint(Joint):
-    pass
+    @safe_rw_property
+    def damping_ratio(self, damping_ratio):
+        '''Set/get damping ratio.'''
+        if damping_ratio is None:
+            return (<b2DistanceJoint *>self.joint).GetDampingRatio()
 
-cdef class PulleyJoint(Joint):
-    pass
+        (<b2DistanceJoint *>self.joint).SetDampingRatio(damping_ratio)
 
-cdef class MouseJoint(Joint):
-    pass
+    @safe_rw_property
+    def frequency(self, frequency):
+        '''Set/get frequency in Hz.'''
+        if frequency is None:
+            return (<b2DistanceJoint *>self.joint).GetFrequency()
 
-cdef class GearJoint(Joint):
-    pass
+        (<b2DistanceJoint *>self.joint).SetFrequency(frequency)
 
-cdef class WheelJoint(Joint):
-    pass
+    @safe_rw_property
+    def length(self, length):
+        '''Set/get the natural length. Manipulating the length can lead to non-
+        physical behavior when the frequency is zero.'''
+        if length is None:
+            return (<b2DistanceJoint *>self.joint).GetLength()
 
-cdef class WeldJoint(Joint):
-    pass
+        (<b2DistanceJoint *>self.joint).SetLength(length)
+
+    @safe_property
+    def local_anchor_a(self):
+        '''The local anchor point relative to bodyA's origin.'''
+        return to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorA())
+
+    @safe_property
+    def local_anchor_b(self):
+        '''The local anchor point relative to bodyB's origin.'''
+        return to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorB())
+
 
 cdef class FrictionJoint(Joint):
-    pass
+    @safe_property
+    def local_anchor_a(self):
+        '''The local anchor point relative to bodyA's origin.'''
+        return to_vec2((<b2FrictionJoint *>self.joint).GetLocalAnchorA())
 
-cdef class RopeJoint(Joint):
-    pass
+    @safe_property
+    def local_anchor_b(self):
+        '''The local anchor point relative to bodyB's origin.'''
+        return to_vec2((<b2FrictionJoint *>self.joint).GetLocalAnchorB())
+
+    @safe_rw_property
+    def max_force(self, max_force):
+        '''Get the maximum friction force in N.'''
+        if max_force is None:
+            return (<b2FrictionJoint *>self.joint).GetMaxForce()
+
+        (<b2FrictionJoint *>self.joint).SetMaxForce(max_force)
+
+    @safe_rw_property
+    def max_torque(self, max_torque):
+        '''Get the maximum friction torque in N*m.'''
+        if max_torque is None:
+            return (<b2FrictionJoint *>self.joint).GetMaxTorque()
+
+        (<b2FrictionJoint *>self.joint).SetMaxTorque(max_torque)
+
+
+cdef class GearJoint(Joint):
+    @safe_rw_property
+    def ratio(self, ratio):
+        '''Set/Get the gear ratio.'''
+        if ratio is None:
+            return (<b2GearJoint *>self.joint).GetRatio()
+
+        (<b2GearJoint *>self.joint).SetRatio(ratio)
+
 
 cdef class MotorJoint(Joint):
-    pass
+    @safe_rw_property
+    def angular_offset(self, angular_offset):
+        '''Set/get the target angular offset, in radians.'''
+        if angular_offset is None:
+            return (<b2MotorJoint *>self.joint).GetAngularOffset()
+
+        (<b2MotorJoint *>self.joint).SetAngularOffset(angular_offset)
+
+    @safe_rw_property
+    def correction_factor(self, correction_factor):
+        '''Get the position correction factor in the range [0,1].'''
+        if correction_factor is None:
+            return (<b2MotorJoint *>self.joint).GetCorrectionFactor()
+
+        (<b2MotorJoint *>self.joint).SetCorrectionFactor(correction_factor)
+
+    @safe_rw_property
+    def linear_offset(self, linear_offset):
+        '''Set/get the target linear offset, in frame A, in meters.'''
+        if linear_offset is None:
+            return to_vec2((<b2MotorJoint *>self.joint).GetLinearOffset())
+
+        (<b2MotorJoint *>self.joint).SetLinearOffset(to_b2vec2(linear_offset))
+
+    @safe_rw_property
+    def max_force(self, max_force):
+        '''Get the maximum friction force in N.'''
+        if max_force is None:
+            return (<b2MotorJoint *>self.joint).GetMaxForce()
+
+        (<b2MotorJoint *>self.joint).SetMaxForce(max_force)
+
+    @safe_rw_property
+    def max_torque(self, max_torque):
+        '''Get the maximum friction torque in N*m.'''
+        if max_torque is None:
+            return (<b2MotorJoint *>self.joint).GetMaxTorque()
+
+        (<b2MotorJoint *>self.joint).SetMaxTorque(max_torque)
+
+
+cdef class MouseJoint(Joint):
+    @safe_rw_property
+    def damping_ratio(self, damping_ratio):
+        '''Set/get the damping ratio (dimensionless).'''
+        if damping_ratio is None:
+            return (<b2MouseJoint *>self.joint).GetDampingRatio()
+
+        (<b2MouseJoint *>self.joint).SetDampingRatio(damping_ratio)
+
+    @safe_rw_property
+    def frequency(self, frequency):
+        '''Set/get the frequency in Hertz.'''
+        if frequency is None:
+            return (<b2MouseJoint *>self.joint).GetFrequency()
+
+        (<b2MouseJoint *>self.joint).SetFrequency(frequency)
+
+    @safe_rw_property
+    def max_force(self, max_force):
+        '''Set/get the maximum force in Newtons.'''
+        if max_force is None:
+            return (<b2MouseJoint *>self.joint).GetMaxForce()
+
+        (<b2MouseJoint *>self.joint).SetMaxForce(max_force)
+
+    @safe_rw_property
+    def target(self, target):
+        '''Use this to update the target point.'''
+        if target is None:
+            return to_vec2((<b2MouseJoint *>self.joint).GetTarget())
+
+        (<b2MouseJoint *>self.joint).SetTarget(to_b2vec2(target))
+
+
+cdef class PrismaticJoint(Joint):
+    @safe_property
+    def joint_speed(self):
+        '''Get the current joint translation speed, usually in meters per
+        second.'''
+        return (<b2PrismaticJoint *>self.joint).GetJointSpeed()
+
+    @safe_property
+    def joint_translation(self):
+        '''Get the current joint translation, usually in meters.'''
+        return (<b2PrismaticJoint *>self.joint).GetJointTranslation()
+
+    @safe_property
+    def limit_enabled(self):
+        '''Is the joint limit enabled?'''
+        return (<b2PrismaticJoint *>self.joint).IsLimitEnabled()
+
+    @safe_property
+    def local_anchor_a(self):
+        '''The local anchor point relative to bodyA's origin.'''
+        return to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAnchorA())
+
+    @safe_property
+    def local_anchor_b(self):
+        '''The local anchor point relative to bodyB's origin.'''
+        return to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAnchorB())
+
+    @safe_property
+    def local_axis_a(self):
+        '''The local joint axis relative to bodyA.'''
+        return to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAxisA())
+
+    @safe_rw_property
+    def max_motor_force(self, max_motor_force):
+        '''Set the maximum motor force, usually in N.'''
+        if max_motor_force is None:
+            return (<b2PrismaticJoint *>self.joint).GetMaxMotorForce()
+
+        (<b2PrismaticJoint *>self.joint).SetMaxMotorForce(max_motor_force)
+
+    @safe_property
+    def motor_enabled(self):
+        '''Is the joint motor enabled?'''
+        return (<b2PrismaticJoint *>self.joint).IsMotorEnabled()
+
+    @safe_method
+    def motor_force(self, inv_dt):
+        '''Get the current motor force given the inverse time step, usually in
+        N.'''
+        return (<b2PrismaticJoint *>self.joint).GetMotorForce(inv_dt)
+
+    @safe_rw_property
+    def motor_speed(self, motor_speed):
+        '''Get the motor speed, usually in meters per second.'''
+        if motor_speed is None:
+            return (<b2PrismaticJoint *>self.joint).GetMotorSpeed()
+
+        (<b2PrismaticJoint *>self.joint).SetMotorSpeed(motor_speed)
+
+    @safe_property
+    def reference_angle(self):
+        '''Get the reference angle.'''
+        return (<b2PrismaticJoint *>self.joint).GetReferenceAngle()
+
+    @safe_rw_property
+    def lower_limit(self, limit):
+        '''The lower joint limit in meters.'''
+        if limit is None:
+            return (<b2PrismaticJoint *>self.joint).GetLowerLimit()
+
+        (<b2PrismaticJoint *>self.joint).SetLimits(limit, self.upper_limit)
+
+    @safe_rw_property
+    def upper_limit(self, limit):
+        '''The upper joint limit in meters.'''
+        if limit is None:
+            return (<b2PrismaticJoint *>self.joint).GetUpperLimit()
+
+        (<b2PrismaticJoint *>self.joint).SetLimits(self.lower_limit, limit)
+
+
+cdef class PulleyJoint(Joint):
+    @safe_property
+    def current_length_a(self):
+        '''Get the current length of the segment attached to bodyA.'''
+        return (<b2PulleyJoint *>self.joint).GetCurrentLengthA()
+
+    @safe_property
+    def current_length_b(self):
+        '''Get the current length of the segment attached to bodyB.'''
+        return (<b2PulleyJoint *>self.joint).GetCurrentLengthB()
+
+    @safe_property
+    def ground_anchor_a(self):
+        '''Get the first ground anchor.'''
+        return to_vec2((<b2PulleyJoint *>self.joint).GetGroundAnchorA())
+
+    @safe_property
+    def ground_anchor_b(self):
+        '''Get the second ground anchor.'''
+        return to_vec2((<b2PulleyJoint *>self.joint).GetGroundAnchorB())
+
+    @safe_property
+    def length_a(self):
+        '''Get the current length of the segment attached to bodyA.'''
+        return (<b2PulleyJoint *>self.joint).GetLengthA()
+
+    @safe_property
+    def length_b(self):
+        '''Get the current length of the segment attached to bodyB.'''
+        return (<b2PulleyJoint *>self.joint).GetLengthB()
+
+    @safe_property
+    def ratio(self):
+        '''Get the pulley ratio.'''
+        return (<b2PulleyJoint *>self.joint).GetRatio()
+
+
+cdef class RopeJoint(Joint):
+    @safe_property
+    def limit_state(self):
+        ''''''
+        return (<b2RopeJoint *>self.joint).GetLimitState()
+
+    @safe_property
+    def local_anchor_a(self):
+        '''The local anchor point relative to bodyA's origin.'''
+        return to_vec2((<b2RopeJoint *>self.joint).GetLocalAnchorA())
+
+    @safe_property
+    def local_anchor_b(self):
+        '''The local anchor point relative to bodyB's origin.'''
+        return to_vec2((<b2RopeJoint *>self.joint).GetLocalAnchorB())
+
+    @safe_rw_property
+    def max_length(self, max_length):
+        '''Set/Get the maximum length of the rope.'''
+        if max_length is None:
+            return (<b2RopeJoint *>self.joint).GetMaxLength()
+
+        (<b2RopeJoint *>self.joint).SetMaxLength(max_length)
+
+
+cdef class WeldJoint(Joint):
+    @safe_rw_property
+    def damping_ratio(self, damping_ratio):
+        '''Set/get damping ratio.'''
+        if damping_ratio is None:
+            return (<b2WeldJoint *>self.joint).GetDampingRatio()
+
+        (<b2WeldJoint *>self.joint).SetDampingRatio(damping_ratio)
+
+    @safe_rw_property
+    def frequency(self, frequency):
+        '''Set/get frequency in Hz.'''
+        if frequency is None:
+            return (<b2WeldJoint *>self.joint).GetFrequency()
+
+        (<b2WeldJoint *>self.joint).SetFrequency(frequency)
+
+    @safe_property
+    def local_anchor_a(self):
+        '''The local anchor point relative to bodyA's origin.'''
+        return to_vec2((<b2WeldJoint *>self.joint).GetLocalAnchorA())
+
+    @safe_property
+    def local_anchor_b(self):
+        '''The local anchor point relative to bodyB's origin.'''
+        return to_vec2((<b2WeldJoint *>self.joint).GetLocalAnchorB())
+
+    @safe_property
+    def reference_angle(self):
+        '''Get the reference angle.'''
+        return (<b2WeldJoint *>self.joint).GetReferenceAngle()
+
+
+cdef class WheelJoint(Joint):
+    @safe_property
+    def joint_speed(self):
+        '''Get the current joint translation speed, usually in meters per
+        second.'''
+        return (<b2WheelJoint *>self.joint).GetJointSpeed()
+
+    @safe_property
+    def joint_translation(self):
+        '''Get the current joint translation, usually in meters.'''
+        return (<b2WheelJoint *>self.joint).GetJointTranslation()
+
+    @safe_property
+    def local_anchor_a(self):
+        '''The local anchor point relative to bodyA's origin.'''
+        return to_vec2((<b2WheelJoint *>self.joint).GetLocalAnchorA())
+
+    @safe_property
+    def local_anchor_b(self):
+        '''The local anchor point relative to bodyB's origin.'''
+        return to_vec2((<b2WheelJoint *>self.joint).GetLocalAnchorB())
+
+    @safe_property
+    def local_axis_a(self):
+        '''The local joint axis relative to bodyA.'''
+        return to_vec2((<b2WheelJoint *>self.joint).GetLocalAxisA())
+
+    @safe_rw_property
+    def max_motor_torque(self, max_motor_torque):
+        '''Set/Get the maximum motor force, usually in N-m.'''
+        if max_motor_torque is None:
+            return (<b2WheelJoint *>self.joint).GetMaxMotorTorque()
+
+        (<b2WheelJoint *>self.joint).SetMaxMotorTorque(max_motor_torque)
+
+    @safe_property
+    def motor_enabled(self):
+        '''Is the joint motor enabled?'''
+        return (<b2WheelJoint *>self.joint).IsMotorEnabled()
+
+    @safe_rw_property
+    def motor_speed(self, motor_speed):
+        '''Get the motor speed, usually in radians per second.'''
+        if motor_speed is None:
+            return (<b2WheelJoint *>self.joint).GetMotorSpeed()
+
+        (<b2WheelJoint *>self.joint).SetMotorSpeed(motor_speed)
+
+    @safe_method
+    def get_motor_torque(self, inv_dt):
+        '''Get the current motor torque given the inverse time step, usually in
+        N-m.'''
+        return (<b2WheelJoint *>self.joint).GetMotorTorque(inv_dt)
+
+    @safe_rw_property
+    def spring_damping_ratio(self, spring_damping_ratio):
+        '''Set/Get the spring damping ratio'''
+        if spring_damping_ratio is None:
+            return (<b2WheelJoint *>self.joint).GetSpringDampingRatio()
+
+        (<b2WheelJoint *>self.joint).SetSpringDampingRatio(spring_damping_ratio)
+
+    @safe_rw_property
+    def spring_frequency_hz(self, spring_frequency_hz):
+        '''Set/Get the spring frequency in hertz. Setting the frequency to zero
+        disables the spring.'''
+        if spring_frequency_hz is None:
+            return (<b2WheelJoint *>self.joint).GetSpringFrequencyHz()
+
+        (<b2WheelJoint *>self.joint).SetSpringFrequencyHz(spring_frequency_hz)

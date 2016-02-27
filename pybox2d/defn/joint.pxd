@@ -90,3 +90,168 @@ cdef extern from "b2RevoluteJoint.h":
         float32 GetReactionTorque(float32 inv_dt) const
         float32 GetMotorTorque(float32 inv_dt) const
         void Dump()
+
+
+cdef extern from "b2DistanceJoint.h":
+    cdef cppclass b2DistanceJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetDampingRatio()
+        void SetDampingRatio(float32 ratio)
+        float32 GetFrequency()
+        void SetFrequency(float32 hz)
+        float32 GetLength()
+        void SetLength(float32 length)
+        const b2Vec2& GetLocalAnchorA()
+        const b2Vec2& GetLocalAnchorB()
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+
+
+cdef extern from "b2FrictionJoint.h":
+    cdef cppclass b2FrictionJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        const b2Vec2& GetLocalAnchorA()
+        const b2Vec2& GetLocalAnchorB()
+        float32 GetMaxForce()
+        void SetMaxForce(float32 force)
+        float32 GetMaxTorque()
+        void SetMaxTorque(float32 torque)
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+
+
+cdef extern from "b2GearJoint.h":
+    cdef cppclass b2GearJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetRatio()
+        void SetRatio(float32 ratio)
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+
+
+cdef extern from "b2MotorJoint.h":
+    cdef cppclass b2MotorJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetAngularOffset()
+        void SetAngularOffset(float32 angularOffset)
+        float32 GetCorrectionFactor()
+        void SetCorrectionFactor(float32 factor)
+        const b2Vec2& GetLinearOffset()
+        void SetLinearOffset(const b2Vec2& linearOffset)
+        float32 GetMaxForce()
+        void SetMaxForce(float32 force)
+        float32 GetMaxTorque()
+        void SetMaxTorque(float32 torque)
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+
+
+cdef extern from "b2MouseJoint.h":
+    cdef cppclass b2MouseJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetDampingRatio()
+        void SetDampingRatio(float32 ratio)
+        float32 GetFrequency()
+        void SetFrequency(float32 hz)
+        float32 GetMaxForce()
+        void SetMaxForce(float32 force)
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+        const b2Vec2& GetTarget()
+        void SetTarget(const b2Vec2& target)
+
+
+cdef extern from "b2PrismaticJoint.h":
+    cdef cppclass b2PrismaticJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        bool IsLimitEnabled()
+        float32 GetJointSpeed()
+        float32 GetJointTranslation()
+        void SetLimits(float32 lower, float32 upper)
+        const b2Vec2& GetLocalAnchorA()
+        const b2Vec2& GetLocalAnchorB()
+        const b2Vec2& GetLocalAxisA()
+        float32 GetLowerLimit()
+        float32 GetMaxMotorForce()
+        void SetMaxMotorForce(float32 force)
+        float32 GetMotorForce(float32 inv_dt)
+        float32 GetMotorSpeed()
+        void SetMotorSpeed(float32 speed)
+        bool IsMotorEnabled()
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+        float32 GetReferenceAngle()
+        float32 GetUpperLimit()
+
+
+cdef extern from "b2PulleyJoint.h":
+    cdef cppclass b2PulleyJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetCurrentLengthA()
+        float32 GetCurrentLengthB()
+        b2Vec2 GetGroundAnchorA()
+        b2Vec2 GetGroundAnchorB()
+        float32 GetLengthA()
+        float32 GetLengthB()
+        float32 GetRatio()
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+        void ShiftOrigin(const b2Vec2& newOrigin)
+
+
+cdef extern from "b2RopeJoint.h":
+    cdef cppclass b2RopeJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        b2LimitState GetLimitState()
+        const b2Vec2& GetLocalAnchorA()
+        const b2Vec2& GetLocalAnchorB()
+        float32 GetMaxLength()
+        void SetMaxLength(float32 length)
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+
+
+cdef extern from "b2WeldJoint.h":
+    cdef cppclass b2WeldJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetDampingRatio()
+        void SetDampingRatio(float32 ratio)
+        float32 GetFrequency()
+        void SetFrequency(float32 hz)
+        const b2Vec2& GetLocalAnchorA()
+        const b2Vec2& GetLocalAnchorB()
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+        float32 GetReferenceAngle()
+
+
+cdef extern from "b2WheelJoint.h":
+    cdef cppclass b2WheelJoint(b2Joint):
+        b2Vec2 GetAnchorA()
+        b2Vec2 GetAnchorB()
+        float32 GetJointSpeed()
+        float32 GetJointTranslation()
+        const b2Vec2& GetLocalAnchorA()
+        const b2Vec2& GetLocalAnchorB()
+        const b2Vec2& GetLocalAxisA()
+        float32 GetMaxMotorTorque()
+        void SetMaxMotorTorque(float32 torque)
+        bool IsMotorEnabled()
+        float32 GetMotorSpeed()
+        void SetMotorSpeed(float32 speed)
+        float32 GetMotorTorque(float32 inv_dt)
+        b2Vec2 GetReactionForce(float32 inv_dt)
+        float32 GetReactionTorque(float32 inv_dt)
+        float32 GetSpringDampingRatio()
+        void SetSpringDampingRatio(float32 ratio)
+        float32 GetSpringFrequencyHz()
+        void SetSpringFrequencyHz(float32 hz)
