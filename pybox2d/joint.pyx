@@ -110,15 +110,66 @@ cdef class RevoluteJoint(Joint):
 
     @safe_property
     def reference_angle(self):
+        '''The reference angle, in radians'''
         return (<b2RevoluteJoint *>self.joint).GetReferenceAngle()
 
     @safe_property
     def joint_angle(self):
+        '''The current joint angle, in radians.'''
         return (<b2RevoluteJoint *>self.joint).GetJointAngle()
 
     @safe_property
     def joint_speed(self):
+        '''The current joint angle speed in radians per second.'''
         return (<b2RevoluteJoint *>self.joint).GetJointSpeed()
+
+    @safe_rw_property
+    def limit_enabled(self, enable):
+        '''Is the joint limit enabled?'''
+        if enable is None:
+            return (<b2RevoluteJoint *>self.joint).IsLimitEnabled()
+
+        (<b2RevoluteJoint *>self.joint).EnableLimit(enable)
+
+    @safe_rw_property
+    def lower_limit(self, limit):
+        '''The lower joint limit in radians.'''
+        if limit is None:
+            return (<b2RevoluteJoint *>self.joint).GetLowerLimit()
+
+        (<b2RevoluteJoint *>self.joint).SetLimits(limit, self.upper_limit)
+
+    @safe_rw_property
+    def upper_limit(self, limit):
+        '''The upper joint limit in radians.'''
+        if limit is None:
+            return (<b2RevoluteJoint *>self.joint).GetUpperLimit()
+
+        (<b2RevoluteJoint *>self.joint).SetLimits(self.lower_limit, limit)
+
+    @safe_rw_property
+    def motor_enabled(self, enable):
+        '''Is the joint motor enabled?'''
+        if enable is None:
+            return (<b2RevoluteJoint *>self.joint).IsMotorEnabled()
+
+        (<b2RevoluteJoint *>self.joint).EnableMotor(enable)
+
+    @safe_rw_property
+    def motor_speed(self, speed):
+        '''The motor speed in radians per second.'''
+        if speed is None:
+            return (<b2RevoluteJoint *>self.joint).GetMotorSpeed()
+
+        (<b2RevoluteJoint *>self.joint).SetMotorSpeed(speed)
+
+    @safe_rw_property
+    def max_motor_torque(self, max_motor_torque):
+        '''The maximum motor torque, usually in N-m.'''
+        if max_motor_torque is None:
+            return (<b2RevoluteJoint *>self.joint).GetMaxMotorTorque()
+
+        (<b2RevoluteJoint *>self.joint).SetMaxMotorTorque(max_motor_torque)
 
 
 cdef class PrismaticJoint(Joint):
