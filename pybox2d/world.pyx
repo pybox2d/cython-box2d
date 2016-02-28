@@ -508,13 +508,18 @@ cdef class World:
         return self.create_joint_from_defn((<b2JointDef*>&defn), None, None)
 
     def create_motor_joint(self, bodies, *, collide_connected=False,
-                           angular_offset=0.0, correction_factor=0.3,
+                           angular_offset=None, correction_factor=0.3,
                            linear_offset=None, max_force=1.0, max_torque=1.0):
         '''Create a motor joint between two bodies
 
         A motor joint is used to control the relative motion between two
         bodies. A typical usage is to control the movement of a dynamic body
         with respect to the ground.
+        
+        Two options for initialization:
+            1. Specify linear_offset and angular_offset manually
+            2. Specify neither, and calculate the current offsets between the
+               bodies
 
         Parameters
         ----------
@@ -546,18 +551,19 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2MotorJointDef defn
-        # if :
-        defn.bodyA = ba
-        defn.bodyB = bb
-        # else:
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # void Initialize(b2Body* bodyA, b2Body* bodyB)
-        # Initialize the bodies and offsets using the current transforms.
+        if angular_offset is not None or linear_offset is not None:
+            if angular_offset is None or linear_offset is None:
+                raise ValueError('Must specify both offsets or neither one')
+            defn.bodyA = ba
+            defn.bodyB = bb
+            defn.angularOffset = angular_offset
+            defn.linearOffset = to_b2vec2(linear_offset)
+        else:
+            # Initialize the bodies and offsets using the current transforms.
+            defn.Initialize(ba, bb)
 
         defn.collideConnected = collide_connected
-        defn.angularOffset = angular_offset
         defn.correctionFactor = correction_factor
-        defn.linearOffset = to_b2vec2(linear_offset)
         defn.maxForce = max_force
         defn.maxTorque = max_torque
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
