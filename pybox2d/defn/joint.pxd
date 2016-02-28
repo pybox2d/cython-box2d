@@ -269,6 +269,11 @@ cdef extern from "b2PulleyJoint.h":
 
 
 cdef extern from "b2RopeJoint.h":
+    cdef cppclass b2RopeJointDef(b2JointDef):
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+        float32 maxLength
+
     cdef cppclass b2RopeJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()

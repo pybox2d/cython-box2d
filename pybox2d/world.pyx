@@ -748,3 +748,61 @@ cdef class World:
         defn.localAnchorB = to_b2vec2(local_anchor_b)
         defn.ratio = ratio
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+
+    def create_rope_joint(self, bodies, *, collide_connected=False,
+                          local_anchor_a=None, local_anchor_b=None,
+                          max_length=0.0):
+        '''Create a rope joint between two bodies
+
+        A rope joint enforces a maximum distance between two points on two
+        bodies. It has no other effect. Warning: if you attempt to change the
+        maximum length during the simulation you will get some non-physical
+        behavior. A model that would allow you to dynamically modify the length
+        would have some sponginess, so Erin Catto chose not to implement it
+        that way.
+
+        See `world.create_distance_joint` if you want to dynamically control
+        length.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        max_length : float, optional
+            The maximum length of the rope. Warning: this must be larger than
+            b2_linearSlop or the joint will have no effect.
+        '''
+        body_a, body_b = bodies
+
+        if local_anchor_a is None:
+            local_anchor_a = (-1.0, 0.0)
+        if local_anchor_b is None:
+            local_anchor_b = (1.0, 0.0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2RopeJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # # no init
+        # # no init
+
+        defn.collideConnected = collide_connected
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        defn.maxLength = max_length
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
