@@ -144,6 +144,15 @@ cdef class Fixture(Base):
             return self.thisptr.IsSensor()
 
         self.thisptr.SetSensor(sensor)
+    
+    @property  # safe due to shape getter
+    def mass_data(self):
+        '''The mass data associated with the shape and this fixture's density
+
+        See Shape.compute_mass for more information.
+        '''
+        shape = self.shape
+        return shape.get_mass_data(self.density)
 
     def _get_repr_info(self):
         yield ('shape', self.shape)

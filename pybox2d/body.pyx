@@ -328,6 +328,47 @@ cdef class Body(Base):
             return self.thisptr.IsFixedRotation()
 
         self.thisptr.SetFixedRotation(fixed_rotation)
+    
+    @safe_rw_property
+    def mass_data(self, mass_data):
+        '''Get or set the mass properties of the body
+        
+        It can be used to override the mass properties of the fixtures.
+
+        Note that this changes the center of mass position.
+        Note that creating or destroying fixtures can also alter the mass.
+        This function has no effect if the body isn't dynamic.
+        
+        Parameters:
+        -----------
+        mass_data : (mass, center, inertia) or MassData
+            Where:
+            The mass of the shape, usually in kilograms.
+            The position of the shape's centroid relative to the shape's
+            origin.
+            The rotational inertia of the shape about the local origin.
+        '''
+        cdef b2MassData md
+        if mass_data is None:
+            self.thisptr.GetMassData(&md)
+            return MassData(mass=md.mass,
+                            center=to_vec2(md.center),
+                            inertia=md.I)
+        
+        mass, center, inertia = mass_data
+        md.mass = mass
+        md.center = to_b2vec2(center)
+        md.I = inertia
+        self.thisptr.SetMassData(&md)
+
+    @safe_method
+    def reset_mass_data(self):
+        '''Reset the mass properties to the sum of the mass properties of the
+        fixtures.  This normally does not need to be called unless you called
+        set_mass_data to override the mass and you later want to reset the
+        mass.
+        '''
+        self.thisptr.ResetMassData()
 
     # TODO can't use cpdef with generators?
     def _get_repr_info(self):
@@ -348,4 +389,4 @@ cdef class Body(Base):
         yield ('angular_damping', self.angular_damping)
         yield ('inertia', self.inertia)
         yield ('mass', self.mass)
-        # yield ('mass_data', self.mass_data)
+        yield ('mass_data', self.mass_data)
