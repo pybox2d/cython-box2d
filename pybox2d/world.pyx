@@ -621,8 +621,8 @@ cdef class World:
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_prismatic_joint(self, bodies, *, collide_connected=False,
+                               local_anchors=None, anchor=None, axis=None,
                                enable_limit=False, enable_motor=False,
-                               local_anchor_a=None, local_anchor_b=None,
                                local_axis_a=None, lower_translation=0.0,
                                max_motor_force=0.0, motor_speed=0.0,
                                reference_angle=0.0, upper_translation=0.0):
@@ -632,6 +632,10 @@ cdef class World:
         translation along an axis fixed in bodyA. Relative rotation is
         prevented. You can use a joint limit to restrict the range of motion
         and a joint motor to drive the motion or to model joint friction.
+        
+        Two options for initialization:
+        1. Specify (world) anchor and axis
+        2. Specify local_anchors, local_axis_a, and reference_angle
 
         Parameters
         ----------
@@ -639,16 +643,24 @@ cdef class World:
             The bodies to join together
         collide_connected : bool, optional
             Allow collision between connected bodies (default: False)
+        anchor : Vec2, optional
+            The world anchor point where the bodies will be joined
+            Requires axis to be specified as well
+            If unspecified, local_anchors, local_axis_a, and reference_angle
+            must be specified.
+        axis : Vec2, optional
+            Unit world axis for the joint
+            Requires anchor to be specified as well
+        local_anchors : (anchor_a, anchor_b), Vec2, optional
+            Local anchor points relative to (body_a, body_b).
+            Required if 'anchor' is unspecified.
         enable_limit : bool, optional
             Enable/disable the joint limit.
         enable_motor : bool, optional
             Enable/disable the joint motor.
-        local_anchor_a : Vec2, optional
-            The local anchor point relative to bodyA's origin.
-        local_anchor_b : Vec2, optional
-            The local anchor point relative to bodyB's origin.
         local_axis_a : Vec2, optional
             The local translation unit axis in bodyA.
+            Required if 'anchor' is unspecified.
         lower_translation : float, optional
             The lower translation limit, usually in meters.
         max_motor_force : float, optional
@@ -656,18 +668,13 @@ cdef class World:
         motor_speed : float, optional
             The desired motor speed in radians per second.
         reference_angle : float, optional
-            The constrained angle between the bodies: bodyB_angle - bodyA_angle.
+            The constrained angle between the bodies: 
+                bodyB_angle - bodyA_angle
+            Required if 'anchor' is unspecified.
         upper_translation : float, optional
             The upper translation limit, usually in meters.
         '''
         body_a, body_b = bodies
-
-        if local_anchor_a is None:
-            local_anchor_a = (0, 0)
-        if local_anchor_b is None:
-            local_anchor_b = (0, 0)
-        if local_axis_a is None:
-            local_axis_a = (1.0, 0.0)
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
@@ -676,25 +683,40 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2PrismaticJointDef defn
-        # if :
         defn.bodyA = ba
         defn.bodyB = bb
-        # else:
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor, const b2Vec2& axis)
-        # Initialize the bodies, anchors, axis, and reference angle using the world anchor and unit world axis.
+        if anchor is not None or axis is not None:
+            if anchor is None or axis is None:
+                raise ValueError('Must specify anchor and axis')
+
+            # Initialize the bodies, anchors, axis, and reference angle using
+            # the world anchor and unit world axis.
+            defn.Initialize(ba, bb, to_b2vec2(anchor), to_b2vec2(axis))
+        elif (local_anchors is not None or reference_angle is not None or
+                local_axis_a is not None):
+            if local_axis_a is None:
+                local_axis_a = (1.0, 0.0)
+
+            if (local_anchors is None or reference_angle is None or
+                    local_axis_a is None):
+                raise ValueError('Must specify local_anchors, reference_angle, '
+                                 'local_axis_a')
+
+            local_anchor_a, local_anchor_b = local_anchors
+            defn.localAnchorA = to_b2vec2(local_anchor_a)
+            defn.localAnchorB = to_b2vec2(local_anchor_b)
+            defn.localAxisA = to_b2vec2(local_axis_a)
+            defn.referenceAngle = reference_angle
+        else:
+            raise ValueError('Must specify either anchor or local_anchors')
 
         defn.collideConnected = collide_connected
         defn.enableLimit = enable_limit
         defn.enableMotor = enable_motor
-        defn.localAnchorA = to_b2vec2(local_anchor_a)
-        defn.localAnchorB = to_b2vec2(local_anchor_b)
-        defn.localAxisA = to_b2vec2(local_axis_a)
         defn.lowerTranslation = lower_translation
+        defn.upperTranslation = upper_translation
         defn.maxMotorForce = max_motor_force
         defn.motorSpeed = motor_speed
-        defn.referenceAngle = reference_angle
-        defn.upperTranslation = upper_translation
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_pulley_joint(self, bodies, *, collide_connected=True,
