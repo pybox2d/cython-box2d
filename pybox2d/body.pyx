@@ -274,35 +274,91 @@ cdef class Body(Base):
 
     @safe_property
     def mass(self):
+        '''Get the total mass of the body, usually in kilograms (kg).'''
         return self.thisptr.GetMass()
 
     @safe_property
     def inertia(self):
+        '''Get the rotational inertia of the body about the local origin
+        Usually in kg-m^2.
+        '''
         return self.thisptr.GetInertia()
 
     @safe_property
     def position(self):
+        '''Get the world body origin position.'''
         return to_vec2(self.thisptr.GetPosition())
 
     @safe_method
-    def apply_force(self, force, point, bool wake):
+    def apply_force(self, force, point, bool wake=True):
+        '''Apply a force at a world point.
+
+        If the force is not applied at the center of mass, it will generate a
+        torque and affect the angular velocity. This wakes up the body.
+
+        Parameters
+        ----------
+        force : Vec2
+            the world force vector, usually in Newtons (N).
+        point : Vec2
+            the world position of the point of application.
+        wake : bool, optional
+            also wake up the body
+        '''
         self.thisptr.ApplyForce(to_b2vec2(force), to_b2vec2(point), wake)
 
     @safe_method
-    def apply_linear_impulse(self, impulse, point, bool wake):
+    def apply_linear_impulse(self, impulse, point, bool wake=True):
+        '''Apply an impulse at a point.
+
+        This immediately modifies the velocity.  It also modifies the angular
+        velocity if the point of application is not at the center of mass. This
+        wakes up the body.
+
+        Parameters
+        ----------
+        impulse : Vec2
+            the world impulse vector, usually in N-seconds or kg-m/s
+        point : Vec2
+            the world position of the point of application.
+        wake : bool, optional
+            also wake up the body
+        '''
         self.thisptr.ApplyLinearImpulse(to_b2vec2(impulse), to_b2vec2(point),
                                         wake)
 
     @safe_method
-    def apply_angular_impulse(self, float impulse, bool wake):
+    def apply_angular_impulse(self, float impulse, bool wake=True):
+        '''Apply an angular impulse.
+
+        impulse : float
+            impulse the angular impulse in units of kg*m*m/s
+        wake : bool, optional
+            also wake up the body
+        '''
         self.thisptr.ApplyAngularImpulse(impulse, wake)
 
     @safe_method
-    def apply_torque(self, float torque, bool wake):
+    def apply_torque(self, float torque, bool wake=True):
+        '''Apply a torque.
+
+        This affects the angular velocity without affecting the linear velocity
+        of the center of mass.
+
+        Parameters
+        ----------
+        torque : float
+            about the z-axis (out of the screen), usually in N-m.
+        wake : bool, optional
+            also wake up the body
+        '''
         self.thisptr.ApplyTorque(torque, wake)
 
     @safe_rw_property
     def sleeping_allowed(self, sleeping_allowed):
+        '''You can disable sleeping on this body. If you disable sleeping, the
+        body will be woken.'''
+
         if sleeping_allowed is None:
             return self.thisptr.IsSleepingAllowed()
 
@@ -310,6 +366,12 @@ cdef class Body(Base):
 
     @safe_rw_property
     def awake(self, awake):
+        '''Set the sleep state of the body.
+
+        A sleeping body has very low CPU cost.
+
+        If set to True, the body will be awoken.
+        '''
         if awake is None:
             return self.thisptr.IsAwake()
 
@@ -317,6 +379,22 @@ cdef class Body(Base):
 
     @safe_rw_property
     def active(self, active):
+        '''The active state of the body.
+
+        An inactive body is not simulated and cannot be collided with or woken
+        up.  If you pass a flag of true, all fixtures will be added to the
+        broad-phase.
+
+        If you pass a flag of false, all fixtures will be removed from the
+        broad-phase and all contacts will be destroyed.  Fixtures and joints
+        are otherwise unaffected. You may continue to create/destroy fixtures
+        and joints on inactive bodies.
+
+        Fixtures on an inactive body are implicitly inactive and will not
+        participate in collisions, ray-casts, or queries.  Joints connected to
+        an inactive body are implicitly inactive.  An inactive body is still
+        owned by a b2World object and remains in the body list.
+        '''
         if active is None:
             return self.thisptr.IsActive()
 
@@ -324,21 +402,25 @@ cdef class Body(Base):
 
     @safe_rw_property
     def fixed_rotation(self, fixed_rotation):
+        '''Fixed rotation.
+
+        Setting this causes the mass to be reset.
+        '''
         if fixed_rotation is None:
             return self.thisptr.IsFixedRotation()
 
         self.thisptr.SetFixedRotation(fixed_rotation)
-    
+
     @safe_rw_property
     def mass_data(self, mass_data):
         '''Get or set the mass properties of the body
-        
+
         It can be used to override the mass properties of the fixtures.
 
         Note that this changes the center of mass position.
         Note that creating or destroying fixtures can also alter the mass.
         This function has no effect if the body isn't dynamic.
-        
+
         Parameters:
         -----------
         mass_data : (mass, center, inertia) or MassData
@@ -354,7 +436,7 @@ cdef class Body(Base):
             return MassData(mass=md.mass,
                             center=to_vec2(md.center),
                             inertia=md.I)
-        
+
         mass, center, inertia = mass_data
         md.mass = mass
         md.center = to_b2vec2(center)
