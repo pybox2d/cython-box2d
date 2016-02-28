@@ -64,29 +64,45 @@ def test_revolute_joint_a(world, ground, dynamic_body):
     world.create_revolute_joint((ground, dynamic_body),
                                 anchor=dynamic_body.position)
 
+
 def test_revolute_joint_b(world, ground, dynamic_body):
     world.create_revolute_joint((ground, dynamic_body),
                                 local_anchors=((0, 0), (0, 0)),
                                 reference_angle=0.0)
+
 
 def test_distance_joint_a(world, ground, dynamic_body):
     world.create_distance_joint((ground, dynamic_body),
                                 local_anchors=((0, 0), (0, 0)),
                                 length=1.0)
 
+
 def test_distance_joint_b(world, ground, dynamic_body):
     world.create_distance_joint((ground, dynamic_body),
                                 anchors=(ground.position,
                                          dynamic_body.position))
+
 
 def test_friction_joint_a(world, ground, dynamic_body):
     world.create_friction_joint((ground, dynamic_body),
                                 local_anchors=((0, 0), (0, 0)),
                                 )
 
+
 def test_friction_joint_b(world, ground, dynamic_body):
     world.create_friction_joint((ground, dynamic_body),
                                 anchor=dynamic_body.position)
+
+
+def test_motor_joint_a(world, ground, dynamic_body):
+    world.create_motor_joint((ground, dynamic_body),
+                             angular_offset=1.0,
+                             linear_offset=(1, 0))
+
+
+def test_motor_joint_b(world, ground, dynamic_body):
+    world.create_motor_joint((ground, dynamic_body))
+
 
 # def test_gear_joint_a(world, ground, static_body, dynamic_body,
 #                       dynamic_body2):

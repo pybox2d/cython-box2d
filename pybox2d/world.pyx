@@ -560,9 +560,6 @@ cdef class World:
         '''
         body_a, body_b = bodies
 
-        if linear_offset is None:
-            linear_offset = (0, 0)
-
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
@@ -570,11 +567,11 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2MotorJointDef defn
+        defn.bodyA = ba
+        defn.bodyB = bb
         if angular_offset is not None or linear_offset is not None:
             if angular_offset is None or linear_offset is None:
                 raise ValueError('Must specify both offsets or neither one')
-            defn.bodyA = ba
-            defn.bodyB = bb
             defn.angularOffset = angular_offset
             defn.linearOffset = to_b2vec2(linear_offset)
         else:
