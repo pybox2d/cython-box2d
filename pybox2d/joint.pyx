@@ -265,6 +265,9 @@ cdef class FrictionJoint(Joint):
 
 
 cdef class GearJoint(Joint):
+    cdef readonly joint1
+    cdef readonly joint2
+
     @safe_rw_property
     def ratio(self, ratio):
         '''Set/Get the gear ratio.'''

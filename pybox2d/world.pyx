@@ -223,6 +223,8 @@ cdef class World:
         body : Body
             The body to remove
         '''
+        assert body.valid, 'Body no longer valid'
+
         for joint in list(body._joints):
             self.destroy_joint(joint)
 
@@ -252,6 +254,9 @@ cdef class World:
 
     cdef create_joint_from_defn(self, b2JointDef* defn, Body body_a,
                                 Body body_b):
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Joint *jptr = self.world.CreateJoint(defn)
         joint = Joint.upcast(jptr)
@@ -316,6 +321,9 @@ cdef class World:
         cdef b2RevoluteJointDef defn
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -388,6 +396,9 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
+
         cdef b2DistanceJointDef defn
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -452,6 +463,9 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
+
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
 
@@ -509,22 +523,33 @@ cdef class World:
         if (not isinstance(joint_a, (RevoluteJoint, PrismaticJoint)) or
                 not isinstance(joint_b, (RevoluteJoint, PrismaticJoint))):
             raise TypeError('Joints must either be revolute or prismatic')
-        
-        cdef Body body_a = joint_a.body_a
-        cdef Body body_b = joint_b.body_a
+            
+        cdef Body body_a = joint_a.body_b
+        cdef Body body_b = joint_b.body_b
+
+        assert joint_a.valid, 'Joint A no longer valid'
+        assert joint_b.valid, 'Joint B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
         cdef b2Joint *ja=(<Joint>joint_a).joint
         cdef b2Joint *jb=(<Joint>joint_b).joint
         
+        print(joint_a, joint_b)
+        print(body_a, body_b)
+
         # TODO  joint linking is going to cause problems, i forgot about this
         cdef b2GearJointDef defn
         defn.joint1 = ja
         defn.joint2 = jb
         defn.ratio = ratio
         defn.collideConnected = collide_connected
-        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+        joint = self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+        raise ValueError('set')
+        (<GearJoint>joint).joint_a = joint_a
+        (<GearJoint>joint).joint_b = joint_b
+        return joint
 
     def create_motor_joint(self, bodies, *, collide_connected=False,
                            angular_offset=None, correction_factor=0.3,
@@ -562,6 +587,9 @@ cdef class World:
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -622,6 +650,9 @@ cdef class World:
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -694,6 +725,9 @@ cdef class World:
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -783,6 +817,9 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
+
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
 
@@ -865,6 +902,9 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
+
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
 
@@ -910,6 +950,9 @@ cdef class World:
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -986,6 +1029,9 @@ cdef class World:
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
+
+        assert body_a.valid, 'Body A no longer valid'
+        assert body_b.valid, 'Body B no longer valid'
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr

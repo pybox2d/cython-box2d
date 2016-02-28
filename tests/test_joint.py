@@ -208,14 +208,14 @@ def test_wheel_joint_b(world, ground, dynamic_body):
     print(j)
 
 
-# def test_gear_joint_a(world, ground, static_body, dynamic_body,
-#                       dynamic_body2):
-#     rj1 = world.create_revolute_joint((ground, dynamic_body),
-#                                       anchor=dynamic_body.position)
-#     rj2 = world.create_revolute_joint((ground, dynamic_body2),
-#                                       anchor=dynamic_body.position)
-#     world.create_gear_joint((rj1, rj2),
-#                             )
+def test_gear_joint_a(world, ground, static_body, dynamic_body,
+                      dynamic_body2):
+    rj1 = world.create_revolute_joint((ground, dynamic_body),
+                                      anchor=dynamic_body.position)
+    rj2 = world.create_revolute_joint((ground, dynamic_body2),
+                                      anchor=dynamic_body.position)
+    world.create_gear_joint((rj1, rj2),
+                            )
 
 
 def test_joint_deletion(world, ground):
