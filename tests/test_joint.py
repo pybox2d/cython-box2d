@@ -160,6 +160,54 @@ def test_pulley_joint_b(world, ground, dynamic_body):
     print(j)
 
 
+def test_rope_joint_a(world, ground, dynamic_body):
+    j = world.create_rope_joint((ground, dynamic_body),
+                                local_anchors=((0, 0), (0, 0)))
+
+    print(j)
+
+
+def test_rope_joint_b(world, ground, dynamic_body):
+    j = world.create_rope_joint((ground, dynamic_body))
+    print(j)
+
+
+def test_weld_joint_a(world, ground, dynamic_body):
+    j = world.create_weld_joint((ground, dynamic_body),
+                                anchor=dynamic_body.position)
+
+    print(j)
+
+
+def test_weld_joint_b(world, ground, dynamic_body):
+    j = world.create_weld_joint((ground, dynamic_body),
+                                local_anchors=((0, 0), (0, 0)),
+                                reference_angle=0.0)
+    print(j)
+
+
+def test_wheel_joint_a(world, ground, dynamic_body):
+    world.create_wheel_joint((ground, dynamic_body),
+                             anchor=dynamic_body.position,
+                             axis=(1, 0))
+
+    with pytest.raises(ValueError):
+        world.create_wheel_joint((ground, dynamic_body),
+                                 anchor=dynamic_body.position)
+        # axis unspecified
+
+    with pytest.raises(ValueError):
+        world.create_wheel_joint((ground, dynamic_body))
+        # no anchor specified
+
+
+def test_wheel_joint_b(world, ground, dynamic_body):
+    j = world.create_wheel_joint((ground, dynamic_body),
+                                 local_anchors=((0, 0), (0, 0)),
+                                 local_axis_a=(1, 0))
+    print(j)
+
+
 # def test_gear_joint_a(world, ground, static_body, dynamic_body,
 #                       dynamic_body2):
 #     rj1 = world.create_revolute_joint((ground, dynamic_body),
