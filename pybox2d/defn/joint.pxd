@@ -241,6 +241,18 @@ cdef extern from "b2PrismaticJoint.h":
 
 
 cdef extern from "b2PulleyJoint.h":
+    cdef cppclass b2PulleyJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2&
+                        groundAnchorA, const b2Vec2& groundAnchorB, const
+                        b2Vec2& anchorA, const b2Vec2& anchorB, float32 ratio)
+        b2Vec2 groundAnchorA
+        b2Vec2 groundAnchorB
+        float32 lengthA
+        float32 lengthB
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+        float32 ratio
+
     cdef cppclass b2PulleyJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()

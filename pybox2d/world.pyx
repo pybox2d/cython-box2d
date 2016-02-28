@@ -672,3 +672,79 @@ cdef class World:
         defn.referenceAngle = reference_angle
         defn.upperTranslation = upper_translation
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+    def create_pulley_joint(self, bodies, *, collide_connected=True,
+                            ground_anchor_a=None, ground_anchor_b=None,
+                            length_a=0.0, length_b=0.0, local_anchor_a=None,
+                            local_anchor_b=None, ratio=1.0):
+        '''Create a pulley joint between two bodies
+
+        The pulley joint is connected to two bodies and two fixed ground
+        points. The pulley supports a ratio such that:
+
+        length1 + ratio * length2 <= constant
+
+        Yes, the force transmitted is scaled by the ratio.
+
+        Warning: the pulley joint can get a bit squirrelly by itself. They
+        often work better when combined with prismatic joints. You should also
+        cover the the anchor points with static shapes to prevent one side
+        from going to zero length.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: True)
+        ground_anchor_a : Vec2, optional
+            The first ground anchor in world coordinates. This point never moves.
+        ground_anchor_b : Vec2, optional
+            The second ground anchor in world coordinates. This point never moves.
+        length_a : float, optional
+            The a reference length for the segment attached to bodyA.
+        length_b : float, optional
+            The a reference length for the segment attached to bodyB.
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        ratio : float, optional
+            The pulley ratio, used to simulate a block-and-tackle.
+        '''
+        body_a, body_b = bodies
+
+        if ground_anchor_a is None:
+            ground_anchor_a = (-1.0, 1.0)
+        if ground_anchor_b is None:
+            ground_anchor_b = (1.0, 1.0)
+        if local_anchor_a is None:
+            local_anchor_a = (-1.0, 0.0)
+        if local_anchor_b is None:
+            local_anchor_b = (1.0, 0.0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2PulleyJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& groundAnchorA, const b2Vec2& groundAnchorB, const b2Vec2& anchorA, const b2Vec2& anchorB, float32 ratio)
+        # Initialize the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
+
+        defn.collideConnected = collide_connected
+        defn.collideConnected = collide_connected
+        defn.groundAnchorA = to_b2vec2(ground_anchor_a)
+        defn.groundAnchorB = to_b2vec2(ground_anchor_b)
+        defn.lengthA = length_a
+        defn.lengthB = length_b
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        defn.ratio = ratio
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
