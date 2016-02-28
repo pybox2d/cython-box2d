@@ -611,13 +611,8 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2MouseJointDef defn
-        # if :
         defn.bodyA = ba
         defn.bodyB = bb
-        # else:
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # no init
-
         defn.collideConnected = collide_connected
         defn.dampingRatio = damping_ratio
         defn.frequencyHz = frequency_hz
