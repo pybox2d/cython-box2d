@@ -6,14 +6,27 @@ cdef class World:
     cdef b2World *world
     cdef dict _bodies
     cdef dict _joints
+    cdef dict _linked_joints
     cdef object _default_body_class
 
     def __cinit__(self):
         self.world = new b2World(b2Vec2(0.0, 0.0))
         self._bodies = {}
         self._joints = {}
+        self._linked_joints = {}
 
     def __dealloc__(self):
+        for joint in self._joints.values():
+            (<Joint>joint).invalidate()
+
+        self._joints.clear()
+        self._linked_joints.clear()
+
+        for body in self._bodies.values():
+            (<Body>body).invalidate()
+
+        self._bodies.clear()
+        
         del self.world
 
     def __init__(self, gravity=None, default_body_class=None):
@@ -345,9 +358,9 @@ cdef class World:
         rod.
     
         Two options for initialization of the joint:
-            1. set local_anchor_a, local_anchor_b, and length manually
-            2. set anchor_a and anchor_b in world coordinates, and length
-               will be calculated automatically
+        1. set local_anchors, and length manually
+        2. set anchors in world coordinates, and length will be calculated
+           automatically
 
         Parameters
         ----------
@@ -496,17 +509,22 @@ cdef class World:
         if (not isinstance(joint_a, (RevoluteJoint, PrismaticJoint)) or
                 not isinstance(joint_b, (RevoluteJoint, PrismaticJoint))):
             raise TypeError('Joints must either be revolute or prismatic')
+        
+        cdef Body body_a = joint_a.body_a
+        cdef Body body_b = joint_b.body_a
 
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
         cdef b2Joint *ja=(<Joint>joint_a).joint
         cdef b2Joint *jb=(<Joint>joint_b).joint
-
+        
         # TODO  joint linking is going to cause problems, i forgot about this
         cdef b2GearJointDef defn
         defn.joint1 = ja
         defn.joint2 = jb
         defn.ratio = ratio
         defn.collideConnected = collide_connected
-        return self.create_joint_from_defn((<b2JointDef*>&defn), None, None)
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_motor_joint(self, bodies, *, collide_connected=False,
                            angular_offset=None, correction_factor=0.3,

@@ -37,6 +37,15 @@ def dynamic_body(state, world, gravity=None, position=None):
 
 
 @pytest.fixture(scope='function')
+def dynamic_body2(state, world, gravity=None, position=None):
+    if position is None:
+        position = (0, 0)
+    body = world.create_dynamic_body(position=position)
+    state['body'] = body
+    return body
+
+
+@pytest.fixture(scope='function')
 def ground(world):
     vertices = [(-40, 0), (40, 0)]
     fixture = pybox2d.FixtureDef(shape=pybox2d.EdgeShape(vertices=vertices))
