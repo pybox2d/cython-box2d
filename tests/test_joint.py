@@ -61,51 +61,61 @@ def test_revolute_joint(world, ground):
 
 
 def test_revolute_joint_a(world, ground, dynamic_body):
-    world.create_revolute_joint((ground, dynamic_body),
-                                anchor=dynamic_body.position)
+    j = world.create_revolute_joint((ground, dynamic_body),
+                                    anchor=dynamic_body.position)
+
+    print(j)
 
 
 def test_revolute_joint_b(world, ground, dynamic_body):
-    world.create_revolute_joint((ground, dynamic_body),
-                                local_anchors=((0, 0), (0, 0)),
-                                reference_angle=0.0)
+    j = world.create_revolute_joint((ground, dynamic_body),
+                                    local_anchors=((0, 0), (0, 0)),
+                                    reference_angle=0.0)
+    print(j)
 
 
 def test_distance_joint_a(world, ground, dynamic_body):
-    world.create_distance_joint((ground, dynamic_body),
-                                local_anchors=((0, 0), (0, 0)),
-                                length=1.0)
+    j = world.create_distance_joint((ground, dynamic_body),
+                                    local_anchors=((0, 0), (0, 0)),
+                                    length=1.0)
+    print(j)
 
 
 def test_distance_joint_b(world, ground, dynamic_body):
-    world.create_distance_joint((ground, dynamic_body),
-                                anchors=(ground.position,
-                                         dynamic_body.position))
+    j = world.create_distance_joint((ground, dynamic_body),
+                                    anchors=(ground.position,
+                                             dynamic_body.position))
+    print(j)
 
 
 def test_friction_joint_a(world, ground, dynamic_body):
-    world.create_friction_joint((ground, dynamic_body),
-                                local_anchors=((0, 0), (0, 0)),
-                                )
+    j = world.create_friction_joint((ground, dynamic_body),
+                                    local_anchors=((0, 0), (0, 0)),
+                                    )
+    print(j)
+
 
 
 def test_friction_joint_b(world, ground, dynamic_body):
-    world.create_friction_joint((ground, dynamic_body),
-                                anchor=dynamic_body.position)
-
+    j = world.create_friction_joint((ground, dynamic_body),
+                                    anchor=dynamic_body.position)
+    print(j)
 
 def test_motor_joint_a(world, ground, dynamic_body):
-    world.create_motor_joint((ground, dynamic_body),
-                             angular_offset=1.0,
-                             linear_offset=(1, 0))
+    j = world.create_motor_joint((ground, dynamic_body),
+                                 angular_offset=1.0,
+                                 linear_offset=(1, 0))
+    print(j)
 
 
 def test_motor_joint_b(world, ground, dynamic_body):
-    world.create_motor_joint((ground, dynamic_body))
+    j = world.create_motor_joint((ground, dynamic_body))
+    print(j)
 
 
 def test_mouse_joint_a(world, ground, dynamic_body):
-    world.create_mouse_joint((ground, dynamic_body))
+    j = world.create_mouse_joint((ground, dynamic_body))
+    print(j)
 
 
 def test_prismatic_joint_a(world, ground, dynamic_body):
@@ -124,27 +134,30 @@ def test_prismatic_joint_a(world, ground, dynamic_body):
 
 
 def test_prismatic_joint_b(world, ground, dynamic_body):
-    world.create_prismatic_joint((ground, dynamic_body),
-                                 local_anchors=((0, 0), (0, 0)),
-                                 local_axis_a=(1, 0))
+    j = world.create_prismatic_joint((ground, dynamic_body),
+                                     local_anchors=((0, 0), (0, 0)),
+                                     local_axis_a=(1, 0))
+    print(j)
 
 
 def test_pulley_joint_a(world, ground, dynamic_body):
-    world.create_pulley_joint((ground, dynamic_body),
-                              ground_anchors=(ground.position,
-                                              dynamic_body.position),
-                              anchors=(ground.position,
-                                       dynamic_body.position),
-                              ratio=1.0)
+    j = world.create_pulley_joint((ground, dynamic_body),
+                                  ground_anchors=(ground.position,
+                                                  dynamic_body.position),
+                                  anchors=(ground.position,
+                                           dynamic_body.position),
+                                  ratio=1.0)
+    print(j)
 
 
 def test_pulley_joint_b(world, ground, dynamic_body):
-    world.create_pulley_joint((ground, dynamic_body),
-                              ground_anchors=(ground.position,
-                                              dynamic_body.position),
-                              local_anchors=((0, 0), (0, 0)),
-                              lengths=(1, 2),
-                              ratio=1.0)
+    j = world.create_pulley_joint((ground, dynamic_body),
+                                  ground_anchors=(ground.position,
+                                                  dynamic_body.position),
+                                  local_anchors=((0, 0), (0, 0)),
+                                  lengths=(1, 2),
+                                  ratio=1.0)
+    print(j)
 
 
 # def test_gear_joint_a(world, ground, static_body, dynamic_body,

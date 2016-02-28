@@ -416,7 +416,7 @@ cdef class PrismaticJoint(Joint):
         return (<b2PrismaticJoint *>self.joint).IsMotorEnabled()
 
     @safe_method
-    def motor_force(self, inv_dt):
+    def get_motor_force(self, inv_dt):
         '''Get the current motor force given the inverse time step, usually in
         N.'''
         return (<b2PrismaticJoint *>self.joint).GetMotorForce(inv_dt)
@@ -461,7 +461,6 @@ cdef class PrismaticJoint(Joint):
         yield ('local_axis_a', self.local_axis_a)
         yield ('max_motor_force', self.max_motor_force)
         yield ('motor_enabled', self.motor_enabled)
-        yield ('motor_force', self.motor_force)
         yield ('motor_speed', self.motor_speed)
         yield ('reference_angle', self.reference_angle)
         yield ('lower_limit', self.lower_limit)
@@ -672,6 +671,5 @@ cdef class WheelJoint(Joint):
         yield ('max_motor_torque', self.max_motor_torque)
         yield ('motor_enabled', self.motor_enabled)
         yield ('motor_speed', self.motor_speed)
-        yield ('get_motor_torque', self.get_motor_torque)
         yield ('spring_damping_ratio', self.spring_damping_ratio)
         yield ('spring_frequency_hz', self.spring_frequency_hz)
