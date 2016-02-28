@@ -405,12 +405,16 @@ cdef class World:
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_friction_joint(self, bodies, *, collide_connected=False,
-                              local_anchor_a=None, local_anchor_b=None,
+                              local_anchors=None, anchor=None,
                               max_force=0.0, max_torque=0.0):
         '''Create a friction joint between two bodies
 
         Friction joint. This is used for top-down friction. It provides 2D
         translational friction and angular friction.
+
+        Two options for initialization of the joint:
+            1. set local_anchors for each body
+            2. set a single world anchor point
 
         Parameters
         ----------
@@ -419,23 +423,17 @@ cdef class World:
         anchor : Vec2, optional
             The world anchor point where the bodies will be joined
             If unspecified, local anchors must be specified.
+        local_anchors : (anchor_a, anchor_b), Vec2, optional
+            Local anchor points relative to (body_a, body_b).
+            Required if 'anchor' is unspecified.
         collide_connected : bool, optional
             Allow collision between connected bodies (default: False)
-        local_anchor_a : Vec2, optional
-            The local anchor point relative to bodyA's origin.
-        local_anchor_b : Vec2, optional
-            The local anchor point relative to bodyB's origin.
         max_force : float, optional
             The maximum friction force in N.
         max_torque : float, optional
             The maximum friction torque in N-m.
         '''
         body_a, body_b = bodies
-
-        if local_anchor_a is None:
-            local_anchor_a = (0., 0.)
-        if local_anchor_b is None:
-            local_anchor_b = (0., 0.)
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
@@ -444,18 +442,23 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2FrictionJointDef defn
-        # if :
-        defn.bodyA = ba
-        defn.bodyB = bb
-        # else:
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor)
-        # Initialize the bodies, anchors, axis, and reference angle using the
-        # world anchor and world axis.
+        if anchor is not None:
+            # Initialize the bodies, anchors, axis, and reference angle using
+            # the world anchor and world axis.
+            defn.Initialize(ba, bb, to_b2vec2(anchor))
+        elif local_anchors is not None:
+            # Initialize the bodies, anchors, axis, and reference angle using
+            # local body anchors
+            anchora, anchorb = local_anchors
+
+            defn.bodyA = ba
+            defn.bodyB = bb
+            defn.localAnchorA = to_b2vec2(anchora)
+            defn.localAnchorB = to_b2vec2(anchorb)
+        else:
+            raise ValueError('Must specify either local_anchors or anchor')
 
         defn.collideConnected = collide_connected
-        defn.localAnchorA = to_b2vec2(local_anchor_a)
-        defn.localAnchorB = to_b2vec2(local_anchor_b)
         defn.maxForce = max_force
         defn.maxTorque = max_torque
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
