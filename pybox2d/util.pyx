@@ -26,7 +26,7 @@ cdef b2Vec2 to_b2vec2(iterable):
 
 
 cdef long pointer_as_key(void *ptr):
-    return (<long>ptr)
+    return <long>ptr
 
 
 cdef safe_property(getter):

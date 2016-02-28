@@ -16,16 +16,18 @@ cdef class World:
         self._linked_joints = {}
 
     def __dealloc__(self):
-        for joint in self._joints.values():
-            (<Joint>joint).invalidate()
+        if self._joints:
+            for joint in self._joints.values():
+                (<Joint>joint).invalidate()
 
-        self._joints.clear()
-        self._linked_joints.clear()
+            self._joints.clear()
+            self._linked_joints.clear()
+        
+        if self._bodies:
+            for body in self._bodies.values():
+                (<Body>body).invalidate()
 
-        for body in self._bodies.values():
-            (<Body>body).invalidate()
-
-        self._bodies.clear()
+            self._bodies.clear()
         
         del self.world
 

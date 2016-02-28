@@ -19,13 +19,14 @@ cdef class Body(Base):
     def __hash__(self):
         if self.thisptr == NULL:
             raise ValueError('Underlying object was destroyed')
-        return (<long>self.thisptr)
+        return pointer_as_key(self.thisptr)
 
     cdef invalidate(self):
         # underlying b2Body has been destroyed
-        for fixture in self.fixtures:
+        for fixture in self._fixtures.values():
             fixture.invalidate()
 
+        self.fixtures.clear()
         self.thisptr = NULL
 
     @property
@@ -116,7 +117,8 @@ cdef class Body(Base):
 
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
         fixture = Fixture.from_b2Fixture(fptr)
-        self._fixtures[pointer_as_key(fptr)] = fixture
+        key = hash(fixture)
+        self._fixtures[key] = fixture
 
         if fixture_defn.data is not None:
             fixture.data = fixture_defn.data
@@ -217,8 +219,12 @@ cdef class Body(Base):
         fixture : Fixture
             The fixture to remove
         '''
+        if not fixture.valid:
+            raise ValueError('Fixture no longer valid')
+
         cdef b2Fixture *fptr = fixture.thisptr
-        del self._fixtures[pointer_as_key(fptr)]
+        key = hash(fixture)
+        del self._fixtures[key]
 
         fixture.invalidate()
         del fixture
@@ -232,11 +238,11 @@ cdef class Body(Base):
         Note: users may attempt to delete or add fixtures during iteration, so
         the exposed property returns a full list.
         '''
-        cdef b2Fixture *fptr
-        fptr = self.thisptr.GetFixtureList()
+        cdef b2Fixture *fptr = self.thisptr.GetFixtureList()
 
         while fptr:
-            yield self._fixtures[pointer_as_key(fptr)]
+            key = pointer_as_key(fptr)
+            yield self._fixtures[key]
             fptr = fptr.GetNext()
 
     @property  # safety check comes in _iter_fixtures

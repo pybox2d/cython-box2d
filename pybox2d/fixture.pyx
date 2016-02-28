@@ -12,9 +12,10 @@ cdef class FixtureDef(Base):
 
     def __cinit__(self):
         self.thisptr = new b2FixtureDef()
-
+    
     def __dealloc__(self):
-        del self.thisptr
+        if self.thisptr != NULL:
+            del self.thisptr
 
     def __init__(self, shape=None, friction=0.2, restitution=0.0,
                  density=0.0, sensor=False, data=None, filter_=None):
@@ -98,6 +99,9 @@ cdef class Fixture(Base):
     cdef b2Fixture *thisptr
     cdef public object data
 
+    def __hash__(self):
+        return pointer_as_key(self.thisptr)
+
     @staticmethod
     cdef from_b2Fixture(b2Fixture *fixture):
         fx = Fixture()
@@ -144,7 +148,7 @@ cdef class Fixture(Base):
             return self.thisptr.IsSensor()
 
         self.thisptr.SetSensor(sensor)
-    
+
     @property  # safe due to shape getter
     def mass_data(self):
         '''The mass data associated with the shape and this fixture's density
