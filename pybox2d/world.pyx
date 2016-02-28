@@ -812,8 +812,7 @@ cdef class World:
 
 
     def create_rope_joint(self, bodies, *, collide_connected=False,
-                          local_anchor_a=None, local_anchor_b=None,
-                          max_length=0.0):
+                          local_anchors=None, max_length=0.0):
         '''Create a rope joint between two bodies
 
         A rope joint enforces a maximum distance between two points on two
@@ -832,20 +831,20 @@ cdef class World:
             The bodies to join together
         collide_connected : bool, optional
             Allow collision between connected bodies (default: False)
-        local_anchor_a : Vec2, optional
-            The local anchor point relative to bodyA's origin.
-        local_anchor_b : Vec2, optional
-            The local anchor point relative to bodyB's origin.
+        local_anchors : (local_anchor_a, local_anchor_b), Vec2, optional
+            Local anchor points relative to (body_a, body_b).
+            Defaults to ((-1, 0), (1, 0))
         max_length : float, optional
             The maximum length of the rope. Warning: this must be larger than
             b2_linearSlop or the joint will have no effect.
         '''
         body_a, body_b = bodies
-
-        if local_anchor_a is None:
+        
+        if local_anchors is None:
             local_anchor_a = (-1.0, 0.0)
-        if local_anchor_b is None:
             local_anchor_b = (1.0, 0.0)
+        else:
+            local_anchor_a, local_anchor_b = local_anchors
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
@@ -854,14 +853,8 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2RopeJointDef defn
-        # if :
         defn.bodyA = ba
         defn.bodyB = bb
-        # else:
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # # no init
-        # # no init
-
         defn.collideConnected = collide_connected
         defn.localAnchorA = to_b2vec2(local_anchor_a)
         defn.localAnchorB = to_b2vec2(local_anchor_b)
