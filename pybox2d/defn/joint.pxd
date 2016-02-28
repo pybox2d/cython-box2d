@@ -180,6 +180,12 @@ cdef extern from "b2MotorJoint.h":
 
 
 cdef extern from "b2MouseJoint.h":
+    cdef cppclass b2MouseJointDef(b2JointDef):
+        float32 dampingRatio
+        float32 frequencyHz
+        float32 maxForce
+        b2Vec2 target
+
     cdef cppclass b2MouseJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()

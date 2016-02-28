@@ -538,3 +538,62 @@ cdef class World:
         defn.maxForce = max_force
         defn.maxTorque = max_torque
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+    def create_mouse_joint(self, bodies, *, collide_connected=False,
+                           damping_ratio=0.7, frequency_hz=5.0, max_force=0.0,
+                           target=None):
+        '''Create a mouse joint between two bodies
+
+        A mouse joint is used to make a point on a body track a specified
+        world point. This a soft constraint with a maximum force. This allows
+        the constraint to stretch and without applying huge forces.
+
+        NOTE: this joint is not documented in the manual because it was
+        developed to be used in the testbed. If you want to learn how to use
+        the mouse joint, look at the testbed.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        damping_ratio : float, optional
+            The damping ratio. 0 = no damping, 1 = critical damping.
+        frequency_hz : float, optional
+            The response speed.
+        max_force : float, optional
+            The maximum constraint force that can be exerted to move the
+            candidate body. Usually you will express as some multiple of the
+            weight (multiplier * mass * gravity).
+        target : Vec2, optional
+            The initial world target point. This is assumed to coincide with
+            the body anchor initially.
+        '''
+        body_a, body_b = bodies
+
+        if target is None:
+            target = (0.0, 0.0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2MouseJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # no init
+
+        defn.collideConnected = collide_connected
+        defn.dampingRatio = damping_ratio
+        defn.frequencyHz = frequency_hz
+        defn.maxForce = max_force
+        defn.target = to_b2vec2(target)
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+
