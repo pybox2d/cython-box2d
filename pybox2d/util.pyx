@@ -1,4 +1,21 @@
-from functools import wraps
+import sys
+
+if sys.version_info.major < 3:
+    # note: for whatever reason, 2.7 is failing on circle in functools.wraps:
+    #     setattr(wrapper, attr, getattr(wrapped, attr))
+    #   AttributeError: 'method_descriptor' object has no attribute '__module__'
+    def wraps(fcn):
+        def wrapper(wrapping):
+            wrapping.__doc__ = fcn.__doc__
+            wrapping.__name__ = fcn.__name__
+            try:
+                wrapping.__dict__.update(fcn.__dict__)
+            except AttributeError:
+                pass
+            return fcn
+        return wrapper
+else:
+    from functools import wraps
 
 cdef to_vec2(b2Vec2 vec):
     return Vec2(vec.x, vec.y)
