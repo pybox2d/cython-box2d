@@ -98,6 +98,7 @@ cdef class FixtureDef(Base):
 cdef class Fixture(Base):
     cdef b2Fixture *thisptr
     cdef public object data
+    cdef readonly Shape shape
 
     def __hash__(self):
         return pointer_as_key(self.thisptr)
@@ -106,6 +107,7 @@ cdef class Fixture(Base):
     cdef from_b2Fixture(b2Fixture *fixture):
         fx = Fixture()
         fx.thisptr = fixture
+        fx.shape = Shape.upcast(fx.thisptr.GetShape())
         return fx
 
     @property
@@ -113,13 +115,10 @@ cdef class Fixture(Base):
         return (self.thisptr != NULL)
 
     def invalidate(self):
-        # TODO shapes need some rethinking
         self.thisptr = NULL
-
-    @safe_property
-    def shape(self):
-        shape = self.thisptr.GetShape()
-        return Shape.upcast(shape)
+        if self.shape is not None:
+            self.shape.invalidate()
+        self.shape = None
 
     @safe_rw_property
     def density(self, density):

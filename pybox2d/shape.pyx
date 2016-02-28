@@ -10,6 +10,10 @@ cdef class Shape(Base):
     def __cinit__(self):
         self.shape = NULL
         self.owner = False
+    
+    @property
+    def valid(self):
+        return (self.shape != NULL)
 
     cdef from_existing(self, b2Shape *shape, owner=True):
         if self.owner:
@@ -23,6 +27,11 @@ cdef class Shape(Base):
     # def raycast(self, output, input, transform, child_index):
     # def test_point(self, transform, point):
     
+    cdef invalidate(self):
+        if not self.owner:
+            self.shape = NULL
+
+    @safe_method
     def compute_mass(self, density):
         '''Compute the mass properties of this shape using its dimensions and
         density.
@@ -48,12 +57,12 @@ cdef class Shape(Base):
                         center=to_vec2(md.center),
                         inertia=md.I)
 
-    @property
+    @safe_property
     def child_count(self):
         '''The number of child primitives.'''
         return self.shape.GetChildCount()
 
-    @property
+    @safe_property
     def radius(self):
         '''The shape radius'''
         return self.shape.m_radius

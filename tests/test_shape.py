@@ -41,3 +41,33 @@ def test_create_fixture(static_body, circle, density=1.0):
     assert fixture.shape.radius == circle.radius
     assert_almost_equal(fixture.shape.center, circle.center)
     assert fixture.density == density
+
+
+def test_destroy_fixture(static_body, circle, density=1.0):
+    assert circle.valid
+    fixture = static_body.create_fixture(shape=circle, density=density)
+    shape = fixture.shape
+    assert shape.valid
+    static_body.destroy_fixture(fixture)
+    assert circle.valid
+    assert not shape.valid
+
+
+def test_destroy_fixture(world, static_body, circle, density=1.0):
+    assert circle.valid
+    fixture = static_body.create_fixture(shape=circle, density=density)
+    shape = fixture.shape
+    assert shape.valid
+    assert static_body.valid
+    assert fixture.valid
+
+    world.destroy_body(static_body)
+
+    with pytest.raises(RuntimeError):
+        # body already removed
+        static_body.destroy_fixture(fixture)
+
+    assert circle.valid
+    assert not shape.valid
+    assert not static_body.valid
+    assert not fixture.valid

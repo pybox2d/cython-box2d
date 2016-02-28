@@ -14,24 +14,24 @@ cdef class CircleShape(Shape):
         self.shape.m_radius = radius
         self.center = center
 
-    property radius:
-        '''The shape radius'''
-        def __get__(self):
+    @safe_rw_property
+    def radius(self, radius):
+        '''The circle radius'''
+        if radius is None:
             return self.shape.m_radius
 
-        def __set__(self, value):
-            self.shape.m_radius = value
+        self.shape.m_radius = radius
 
-    property center:
+    @safe_rw_property
+    def center(self, center):
         '''The center of the circle'''
-        def __get__(self):
+        if center is None:
             return Vec2((<b2CircleShape *>self.shape).m_p.x,
                         (<b2CircleShape *>self.shape).m_p.y)
 
-        def __set__(self, center):
-            cx, cy = center
-            (<b2CircleShape *>self.shape).m_p.x = cx
-            (<b2CircleShape *>self.shape).m_p.y = cy
+        cx, cy = center
+        (<b2CircleShape *>self.shape).m_p.x = cx
+        (<b2CircleShape *>self.shape).m_p.y = cy
 
     def _get_repr_info(self):
         yield ('radius', self.radius)
