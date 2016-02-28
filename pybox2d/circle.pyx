@@ -15,6 +15,7 @@ cdef class CircleShape(Shape):
         self.center = center
 
     property radius:
+        '''The shape radius'''
         def __get__(self):
             return self.shape.m_radius
 
@@ -22,6 +23,7 @@ cdef class CircleShape(Shape):
             self.shape.m_radius = value
 
     property center:
+        '''The center of the circle'''
         def __get__(self):
             return Vec2((<b2CircleShape *>self.shape).m_p.x,
                         (<b2CircleShape *>self.shape).m_p.y)

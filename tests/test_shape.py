@@ -13,6 +13,8 @@ def test_circle():
     assert basic_circle.radius == 1.0
     assert_almost_equal(basic_circle.center, (0, 0.1))
 
+    md = basic_circle.compute_mass(1.0)
+
 
 def test_create_circle_fixture(static_body, circle):
     fixture = static_body.create_circle_fixture(radius=circle.radius,

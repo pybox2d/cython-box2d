@@ -23,11 +23,11 @@ cdef extern from "b2Shape.h":
         # virtual b2Shape* Clone(b2BlockAllocator* allocator) const
         b2ShapeType GetType() const
         int32 GetChildCount() const
-        # virtual bool TestPoint(const b2Transform& xf, const b2Vec2& p) const
-        # virtual bool RayCast(b2RayCastOutput* output, const b2RayCastInput& input,
-        # const b2Transform& transform, int32 childIndex) const
-        # virtual void ComputeAABB(b2AABB* aabb, const b2Transform& xf, int32 childIndex) const
-        # virtual void ComputeMass(b2MassData* massData, float32 density) const
+        bool TestPoint(const b2Transform& xf, const b2Vec2& p) const
+        bool RayCast(b2RayCastOutput* output, const b2RayCastInput& input,
+                     const b2Transform& transform, int32 childIndex)
+        void ComputeAABB(b2AABB* aabb, const b2Transform& xf, int32 childIndex)
+        void ComputeMass(b2MassData* massData, float32 density)
         b2ShapeType m_type
         float32 m_radius
 
