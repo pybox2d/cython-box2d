@@ -281,7 +281,8 @@ cdef class World:
             Allow collision between connected bodies (default: False)
         anchor : Vec2, optional
             The world anchor point where the bodies will be joined
-            If unspecified, reference_angle and local_anchors must be specified.
+            If unspecified, reference_angle and local_anchors must be
+            specified.
         reference_angle : float, optional
             Reference angle in radians (body_b angle minus body_a angle)
             Required if 'anchor' is unspecified.
@@ -862,37 +863,35 @@ cdef class World:
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_weld_joint(self, bodies, *, collide_connected=False,
-                          damping_ratio=0.0, frequency_hz=0.0,
-                          local_anchor_a=None, local_anchor_b=None,
-                          reference_angle=0.0):
+                          local_anchors=None, anchor=None, damping_ratio=0.0,
+                          frequency_hz=0.0, reference_angle=None):
         '''Create a weld joint between two bodies
 
         A weld joint essentially glues two bodies together. A weld joint may
         distort somewhat because the island constraint solver is approximate.
+
         Parameters
         ----------
         bodies : (body_a, body_b), Body instances
             The bodies to join together
         collide_connected : bool, optional
             Allow collision between connected bodies (default: False)
+        local_anchors : (local_anchor_a, local_anchor_b), Vec2, optional
+            Local anchor points relative to (body_a, body_b).
+            Required if 'anchor' is unspecified.
+        anchor : Vec2, optional
+            The world anchor point where the bodies will be joined
+            If unspecified, reference_angle and local_anchors must be
+            specified.
         damping_ratio : float, optional
             The damping ratio. 0 = no damping, 1 = critical damping.
         frequency_hz : float, optional
             The mass-spring-damper frequency in Hertz. Rotation only. Disable
             softness with a value of 0.
-        local_anchor_a : Vec2, optional
-            The local anchor point relative to bodyA's origin.
-        local_anchor_b : Vec2, optional
-            The local anchor point relative to bodyB's origin.
         reference_angle : float, optional
             The bodyB angle minus bodyA angle in the reference state (radians).
         '''
         body_a, body_b = bodies
-
-        if local_anchor_a is None:
-            local_anchor_a = (0.0, 0.0)
-        if local_anchor_b is None:
-            local_anchor_b = (0.0, 0.0)
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
@@ -901,23 +900,25 @@ cdef class World:
         cdef b2Body *bb=(<Body>body_b).thisptr
 
         cdef b2WeldJointDef defn
-        # if :
         defn.bodyA = ba
         defn.bodyB = bb
-        # else:
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor)
-        # Initialize the bodies, anchors, and reference angle using a world
-        # anchor point.
+
+        if local_anchors is not None:
+            local_anchor_a, local_anchor_b = local_anchors
+            if reference_angle is None:
+                reference_angle = body_b.angle - body_a.angle
+            defn.localAnchorA = to_b2vec2(local_anchor_a)
+            defn.localAnchorB = to_b2vec2(local_anchor_b)
+            defn.referenceAngle = reference_angle
+        else:
+            # Initialize the bodies, anchors, and reference angle using a world
+            # anchor point.
+            defn.Initialize(ba, bb, to_b2vec2(anchor))
 
         defn.collideConnected = collide_connected
         defn.dampingRatio = damping_ratio
         defn.frequencyHz = frequency_hz
-        defn.localAnchorA = to_b2vec2(local_anchor_a)
-        defn.localAnchorB = to_b2vec2(local_anchor_b)
-        defn.referenceAngle = reference_angle
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
-
 
     def create_wheel_joint(self, bodies, *, collide_connected=False,
                            damping_ratio=0.7, enable_motor=False,
