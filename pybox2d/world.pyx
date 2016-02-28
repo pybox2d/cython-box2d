@@ -334,37 +334,42 @@ cdef class World:
         return self.create_joint_from_defn(&defn, body_a, body_b)
 
     def create_distance_joint(self, bodies, *, collide_connected=False,
-                              damping_ratio=0.0, frequency_hz=0.0, length=1.0,
-                              local_anchor_a=None, local_anchor_b=None):
+                              anchors=None, damping_ratio=0.0,
+                              frequency_hz=0.0, length=1.0,
+                              local_anchors=None):
         '''Create a distance joint between two bodies
 
         A distance joint constrains two points on two bodies to remain at a
         fixed distance from each other. You can view this as a massless, rigid
         rod.
+    
+        Two options for initialization of the joint:
+            1. set local_anchor_a, local_anchor_b, and length manually
+            2. set anchor_a and anchor_b in world coordinates, and length
+               will be calculated automatically
 
         Parameters
         ----------
         bodies : (body_a, body_b), Body instances
             The bodies to join together
+        anchors : (anchor_a, anchor_b), Vec2, optional
+            body_a, body_b anchor points in world coordinates. To use, both
+            anchor_a and anchor_b must be specified. `length` will be
+            calculated automatically.
+        local_anchors : (anchor_a, anchor_b), Vec2, optional
+            Local anchor points relative to (body_a, body_b).
+            Required if 'anchors' is unspecified.
         collide_connected : bool, optional
             Allow collision between connected bodies (default: False)
         damping_ratio : float, optional
             The damping ratio. 0 = no damping, 1 = critical damping.
         frequency_hz : float, optional
-            The mass-spring-damper frequency in Hertz. A value of 0 disables softness.
+            The mass-spring-damper frequency in Hertz. A value of 0 disables
+            softness.
         length : float, optional
             The natural length between the anchor points.
-        local_anchor_a : Vec2, optional
-            The local anchor point relative to bodyA's origin.
-        local_anchor_b : Vec2, optional
-            The local anchor point relative to bodyB's origin.
         '''
         body_a, body_b = bodies
-
-        if local_anchor_a is None:
-            local_anchor_a = (0.0, 0.0)
-        if local_anchor_b is None:
-            local_anchor_b = (0.0, 0.0)
 
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
@@ -375,16 +380,28 @@ cdef class World:
 
         defn.bodyA = ba
         defn.bodyB = bb
-        # defn.Initialize(ba, bb, to_b2vec2(anchor))
-        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchorA, const b2Vec2& anchorB)
-        # Initialize the bodies, anchors, and length using the world anchors.
+        if local_anchors is not None:
+            local_anchor_a, local_anchor_b = local_anchors
+            if local_anchor_a is None:
+                raise ValueError('Must specify both local anchors or neither')
+            if local_anchor_b is None:
+                raise ValueError('Must specify both local anchors or neither')
+            
+            # Initialize the bodies, anchors, and length using the local
+            # anchors.
+            defn.localAnchorA = to_b2vec2(local_anchor_a)
+            defn.localAnchorB = to_b2vec2(local_anchor_b)
+            defn.length = length
+        elif anchors is not None:
+            # Initialize the bodies, anchors, and length using the world anchors.
+            anchor_a, anchor_b = anchors
+            defn.Initialize(ba, bb, to_b2vec2(anchor_a), to_b2vec2(anchor_b))
+        else:
+            raise ValueError('Must specify either local_anchors or anchors')
 
         defn.collideConnected = collide_connected
         defn.dampingRatio = damping_ratio
         defn.frequencyHz = frequency_hz
-        defn.length = length
-        defn.localAnchorA = to_b2vec2(local_anchor_a)
-        defn.localAnchorB = to_b2vec2(local_anchor_b)
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_friction_joint(self, bodies, *, collide_connected=False,
@@ -399,6 +416,9 @@ cdef class World:
         ----------
         bodies : (body_a, body_b), Body instances
             The bodies to join together
+        anchor : Vec2, optional
+            The world anchor point where the bodies will be joined
+            If unspecified, local anchors must be specified.
         collide_connected : bool, optional
             Allow collision between connected bodies (default: False)
         local_anchor_a : Vec2, optional

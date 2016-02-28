@@ -61,7 +61,8 @@ def test_revolute_joint(world, ground):
 
 
 def test_distance_joint(world, ground, dynamic_body):
-    world.create_distance_joint((ground, dynamic_body))
+    world.create_distance_joint((ground, dynamic_body),
+                                local_anchors=((0, 0), (0, 0)))
 
 
 def test_joint_deletion(world, ground):
