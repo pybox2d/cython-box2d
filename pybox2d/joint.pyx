@@ -8,6 +8,11 @@ cdef class Joint(Base):
 
     cdef invalidate(self):
         self.joint = NULL
+    
+    def __hash__(self):
+        if self.joint == NULL:
+            raise ValueError('Underlying object was destroyed')
+        return pointer_as_key(self.joint)
 
     @property
     def valid(self):
@@ -264,10 +269,12 @@ cdef class FrictionJoint(Joint):
         yield ('max_torque', self.max_torque)
 
 
-cdef class GearJoint(Joint):
-    cdef readonly joint1
-    cdef readonly joint2
+cdef class CompositeJoint(Joint):
+    cdef readonly joint_a
+    cdef readonly joint_b
 
+
+cdef class GearJoint(CompositeJoint):
     @safe_rw_property
     def ratio(self, ratio):
         '''Set/Get the gear ratio.'''

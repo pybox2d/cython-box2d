@@ -17,7 +17,9 @@ cdef class Body(Base):
         pass
 
     def __hash__(self):
-        return pointer_as_key(self.thisptr)
+        if self.thisptr == NULL:
+            raise ValueError('Underlying object was destroyed')
+        return (<long>self.thisptr)
 
     cdef invalidate(self):
         # underlying b2Body has been destroyed

@@ -210,12 +210,52 @@ def test_wheel_joint_b(world, ground, dynamic_body):
 
 def test_gear_joint_a(world, ground, static_body, dynamic_body,
                       dynamic_body2):
+    static_body.create_circle_fixture(radius=0.1)
+    dynamic_body.create_circle_fixture(radius=0.2)
+    dynamic_body2.create_circle_fixture(radius=0.3)
+
     rj1 = world.create_revolute_joint((ground, dynamic_body),
                                       anchor=dynamic_body.position)
     rj2 = world.create_revolute_joint((ground, dynamic_body2),
                                       anchor=dynamic_body.position)
-    world.create_gear_joint((rj1, rj2),
-                            )
+    gear = world.create_gear_joint((rj1, rj2), )
+
+    world.destroy_joint(gear)
+    assert not gear.valid
+    assert rj1.valid
+    assert rj2.valid
+
+
+def test_gear_joint_b(world, ground, static_body, dynamic_body,
+                      dynamic_body2):
+    static_body.create_circle_fixture(radius=0.1)
+    dynamic_body.create_circle_fixture(radius=0.2)
+    dynamic_body2.create_circle_fixture(radius=0.3)
+
+    rj1 = world.create_revolute_joint((ground, dynamic_body),
+                                      anchor=dynamic_body.position)
+    rj2 = world.create_revolute_joint((ground, dynamic_body2),
+                                      anchor=dynamic_body.position)
+    gear = world.create_gear_joint((rj1, rj2), )
+
+    world.destroy_joint(rj1)
+    assert not gear.valid
+    assert not rj1.valid
+    assert rj2.valid
+
+
+def test_gear_joint_c(world, ground, static_body, dynamic_body,
+                      dynamic_body2):
+    rj1 = world.create_revolute_joint((ground, dynamic_body),
+                                      anchor=dynamic_body.position)
+    rj2 = world.create_revolute_joint((ground, dynamic_body2),
+                                      anchor=dynamic_body.position)
+    gear = world.create_gear_joint((rj1, rj2), )
+
+    world.destroy_joint(rj2)
+    assert not gear.valid
+    assert rj1.valid
+    assert not rj2.valid
 
 
 def test_joint_deletion(world, ground):

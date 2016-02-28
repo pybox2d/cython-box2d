@@ -243,12 +243,24 @@ cdef class World:
         joint : Joint
             The joint to remove
         '''
-        cdef b2Joint *jptr = joint.joint
-        del self._joints[pointer_as_key(jptr)]
+        if joint in self._linked_joints:
+            for other_joint in self._linked_joints[joint]:
+                # first clear the other joint's reference to this one
+                self._linked_joints[other_joint].remove(joint)
 
+                if isinstance(other_joint, CompositeJoint):
+                    # if the other joint is a composite linking this one, it
+                    # should be deleted first
+                    self.destroy_joint(other_joint)
+
+            del self._linked_joints[joint]
+
+        del self._joints[joint]
+        
         joint.body_a._joints.remove(joint)
         joint.body_b._joints.remove(joint)
-
+        
+        cdef b2Joint *jptr = joint.joint
         joint.invalidate()
         self.world.DestroyJoint(jptr)
 
@@ -260,15 +272,13 @@ cdef class World:
 
         cdef b2Joint *jptr = self.world.CreateJoint(defn)
         joint = Joint.upcast(jptr)
-        if body_a is not None:
-            (<Joint>joint).body_a = body_a
-            body_a._joints.append(joint)
+        (<Joint>joint).body_a = body_a
+        body_a._joints.append(joint)
 
-        if body_b is not None:
-            (<Joint>joint).body_b = body_b
-            body_b._joints.append(joint)
+        (<Joint>joint).body_b = body_b
+        body_b._joints.append(joint)
 
-        self._joints[pointer_as_key(jptr)] = joint
+        self._joints[joint] = joint
         return joint
 
     def create_revolute_joint(self, bodies, *, anchor=None,
@@ -523,33 +533,47 @@ cdef class World:
         if (not isinstance(joint_a, (RevoluteJoint, PrismaticJoint)) or
                 not isinstance(joint_b, (RevoluteJoint, PrismaticJoint))):
             raise TypeError('Joints must either be revolute or prismatic')
+
+        assert joint_a.valid, 'Joint A no longer valid'
+        assert joint_b.valid, 'Joint B no longer valid'
             
         cdef Body body_a = joint_a.body_b
         cdef Body body_b = joint_b.body_b
 
-        assert joint_a.valid, 'Joint A no longer valid'
-        assert joint_b.valid, 'Joint B no longer valid'
+        assert body_a.valid, 'Joint A, Body B no longer valid'
+        assert body_b.valid, 'Joint B, Body B no longer valid'
 
-        cdef b2Body *ba=(<Body>body_a).thisptr
-        cdef b2Body *bb=(<Body>body_b).thisptr
-        cdef b2Joint *ja=(<Joint>joint_a).joint
-        cdef b2Joint *jb=(<Joint>joint_b).joint
-        
-        print(joint_a, joint_b)
-        print(body_a, body_b)
-
-        # TODO  joint linking is going to cause problems, i forgot about this
         cdef b2GearJointDef defn
-        defn.joint1 = ja
-        defn.joint2 = jb
+        defn.bodyA = body_a.thisptr
+        defn.bodyB = body_b.thisptr
+        defn.joint1 = (<Joint>joint_a).joint
+        defn.joint2 = (<Joint>joint_b).joint
         defn.ratio = ratio
         defn.collideConnected = collide_connected
 
-        joint = self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
-        raise ValueError('set')
-        (<GearJoint>joint).joint_a = joint_a
-        (<GearJoint>joint).joint_b = joint_b
+        joint = self.create_joint_from_defn((<b2JointDef*>&defn), body_a,
+                                            body_b)
+
+        cdef GearJoint gj = <GearJoint>joint
+        gj.joint_a = joint_a
+        gj.joint_b = joint_b
+        
+        # link the joints back to this gear joint, since if either is destroyed
+        # this gear joint will have to be destroyed
+        self._link_joint(joint_a, gj)
+        self._link_joint(gj, joint_a)
+
+        self._link_joint(joint_b, gj)
+        self._link_joint(gj, joint_b)
         return joint
+    
+    cdef _link_joint(self, Joint joint1, Joint joint2):
+        '''Link a b2Joint `jptr` to a Joint, so when one is destructed the
+        other can be cleaned up'''
+        if joint1 not in self._linked_joints:
+            self._linked_joints[joint1] = []
+         
+        self._linked_joints[joint1].append(joint2)
 
     def create_motor_joint(self, bodies, *, collide_connected=False,
                            angular_offset=None, correction_factor=0.3,
