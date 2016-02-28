@@ -806,3 +806,60 @@ cdef class World:
         defn.localAnchorB = to_b2vec2(local_anchor_b)
         defn.maxLength = max_length
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+    def create_weld_joint(self, bodies, *, collide_connected=False,
+                          damping_ratio=0.0, frequency_hz=0.0,
+                          local_anchor_a=None, local_anchor_b=None,
+                          reference_angle=0.0):
+        '''Create a weld joint between two bodies
+
+        A weld joint essentially glues two bodies together. A weld joint may
+        distort somewhat because the island constraint solver is approximate.
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        damping_ratio : float, optional
+            The damping ratio. 0 = no damping, 1 = critical damping.
+        frequency_hz : float, optional
+            The mass-spring-damper frequency in Hertz. Rotation only. Disable
+            softness with a value of 0.
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        reference_angle : float, optional
+            The bodyB angle minus bodyA angle in the reference state (radians).
+        '''
+        body_a, body_b = bodies
+
+        if local_anchor_a is None:
+            local_anchor_a = (0.0, 0.0)
+        if local_anchor_b is None:
+            local_anchor_b = (0.0, 0.0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2WeldJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor)
+        # Initialize the bodies, anchors, and reference angle using a world
+        # anchor point.
+
+        defn.collideConnected = collide_connected
+        defn.dampingRatio = damping_ratio
+        defn.frequencyHz = frequency_hz
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        defn.referenceAngle = reference_angle
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)

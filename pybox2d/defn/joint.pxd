@@ -287,6 +287,14 @@ cdef extern from "b2RopeJoint.h":
 
 
 cdef extern from "b2WeldJoint.h":
+    cdef cppclass b2WeldJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor)
+        float32 dampingRatio
+        float32 frequencyHz
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+        float32 referenceAngle
+
     cdef cppclass b2WeldJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()
