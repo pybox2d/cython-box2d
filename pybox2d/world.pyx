@@ -863,3 +863,75 @@ cdef class World:
         defn.localAnchorB = to_b2vec2(local_anchor_b)
         defn.referenceAngle = reference_angle
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+
+    def create_wheel_joint(self, bodies, *, collide_connected=False,
+                           damping_ratio=0.7, enable_motor=False,
+                           frequency_hz=2.0, local_anchor_a=None,
+                           local_anchor_b=None, local_axis_a=None,
+                           max_motor_torque=0.0, motor_speed=0.0):
+        '''Create a wheel joint between two bodies
+
+        A wheel joint. This joint provides two degrees of freedom: translation
+        along an axis fixed in bodyA and rotation in the plane. In other
+        words, it is a point to line constraint with a rotational motor and a
+        linear spring/damper. This joint is designed for vehicle suspensions.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        damping_ratio : float, optional
+            Suspension damping ratio, one indicates critical damping
+        enable_motor : bool, optional
+            Enable/disable the joint motor.
+        frequency_hz : float, optional
+            Suspension frequency, zero indicates no suspension
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        local_axis_a : Vec2, optional
+            The local translation axis in bodyA.
+        max_motor_torque : float, optional
+            The maximum motor torque, usually in N-m.
+        motor_speed : float, optional
+            The desired motor speed in radians per second.
+        '''
+        body_a, body_b = bodies
+
+        if local_anchor_a is None:
+            local_anchor_a = (0, 0)
+        if local_anchor_b is None:
+            local_anchor_b = (0, 0)
+        if local_axis_a is None:
+            local_axis_a = (1.0, 0.0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2WheelJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor, const b2Vec2& axis)
+        # Initialize the bodies, anchors, axis, and reference angle using the
+        # world anchor and world axis.
+
+        defn.collideConnected = collide_connected
+        defn.dampingRatio = damping_ratio
+        defn.enableMotor = enable_motor
+        defn.frequencyHz = frequency_hz
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        defn.localAxisA = to_b2vec2(local_axis_a)
+        defn.maxMotorTorque = max_motor_torque
+        defn.motorSpeed = motor_speed
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)

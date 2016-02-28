@@ -310,6 +310,18 @@ cdef extern from "b2WeldJoint.h":
 
 
 cdef extern from "b2WheelJoint.h":
+    cdef cppclass b2WheelJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor,
+                        const b2Vec2& axis)
+        float32 dampingRatio
+        bool enableMotor
+        float32 frequencyHz
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+        b2Vec2 localAxisA
+        float32 maxMotorTorque
+        float32 motorSpeed
+
     cdef cppclass b2WheelJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()
