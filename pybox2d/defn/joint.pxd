@@ -202,6 +202,21 @@ cdef extern from "b2MouseJoint.h":
 
 
 cdef extern from "b2PrismaticJoint.h":
+    cdef cppclass b2PrismaticJointDef(b2JointDef):
+        void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor,
+                        const b2Vec2& axis)
+
+        bool enableLimit
+        bool enableMotor
+        b2Vec2 localAnchorA
+        b2Vec2 localAnchorB
+        b2Vec2 localAxisA
+        float32 lowerTranslation
+        float32 maxMotorForce
+        float32 motorSpeed
+        float32 referenceAngle
+        float32 upperTranslation
+
     cdef cppclass b2PrismaticJoint(b2Joint):
         b2Vec2 GetAnchorA()
         b2Vec2 GetAnchorB()

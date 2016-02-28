@@ -596,4 +596,79 @@ cdef class World:
         defn.target = to_b2vec2(target)
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
+    def create_prismatic_joint(self, bodies, *, collide_connected=False,
+                               enable_limit=False, enable_motor=False,
+                               local_anchor_a=None, local_anchor_b=None,
+                               local_axis_a=None, lower_translation=0.0,
+                               max_motor_force=0.0, motor_speed=0.0,
+                               reference_angle=0.0, upper_translation=0.0):
+        '''Create a prismatic joint between two bodies
 
+        A prismatic joint. This joint provides one degree of freedom:
+        translation along an axis fixed in bodyA. Relative rotation is
+        prevented. You can use a joint limit to restrict the range of motion
+        and a joint motor to drive the motion or to model joint friction.
+
+        Parameters
+        ----------
+        bodies : (body_a, body_b), Body instances
+            The bodies to join together
+        collide_connected : bool, optional
+            Allow collision between connected bodies (default: False)
+        enable_limit : bool, optional
+            Enable/disable the joint limit.
+        enable_motor : bool, optional
+            Enable/disable the joint motor.
+        local_anchor_a : Vec2, optional
+            The local anchor point relative to bodyA's origin.
+        local_anchor_b : Vec2, optional
+            The local anchor point relative to bodyB's origin.
+        local_axis_a : Vec2, optional
+            The local translation unit axis in bodyA.
+        lower_translation : float, optional
+            The lower translation limit, usually in meters.
+        max_motor_force : float, optional
+            The maximum motor torque, usually in N-m.
+        motor_speed : float, optional
+            The desired motor speed in radians per second.
+        reference_angle : float, optional
+            The constrained angle between the bodies: bodyB_angle - bodyA_angle.
+        upper_translation : float, optional
+            The upper translation limit, usually in meters.
+        '''
+        body_a, body_b = bodies
+
+        if local_anchor_a is None:
+            local_anchor_a = (0, 0)
+        if local_anchor_b is None:
+            local_anchor_b = (0, 0)
+        if local_axis_a is None:
+            local_axis_a = (1.0, 0.0)
+
+        if not isinstance(body_a, Body) or not isinstance(body_b, Body):
+            raise TypeError('Bodies must be a subclass of Body')
+
+        cdef b2Body *ba=(<Body>body_a).thisptr
+        cdef b2Body *bb=(<Body>body_b).thisptr
+
+        cdef b2PrismaticJointDef defn
+        # if :
+        defn.bodyA = ba
+        defn.bodyB = bb
+        # else:
+        # defn.Initialize(ba, bb, to_b2vec2(anchor))
+        # void Initialize(b2Body* bodyA, b2Body* bodyB, const b2Vec2& anchor, const b2Vec2& axis)
+        # Initialize the bodies, anchors, axis, and reference angle using the world anchor and unit world axis.
+
+        defn.collideConnected = collide_connected
+        defn.enableLimit = enable_limit
+        defn.enableMotor = enable_motor
+        defn.localAnchorA = to_b2vec2(local_anchor_a)
+        defn.localAnchorB = to_b2vec2(local_anchor_b)
+        defn.localAxisA = to_b2vec2(local_axis_a)
+        defn.lowerTranslation = lower_translation
+        defn.maxMotorForce = max_motor_force
+        defn.motorSpeed = motor_speed
+        defn.referenceAngle = reference_angle
+        defn.upperTranslation = upper_translation
+        return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
