@@ -221,7 +221,7 @@ cdef class Body(Base):
             The fixture to remove
         '''
         if not fixture.valid:
-            raise ValueError('Fixture no longer valid')
+            raise RuntimeError('Fixture no longer valid')
 
         cdef b2Fixture *fptr = fixture.thisptr
         key = hash(fixture)

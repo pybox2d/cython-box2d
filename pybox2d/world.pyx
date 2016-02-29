@@ -225,7 +225,8 @@ cdef class World:
         body : Body
             The body to remove
         '''
-        assert body.valid, 'Body no longer valid'
+        if not body.valid: 
+            raise RuntimeError('Body no longer valid')
 
         for joint in list(body._joints):
             self.destroy_joint(joint)
@@ -268,9 +269,11 @@ cdef class World:
 
     cdef create_joint_from_defn(self, b2JointDef* defn, Body body_a,
                                 Body body_b):
-
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Joint *jptr = self.world.CreateJoint(defn)
         joint = Joint.upcast(jptr)
@@ -334,8 +337,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -408,8 +413,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2DistanceJointDef defn
         cdef b2Body *ba=(<Body>body_a).thisptr
@@ -475,8 +482,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -536,14 +545,18 @@ cdef class World:
                 not isinstance(joint_b, (RevoluteJoint, PrismaticJoint))):
             raise TypeError('Joints must either be revolute or prismatic')
 
-        assert joint_a.valid, 'Joint A no longer valid'
-        assert joint_b.valid, 'Joint B no longer valid'
+        if not joint_a.valid:
+            raise RuntimeError('Joint A no longer valid')
+        if not joint_b.valid:
+            raise RuntimeError('Joint B no longer valid')
             
         cdef Body body_a = joint_a.body_b
         cdef Body body_b = joint_b.body_b
 
-        assert body_a.valid, 'Joint A, Body B no longer valid'
-        assert body_b.valid, 'Joint B, Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2GearJointDef defn
         defn.bodyA = body_a.thisptr
@@ -614,8 +627,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -677,8 +692,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -752,8 +769,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -843,8 +862,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -928,8 +949,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -977,8 +1000,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
@@ -1056,8 +1081,10 @@ cdef class World:
         if not isinstance(body_a, Body) or not isinstance(body_b, Body):
             raise TypeError('Bodies must be a subclass of Body')
 
-        assert body_a.valid, 'Body A no longer valid'
-        assert body_b.valid, 'Body B no longer valid'
+        if not body_a.valid:
+            raise RuntimeError('Body A no longer valid')
+        if not body_b.valid:
+            raise RuntimeError('Body B no longer valid')
 
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
