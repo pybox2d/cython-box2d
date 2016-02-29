@@ -26,7 +26,8 @@ cdef class Body(Base):
         for fixture in self._fixtures.values():
             fixture.invalidate()
 
-        self.fixtures.clear()
+        self._fixtures.clear()
+        del self._joints[:]
         self.thisptr = NULL
 
     @property
