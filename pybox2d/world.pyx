@@ -22,13 +22,13 @@ cdef class World:
 
             self._joints.clear()
             self._linked_joints.clear()
-        
+
         if self._bodies:
             for body in self._bodies.values():
                 (<Body>body).invalidate()
 
             self._bodies.clear()
-        
+
         del self.world
 
     def __init__(self, gravity=None, default_body_class=None):
@@ -225,7 +225,7 @@ cdef class World:
         body : Body
             The body to remove
         '''
-        if not body.valid: 
+        if not body.valid:
             raise RuntimeError('Body no longer valid')
 
         for joint in list(body._joints):
@@ -259,17 +259,17 @@ cdef class World:
             del self._linked_joints[joint]
 
         del self._joints[joint]
-        
+
         joint.body_a._joints.remove(joint)
         joint.body_b._joints.remove(joint)
-        
+
         cdef b2Joint *jptr = joint.joint
         joint.invalidate()
         self.world.DestroyJoint(jptr)
 
     cdef create_joint_from_defn(self, b2JointDef* defn, Body body_a,
                                 Body body_b):
-        
+
         if not body_a.valid:
             raise RuntimeError('Body A no longer valid')
         if not body_b.valid:
@@ -381,7 +381,7 @@ cdef class World:
         A distance joint constrains two points on two bodies to remain at a
         fixed distance from each other. You can view this as a massless, rigid
         rod.
-    
+
         Two options for initialization of the joint:
         1. set local_anchors, and length manually
         2. set anchors in world coordinates, and length will be calculated
@@ -430,7 +430,7 @@ cdef class World:
                 raise ValueError('Must specify both local anchors or neither')
             if local_anchor_b is None:
                 raise ValueError('Must specify both local anchors or neither')
-            
+
             # Initialize the bodies, anchors, and length using the local
             # anchors.
             defn.localAnchorA = to_b2vec2(local_anchor_a)
@@ -446,6 +446,8 @@ cdef class World:
         defn.collideConnected = collide_connected
         defn.dampingRatio = damping_ratio
         defn.frequencyHz = frequency_hz
+        print('def', defn.dampingRatio, defn.frequencyHz, defn.length,
+              to_vec2(defn.localAnchorA), to_vec2(defn.localAnchorB), )
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_friction_joint(self, bodies, *, collide_connected=False,
@@ -549,7 +551,7 @@ cdef class World:
             raise RuntimeError('Joint A no longer valid')
         if not joint_b.valid:
             raise RuntimeError('Joint B no longer valid')
-            
+
         cdef Body body_a = joint_a.body_b
         cdef Body body_b = joint_b.body_b
 
@@ -572,7 +574,7 @@ cdef class World:
         cdef GearJoint gj = <GearJoint>joint
         gj.joint_a = joint_a
         gj.joint_b = joint_b
-        
+
         # link the joints back to this gear joint, since if either is destroyed
         # this gear joint will have to be destroyed
         self._link_joint(joint_a, gj)
@@ -581,13 +583,13 @@ cdef class World:
         self._link_joint(joint_b, gj)
         self._link_joint(gj, joint_b)
         return joint
-    
+
     cdef _link_joint(self, Joint joint1, Joint joint2):
         '''Link a b2Joint `jptr` to a Joint, so when one is destructed the
         other can be cleaned up'''
         if joint1 not in self._linked_joints:
             self._linked_joints[joint1] = []
-         
+
         self._linked_joints[joint1].append(joint2)
 
     def create_motor_joint(self, bodies, *, collide_connected=False,
@@ -598,7 +600,7 @@ cdef class World:
         A motor joint is used to control the relative motion between two
         bodies. A typical usage is to control the movement of a dynamic body
         with respect to the ground.
-        
+
         Two options for initialization:
             1. Specify linear_offset and angular_offset manually
             2. Specify neither, and calculate the current offsets between the
@@ -722,7 +724,7 @@ cdef class World:
         translation along an axis fixed in bodyA. Relative rotation is
         prevented. You can use a joint limit to restrict the range of motion
         and a joint motor to drive the motion or to model joint friction.
-        
+
         Two options for initialization:
         1. Specify (world) anchor and axis
         2. Specify local_anchors, local_axis_a, and reference_angle
@@ -758,7 +760,7 @@ cdef class World:
         motor_speed : float, optional
             The desired motor speed in radians per second.
         reference_angle : float, optional
-            The constrained angle between the bodies: 
+            The constrained angle between the bodies:
                 bodyB_angle - bodyA_angle
             Required if 'anchor' is unspecified.
         upper_translation : float, optional
@@ -830,7 +832,7 @@ cdef class World:
         often work better when combined with prismatic joints. You should also
         cover the the anchor points with static shapes to prevent one side
         from going to zero length.
-        
+
         ground_anchors is required.
 
         Initialization options:
@@ -873,7 +875,7 @@ cdef class World:
         cdef b2PulleyJointDef defn
         defn.bodyA = ba
         defn.bodyB = bb
-        
+
         if ground_anchors is None:
             ground_anchor_a = (-1.0, 1.0)
             ground_anchor_b = (1.0, 1.0)
@@ -896,7 +898,7 @@ cdef class World:
             defn.localAnchorB = to_b2vec2(local_anchor_b)
             defn.lengthA = length_a
             defn.lengthB = length_b
-            defn.ratio = ratio 
+            defn.ratio = ratio
         elif anchors is not None:
             # Initialize the bodies, anchors, lengths, max lengths, and ratio
             # using the world anchors.
@@ -939,7 +941,7 @@ cdef class World:
             b2_linearSlop or the joint will have no effect.
         '''
         body_a, body_b = bodies
-        
+
         if local_anchors is None:
             local_anchor_a = (-1.0, 0.0)
             local_anchor_b = (1.0, 0.0)
@@ -1041,7 +1043,7 @@ cdef class World:
         along an axis fixed in bodyA and rotation in the plane. In other
         words, it is a point to line constraint with a rotational motor and a
         linear spring/damper. This joint is designed for vehicle suspensions.
-    
+
         Initialization options:
         1. Set local_anchors and local_axis_a
         2. Set world anchor point and axis

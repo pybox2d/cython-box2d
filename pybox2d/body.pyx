@@ -21,7 +21,13 @@ cdef class Body(Base):
             raise ValueError('Underlying object was destroyed')
         return pointer_as_key(self.thisptr)
 
+    cpdef destroyed(self):
+        '''Destruction callback, overrideable in python'''
+        pass
+
     cdef invalidate(self):
+        self.destroyed()
+
         # underlying b2Body has been destroyed
         for fixture in self._fixtures.values():
             fixture.invalidate()
