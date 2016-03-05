@@ -34,21 +34,24 @@ def fix_vertices(screen, vertices):
             for v0, v1 in vertices]
 
 
-def pygame_draw_edge(screen, edge, body, fixture):
+def draw_edge_shape(screen, body, fixture):
+    edge = fixture.shape
     vertices = [body.transform * v
                 for v in edge.main_vertices]
     v0, v1 = fix_vertices(screen, vertices)
     pygame.draw.line(screen, colors[body.type], v0, v1)
 
 
-def pygame_draw_polygon(screen, polygon, body, fixture):
+def draw_polygon_shape(screen, body, fixture):
+    polygon = fixture.shape
     vertices = [body.transform * v
                 for v in polygon.vertices]
     vertices = fix_vertices(screen, vertices)
     pygame.draw.polygon(screen, colors[body.type], vertices)
 
 
-def pygame_draw_circle(screen, circle, body, fixture):
+def draw_circle_shape(screen, body, fixture):
+    circle = fixture.shape
     center = fix_vertices(screen, [body.transform * circle.center])[0]
     pygame.draw.circle(screen, colors[body.type], center,
                        int(circle.radius * PPM),
@@ -59,9 +62,9 @@ def setup_backend(screen_width=640, screen_height=480):
     screen = pygame.display.set_mode((screen_width, screen_height), 0, 32)
 
     draw_registry = {}
-    draw_registry[CircleShape] = pygame_draw_circle
-    draw_registry[PolygonShape] = pygame_draw_polygon
-    draw_registry[EdgeShape] = pygame_draw_edge
+    draw_registry[CircleShape] = draw_circle_shape
+    draw_registry[PolygonShape] = draw_polygon_shape
+    draw_registry[EdgeShape] = draw_edge_shape
     return screen, draw_registry
 
 
@@ -103,15 +106,8 @@ def main_loop(screen, world, draw_registry, target_fps=60.0,
         # Draw the world
         for body in world.bodies:
             for fixture in body.fixtures:
-                shape = fixture.shape
-                try:
-                    draw_fcn = draw_registry[type(fixture.shape)]
-                except KeyError:
-                    # this backend can't draw the shape - draw it as a circle
-                    # for now
-                    draw_fcn = pygame_draw_circle
-
-                draw_fcn(screen, shape, body, fixture)
+                draw_function = draw_registry[type(fixture.shape)]
+                draw_function(screen, body, fixture)
 
         # Make Box2D simulate the physics of our world for one step.
         world.step(time_step, 10, 10)
