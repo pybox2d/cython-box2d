@@ -535,23 +535,24 @@ cdef class Body(Base):
         '''
         self.thisptr.ResetMassData()
 
-    # TODO can't use cpdef with generators?
-    def _get_repr_info(self):
+    cpdef _get_repr_info(self):
+        repr_info = []
         if self.data is not None:
-            yield ('data', self.data)
+            repr_info.append(('data', self.data))
 
-        yield ('position', self.position)
-        yield ('angle', self.angle)
-        yield ('world_center', self.world_center)
-        yield ('local_center', self.local_center)
-        yield ('linear_velocity', self.linear_velocity)
-        yield ('angular_velocity', self.angular_velocity)
-        yield ('transform', self.transform)
-        yield ('type', self.type)
-        yield ('fixtures', self.fixtures)
-        yield ('gravity_scale', self.gravity_scale)
-        yield ('linear_damping', self.linear_damping)
-        yield ('angular_damping', self.angular_damping)
-        yield ('inertia', self.inertia)
-        yield ('mass', self.mass)
-        yield ('mass_data', self.mass_data)
+        repr_info.append(('position', self.position))
+        repr_info.append(('angle', self.angle))
+        repr_info.append(('world_center', self.world_center))
+        repr_info.append(('local_center', self.local_center))
+        repr_info.append(('linear_velocity', self.linear_velocity))
+        repr_info.append(('angular_velocity', self.angular_velocity))
+        repr_info.append(('transform', self.transform))
+        repr_info.append(('type', self.type))
+        repr_info.append(('fixtures', self.fixtures))
+        repr_info.append(('gravity_scale', self.gravity_scale))
+        repr_info.append(('linear_damping', self.linear_damping))
+        repr_info.append(('angular_damping', self.angular_damping))
+        repr_info.append(('inertia', self.inertia))
+        repr_info.append(('mass', self.mass))
+        repr_info.append(('mass_data', self.mass_data))
+        return repr_info

@@ -70,6 +70,6 @@ cdef class EdgeShape(Shape):
                 edge.m_hasVertex0 = True
                 edge.m_hasVertex3 = True
 
-    def _get_repr_info(self):
+    cpdef _get_repr_info(self):
         cdef b2EdgeShape *edge = <b2EdgeShape *>self.shape
-        yield ('vertices', self.vertices)
+        return [('vertices', self.vertices)]

@@ -151,6 +151,7 @@ cdef class Transform(Base):
     def __mul__(Transform xf, other):
         return to_vec2(b2Mul(xf.transform, to_b2vec2(other)))
 
-    def _get_repr_info(self):
-        yield ('position', self.position)
-        yield ('angle', self.angle)
+    cpdef _get_repr_info(self):
+        return [('position', self.position),
+                ('angle', self.angle),
+                ]

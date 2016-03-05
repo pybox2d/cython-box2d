@@ -17,7 +17,7 @@ cdef class PolygonShape(Shape):
 
         if box is not None:
             self.set_as_box(*box)
-    
+
     @safe_rw_property
     def vertices(self, vertices):
         '''The polygon vertices'''
@@ -85,11 +85,11 @@ cdef class PolygonShape(Shape):
     @property
     def valid_polygon(self):
         return (<b2PolygonShape *>self.shape).Validate()
-    
+
     @safe_method
     def set_as_box(self, float hx, float hy, center=None, angle=0.0):
         '''Set the polygon to be a box shape
-        
+
         Parameters
         ----------
         hx : float
@@ -114,13 +114,13 @@ cdef class PolygonShape(Shape):
 
         def __set__(self, box_settings):
             self.set_as_box(*box_settings)
-    
-    def _get_repr_info(self):
+
+    cpdef _get_repr_info(self):
         if self.box_settings is not None:
-            yield ('box', self.box_settings)
+            return [('box', self.box_settings)]
         else:
-            yield ('vertices', self.vertices)
-    
+            return [('vertices', self.vertices)]
+
     @safe_method
     def compute_mass(self, density):
         if (<b2PolygonShape *>self.shape).m_count < 3:

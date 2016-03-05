@@ -8,7 +8,7 @@ cdef class Joint(Base):
 
     cdef invalidate(self):
         self.joint = NULL
-    
+
     def __hash__(self):
         if self.joint == NULL:
             raise ValueError('Underlying object was destroyed')
@@ -62,14 +62,15 @@ cdef class Joint(Base):
         '''Shift the origin for any points stored in world coordinates.'''
         self.joint.ShiftOrigin(to_b2vec2(new_origin))
 
-    def _get_repr_info(self):
-        yield ('valid', self.valid)
-        yield ('body_a', self.body_a)
-        yield ('anchor_a', self.anchor_a)
-        yield ('body_b', self.body_b)
-        yield ('anchor_b', self.anchor_b)
-        yield ('active', self.active)
-        yield ('collide_connected', self.collide_connected)
+    cpdef _get_repr_info(self):
+        return [('valid', self.valid),
+                ('body_a', self.body_a),
+                ('anchor_a', self.anchor_a),
+                ('body_b', self.body_b),
+                ('anchor_b', self.anchor_b),
+                ('active', self.active),
+                ('collide_connected', self.collide_connected),
+                ]
 
     @staticmethod
     cdef upcast(b2Joint *joint):
@@ -176,17 +177,19 @@ cdef class RevoluteJoint(Joint):
 
         (<b2RevoluteJoint *>self.joint).SetMaxMotorTorque(max_motor_torque)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
-        yield ('reference_angle', self.reference_angle)
-        yield ('joint_angle', self.joint_angle)
-        yield ('joint_speed', self.joint_speed)
-        yield ('limit_enabled', self.limit_enabled)
-        yield ('lower_limit', self.lower_limit)
-        yield ('upper_limit', self.upper_limit)
-        yield ('motor_enabled', self.motor_enabled)
-        yield ('motor_speed', self.motor_speed)
-        yield ('max_motor_torque', self.max_motor_torque)
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.extend([('reference_angle', self.reference_angle),
+                          ('joint_angle', self.joint_angle),
+                          ('joint_speed', self.joint_speed),
+                          ('limit_enabled', self.limit_enabled),
+                          ('lower_limit', self.lower_limit),
+                          ('upper_limit', self.upper_limit),
+                          ('motor_enabled', self.motor_enabled),
+                          ('motor_speed', self.motor_speed),
+                          ('max_motor_torque', self.max_motor_torque),
+                          ])
+        return repr_info
 
 
 cdef class DistanceJoint(Joint):
@@ -225,13 +228,15 @@ cdef class DistanceJoint(Joint):
         '''The local anchor point relative to bodyB's origin.'''
         return to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorB())
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
-        yield ('damping_ratio', self.damping_ratio)
-        yield ('frequency', self.frequency)
-        yield ('length', self.length)
-        yield ('local_anchor_a', self.local_anchor_a)
-        yield ('local_anchor_b', self.local_anchor_b)
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.extend([('damping_ratio', self.damping_ratio),
+                          ('frequency', self.frequency),
+                          ('length', self.length),
+                          ('local_anchor_a', self.local_anchor_a),
+                          ('local_anchor_b', self.local_anchor_b),
+                          ])
+        return repr_info
 
 
 cdef class FrictionJoint(Joint):
@@ -261,12 +266,14 @@ cdef class FrictionJoint(Joint):
 
         (<b2FrictionJoint *>self.joint).SetMaxTorque(max_torque)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
-        yield ('local_anchor_a', self.local_anchor_a)
-        yield ('local_anchor_b', self.local_anchor_b)
-        yield ('max_force', self.max_force)
-        yield ('max_torque', self.max_torque)
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.extend([('local_anchor_a', self.local_anchor_a),
+                          ('local_anchor_b', self.local_anchor_b),
+                          ('max_force', self.max_force),
+                          ('max_torque', self.max_torque),
+                          ])
+        return repr_info
 
 
 cdef class CompositeJoint(Joint):
@@ -283,9 +290,10 @@ cdef class GearJoint(CompositeJoint):
 
         (<b2GearJoint *>self.joint).SetRatio(ratio)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
-        yield ('ratio', self.ratio)
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.append(('ratio', self.ratio))
+        return repr_info
 
 
 cdef class MotorJoint(Joint):
@@ -329,13 +337,15 @@ cdef class MotorJoint(Joint):
 
         (<b2MotorJoint *>self.joint).SetMaxTorque(max_torque)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
-        yield ('angular_offset', self.angular_offset)
-        yield ('correction_factor', self.correction_factor)
-        yield ('linear_offset', self.linear_offset)
-        yield ('max_force', self.max_force)
-        yield ('max_torque', self.max_torque)
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.extend([('angular_offset', self.angular_offset),
+                          ('correction_factor', self.correction_factor),
+                          ('linear_offset', self.linear_offset),
+                          ('max_force', self.max_force),
+                          ('max_torque', self.max_torque),
+                          ])
+        return repr_info
 
 
 cdef class MouseJoint(Joint):
@@ -371,13 +381,15 @@ cdef class MouseJoint(Joint):
 
         (<b2MouseJoint *>self.joint).SetTarget(to_b2vec2(target))
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
 
-        yield ('damping_ratio', self.damping_ratio)
-        yield ('frequency', self.frequency)
-        yield ('max_force', self.max_force)
-        yield ('target', self.target)
+        repr_info.extend([('damping_ratio', self.damping_ratio),
+                          ('frequency', self.frequency),
+                          ('max_force', self.max_force),
+                          ('target', self.target),
+                          ])
+        return repr_info
 
 
 cdef class PrismaticJoint(Joint):
@@ -460,21 +472,24 @@ cdef class PrismaticJoint(Joint):
 
         (<b2PrismaticJoint *>self.joint).SetLimits(self.lower_limit, limit)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.extend([
+            ('joint_speed', self.joint_speed),
+            ('joint_translation', self.joint_translation),
+            ('limit_enabled', self.limit_enabled),
+            ('local_anchor_a', self.local_anchor_a),
+            ('local_anchor_b', self.local_anchor_b),
+            ('local_axis_a', self.local_axis_a),
+            ('max_motor_force', self.max_motor_force),
+            ('motor_enabled', self.motor_enabled),
+            ('motor_speed', self.motor_speed),
+            ('reference_angle', self.reference_angle),
+            ('lower_limit', self.lower_limit),
+            ('upper_limit', self.upper_limit),
+            ])
 
-        yield ('joint_speed', self.joint_speed)
-        yield ('joint_translation', self.joint_translation)
-        yield ('limit_enabled', self.limit_enabled)
-        yield ('local_anchor_a', self.local_anchor_a)
-        yield ('local_anchor_b', self.local_anchor_b)
-        yield ('local_axis_a', self.local_axis_a)
-        yield ('max_motor_force', self.max_motor_force)
-        yield ('motor_enabled', self.motor_enabled)
-        yield ('motor_speed', self.motor_speed)
-        yield ('reference_angle', self.reference_angle)
-        yield ('lower_limit', self.lower_limit)
-        yield ('upper_limit', self.upper_limit)
+        return repr_info
 
 
 cdef class PulleyJoint(Joint):
@@ -513,16 +528,19 @@ cdef class PulleyJoint(Joint):
         '''Get the pulley ratio.'''
         return (<b2PulleyJoint *>self.joint).GetRatio()
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
 
-        yield ('current_length_a', self.current_length_a)
-        yield ('current_length_b', self.current_length_b)
-        yield ('ground_anchor_a', self.ground_anchor_a)
-        yield ('ground_anchor_b', self.ground_anchor_b)
-        yield ('length_a', self.length_a)
-        yield ('length_b', self.length_b)
-        yield ('ratio', self.ratio)
+        repr_info.extend([
+            ('current_length_a', self.current_length_a),
+            ('current_length_b', self.current_length_b),
+            ('ground_anchor_a', self.ground_anchor_a),
+            ('ground_anchor_b', self.ground_anchor_b),
+            ('length_a', self.length_a),
+            ('length_b', self.length_b),
+            ('ratio', self.ratio),
+            ])
+        return repr_info
 
 
 cdef class RopeJoint(Joint):
@@ -549,13 +567,15 @@ cdef class RopeJoint(Joint):
 
         (<b2RopeJoint *>self.joint).SetMaxLength(max_length)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
 
-        yield ('limit_state', self.limit_state)
-        yield ('local_anchor_a', self.local_anchor_a)
-        yield ('local_anchor_b', self.local_anchor_b)
-        yield ('max_length', self.max_length)
+        repr_info.extend([('limit_state', self.limit_state),
+                          ('local_anchor_a', self.local_anchor_a),
+                          ('local_anchor_b', self.local_anchor_b),
+                          ('max_length', self.max_length),
+                          ])
+        return repr_info
 
 
 cdef class WeldJoint(Joint):
@@ -590,14 +610,16 @@ cdef class WeldJoint(Joint):
         '''Get the reference angle.'''
         return (<b2WeldJoint *>self.joint).GetReferenceAngle()
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
 
-        yield ('damping_ratio', self.damping_ratio)
-        yield ('frequency', self.frequency)
-        yield ('local_anchor_a', self.local_anchor_a)
-        yield ('local_anchor_b', self.local_anchor_b)
-        yield ('reference_angle', self.reference_angle)
+        repr_info.extend([('damping_ratio', self.damping_ratio),
+                          ('frequency', self.frequency),
+                          ('local_anchor_a', self.local_anchor_a),
+                          ('local_anchor_b', self.local_anchor_b),
+                          ('reference_angle', self.reference_angle),
+                          ])
+        return repr_info
 
 
 cdef class WheelJoint(Joint):
@@ -671,15 +693,18 @@ cdef class WheelJoint(Joint):
 
         (<b2WheelJoint *>self.joint).SetSpringFrequencyHz(spring_frequency_hz)
 
-    def _get_repr_info(self):
-        yield from super()._get_repr_info()
-        yield ('joint_speed', self.joint_speed)
-        yield ('joint_translation', self.joint_translation)
-        yield ('local_anchor_a', self.local_anchor_a)
-        yield ('local_anchor_b', self.local_anchor_b)
-        yield ('local_axis_a', self.local_axis_a)
-        yield ('max_motor_torque', self.max_motor_torque)
-        yield ('motor_enabled', self.motor_enabled)
-        yield ('motor_speed', self.motor_speed)
-        yield ('spring_damping_ratio', self.spring_damping_ratio)
-        yield ('spring_frequency_hz', self.spring_frequency_hz)
+    cpdef _get_repr_info(self):
+        repr_info = Joint._get_repr_info(self)
+        repr_info.extend([
+            ('joint_speed', self.joint_speed),
+            ('joint_translation', self.joint_translation),
+            ('local_anchor_a', self.local_anchor_a),
+            ('local_anchor_b', self.local_anchor_b),
+            ('local_axis_a', self.local_axis_a),
+            ('max_motor_torque', self.max_motor_torque),
+            ('motor_enabled', self.motor_enabled),
+            ('motor_speed', self.motor_speed),
+            ('spring_damping_ratio', self.spring_damping_ratio),
+            ('spring_frequency_hz', self.spring_frequency_hz),
+            ])
+        return repr_info

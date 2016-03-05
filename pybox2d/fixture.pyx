@@ -12,7 +12,7 @@ cdef class FixtureDef(Base):
 
     def __cinit__(self):
         self.thisptr = new b2FixtureDef()
-    
+
     def __dealloc__(self):
         if self.thisptr != NULL:
             del self.thisptr
@@ -85,14 +85,15 @@ cdef class FixtureDef(Base):
         def __set__(self, sensor):
             self.thisptr.isSensor = sensor
 
-    def _get_repr_info(self):
-        yield ('friction', self.friction)
-        yield ('restitution', self.restitution)
-        yield ('density', self.density)
-        yield ('sensor', self.sensor)
-        yield ('data', self.data)
-        yield ('filter_', self.filter_)
-        yield ('shape', self.shape)
+    cpdef _get_repr_info(self):
+        return [('friction', self.friction),
+                ('restitution', self.restitution),
+                ('density', self.density),
+                ('sensor', self.sensor),
+                ('data', self.data),
+                ('filter_', self.filter_),
+                ('shape', self.shape),
+                ]
 
 
 cdef class Fixture(Base):
@@ -157,12 +158,14 @@ cdef class Fixture(Base):
         shape = self.shape
         return shape.get_mass_data(self.density)
 
-    def _get_repr_info(self):
-        yield ('shape', self.shape)
-        yield ('friction', self.friction)
-        yield ('restitution', self.restitution)
-        yield ('sensor', self.sensor)
-        yield ('density', self.density)
+    cpdef _get_repr_info(self):
+        repr_info = [('shape', self.shape),
+                     ('friction', self.friction),
+                     ('restitution', self.restitution),
+                     ('sensor', self.sensor),
+                     ('density', self.density),
+                     ]
 
         if self.data is not None:
-            yield ('data', self.data)
+            repr_info.append(('data', self.data))
+        return repr_info

@@ -33,6 +33,6 @@ cdef class CircleShape(Shape):
         (<b2CircleShape *>self.shape).m_p.x = cx
         (<b2CircleShape *>self.shape).m_p.y = cy
 
-    def _get_repr_info(self):
-        yield ('radius', self.radius)
-        yield ('center', self.center)
+    cpdef _get_repr_info(self):
+        return [('radius', self.radius),
+                ('center', self.center)]

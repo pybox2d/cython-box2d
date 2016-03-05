@@ -1,5 +1,5 @@
 cdef class Base:
-    def _get_repr_info(self):
+    cpdef _get_repr_info(self):
         raise NotImplementedError()
 
     def __repr__(self):

@@ -126,24 +126,28 @@ cdef class BodyDef(Base):
         def __set__(self, type_):
             self.thisptr.type = BodyType.to_enum(type_)
 
-    def _get_repr_info(self):
+    cpdef _get_repr_info(self):
+        repr_info = []
         if self.data is not None:
-            yield ('data', self.data)
+            repr_info.append(('data', self.data))
 
-        yield ('type', self.type)
-        yield ('position', self.position)
-        yield ('angular_velocity', self.angular_velocity)
-        yield ('linear_damping', self.linear_damping)
-        yield ('angular_damping', self.angular_damping)
-        yield ('allow_sleep', self.allow_sleep)
-        yield ('awake', self.awake)
-        yield ('fixed_rotation', self.fixed_rotation)
-        yield ('bullet', self.bullet)
-        yield ('active', self.active)
-        yield ('gravity_scale', self.gravity_scale)
+        repr_info.extend([
+            ('type', self.type),
+            ('position', self.position),
+            ('angular_velocity', self.angular_velocity),
+            ('linear_damping', self.linear_damping),
+            ('angular_damping', self.angular_damping),
+            ('allow_sleep', self.allow_sleep),
+            ('awake', self.awake),
+            ('fixed_rotation', self.fixed_rotation),
+            ('bullet', self.bullet),
+            ('active', self.active),
+            ('gravity_scale', self.gravity_scale),
+            ])
 
         if self.fixtures:
-            yield ('fixtures', self.fixtures)
+            repr_info.append(('fixtures', self.fixtures))
+        return repr_info
 
 
 cdef class StaticBodyDef(BodyDef):
