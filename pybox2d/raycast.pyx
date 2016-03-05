@@ -2,7 +2,6 @@ from cpython.ref cimport PyObject, Py_INCREF, Py_DECREF
 import threading
 from collections import namedtuple
 from threading import Thread
-from queue import Queue
 
 
 cdef cppclass RayCastCallback(b2RayCastCallback):
