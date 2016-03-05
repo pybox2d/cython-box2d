@@ -102,7 +102,8 @@ cdef class World:
         def __get__(self):
             return list(self._iter_joints())
 
-    def step(self, float time_step, int vel_iters, int pos_iters):
+    def step(self, float time_step, int velocity_iterations,
+             int position_iterations):
         '''Take a time step.
 
         This performs collision detection, integration, and constraint
@@ -110,14 +111,14 @@ cdef class World:
 
         Parameters
         ----------
-        timeStep : float
+        time_step : float
             the amount of time to simulate, this should not vary.
-        velocityIterations : float
+        velocity_iterations : float
             Number of iterations for the velocity constraint solver.
-        positionIterations :
+        position_iterations :
             Number of iterations for the position constraint solver.
         '''
-        self.world.Step(time_step, vel_iters, pos_iters)
+        self.world.Step(time_step, velocity_iterations, position_iterations)
 
     def create_body_from_def(self, BodyDef body_defn, *, body_class=None):
         '''Create a body from a BodyDef
