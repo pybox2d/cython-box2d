@@ -99,6 +99,11 @@ cdef class Rotation:
     def y_axis(self):
         return math.atan2(-self.sine, self.cosine)
 
+    def __mul__(Rotation rot, other):
+        vx, vy = other
+        return Vec2(rot.cosine * vx - rot.sine * vy,
+                    rot.sine * vx + rot.cosine * vy)
+
     def __repr__(self):
         return '{0.__class__.__name__}(angle={0.angle})'.format(self)
 
