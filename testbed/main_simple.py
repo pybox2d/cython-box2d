@@ -64,11 +64,9 @@ def setup_backend(screen_width=640, screen_height=480):
     return screen, draw_registry
 
 
-def main_loop(screen, world, draw_registry,
-              world_info, target_fps=60.0):
-
-    if 'title' in world_info:
-        pygame.display.set_caption(world_info['title'])
+def main_loop(screen, world, draw_registry, target_fps=60.0):
+    if 'title' in world.state:
+        pygame.display.set_caption(world.state['title'])
 
     running = True
     clock = pygame.time.Clock()
@@ -107,20 +105,21 @@ def main_loop(screen, world, draw_registry,
     pygame.quit()
 
 
+class TestbedWorld(World):
+    state = {}
+
+
 def main(setup_function, target_fps=60.0):
-    world = World(gravity=(0, -10))
-    world_info = setup_function(world)
+    world = TestbedWorld(gravity=(0, -10))
+    setup_function(world)
 
-    if world_info is None:
-        world_info = {}
-
-    if 'title' not in world_info and setup_function.__doc__:
-        world_info['title'] = setup_function.__doc__
+    if 'title' not in world.state and setup_function.__doc__:
+        world.state['title'] = setup_function.__doc__
 
     screen, draw_registry = setup_backend()
     print(screen)
     return main_loop(screen=screen, world=world, draw_registry=draw_registry,
-                     world_info=world_info, target_fps=target_fps)
+                     target_fps=target_fps)
 
 
 def simple_setup(world):

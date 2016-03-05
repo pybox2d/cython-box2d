@@ -76,7 +76,7 @@ def setup(world):
             fixtures=fixture,
         )
 
-    return {'bridge_bodies': bodies}
+    world.state['bridge_bodies'] = bodies
 
 
 if __name__ == '__main__':
