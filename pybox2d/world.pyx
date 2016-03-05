@@ -1144,10 +1144,36 @@ cdef class World:
             yield info
             resp.continue_without_clipping()
 
-    def raycast_first(self, point1, point2):
+    def raycast_closest(self, point1, point2):
+        '''Cast a ray from point1 to point2
+
+        Get the closest fixture to point1 that lies between point1 and point2.
+
+        Parameters
+        ----------
+        point1 : Vec2
+        point2 : Vec2
+
+        Returns
+        -------
+        info : RaycastInfo(body, fixture, point, normal, fraction)
+            The first fixture that lies on the ray between point1 and point2
+            fixture: the fixture hit by the ray
+            point: the point of initial intersection
+            normal: the normal vector at the point of intersection
+        '''
+        info = None
+        for info, resp in self.raycast_iterable(point1, point2):
+            # return the current fraction to find the closest point.
+            resp.set(info.fraction)
+
+        return info
+
+    def raycast_any(self, point1, point2):
         '''Cast a ray from point1 to point2
 
         Get the first fixture that lies between point1 and point2.
+        This is not necessarily the closest fixture.
 
         Parameters
         ----------

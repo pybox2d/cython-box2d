@@ -140,3 +140,8 @@ class PygameRenderer(RendererBase):
         """Draw the line segment from p1-p2 with the specified color."""
         points = self.to_screen([p1, p2])
         pygame.draw.aaline(self.screen, color, *points)
+
+    def draw_point(self, center, color):
+        radius = 1
+        center = self.to_screen([center])[0]
+        pygame.draw.circle(self.screen, color, center, radius, 0)

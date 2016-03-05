@@ -31,6 +31,14 @@ def default_keyboard_hook(world, key, down):
     print('key', key, 'pressed (down=', down, ')')
 
 
+def default_pre_step_hook(world, renderer):
+    pass
+
+
+def default_pre_render_hook(world, renderer):
+    pass
+
+
 def main_loop(renderer, world, target_fps=60.0, hooks=None):
     screen = renderer.screen
 
@@ -41,6 +49,16 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
         keyboard_hook = default_keyboard_hook
     else:
         keyboard_hook = hooks['keyboard']
+
+    if 'pre_render' not in hooks:
+        pre_render_hook = default_pre_render_hook
+    else:
+        pre_render_hook = hooks['pre_render']
+
+    if 'pre_step' not in hooks:
+        pre_step_hook = default_pre_step_hook
+    else:
+        pre_step_hook = hooks['pre_step']
 
     if 'title' in world.state:
         pygame.display.set_caption(world.state['title'])
@@ -72,9 +90,12 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
             renderer.draw_line_segment(body1.position, body2.position,
                                        (255, 255, 255, 127))
 
+        pre_step_hook(world, renderer)
+
         # Make Box2D simulate the physics of our world for one step.
         world.step(time_step, 10, 10)
 
+        pre_render_hook(world, renderer)
         # Flip the screen and try to keep at the target FPS
         pygame.display.flip()
         clock.tick(target_fps)
@@ -86,8 +107,8 @@ class TestbedWorld(World):
     state = {}
 
 
-def main(setup_function, target_fps=60.0,
-         keyboard_hook=None):
+def main(setup_function, target_fps=60.0, keyboard_hook=None,
+         pre_render_hook=None, pre_step_hook=None):
     world = TestbedWorld(gravity=(0, -10))
     setup_function(world)
 
@@ -99,6 +120,10 @@ def main(setup_function, target_fps=60.0,
 
     if keyboard_hook is not None:
         hooks['keyboard'] = keyboard_hook
+    if pre_render_hook is not None:
+        hooks['pre_render'] = pre_render_hook
+    if pre_step_hook is not None:
+        hooks['pre_step'] = pre_step_hook
 
     return main_loop(renderer=renderer, world=world, target_fps=target_fps,
                      hooks=hooks)
