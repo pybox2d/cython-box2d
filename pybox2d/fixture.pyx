@@ -102,16 +102,18 @@ cdef class FixtureDef(Base):
 cdef class Fixture(Base):
     cdef b2Fixture *thisptr
     cdef public object data
+    cdef readonly Body body
     cdef readonly Shape shape
 
     def __hash__(self):
         return pointer_as_key(self.thisptr)
 
     @staticmethod
-    cdef from_b2Fixture(b2Fixture *fixture):
+    cdef from_b2Fixture(b2Fixture *fixture, object body):
         fx = Fixture()
         fx.thisptr = fixture
         fx.shape = Shape.upcast(fx.thisptr.GetShape())
+        fx.body = body
         return fx
 
     @property
