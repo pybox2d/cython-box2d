@@ -75,3 +75,15 @@ def dynamic_circle_fixture(state, dynamic_body, radius=0.2, center=None):
     fixture = dynamic_body.create_circle_fixture(center=center, radius=radius)
     state['fixture'] = fixture
     return fixture
+
+
+class BodySubclass(pybox2d.Body):
+    pass
+
+
+@pytest.fixture(scope='function')
+def subclassed_body(state, world):
+    body = world.create_dynamic_body(body_class=BodySubclass,
+                                     position=(0, 0))
+    body.create_circle_fixture(center=(0, 0), radius=0.2)
+    return body

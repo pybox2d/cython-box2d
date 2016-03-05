@@ -1,7 +1,6 @@
 from defn.world cimport b2World
 from defn.joint cimport (b2Joint, b2JointDef, b2RevoluteJointDef)
 
-
 cdef class World:
     cdef b2World *world
     cdef dict _bodies
@@ -1116,3 +1115,79 @@ cdef class World:
         defn.maxMotorTorque = max_motor_torque
         defn.motorSpeed = motor_speed
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
+
+    def raycast_all(self, point1, point2):
+        '''Cast a ray from point1 to point2
+
+        Parameters
+        ----------
+        point1 : Vec2
+        point2 : Vec2
+
+        Yields
+        ------
+        info : RaycastInfo(body, fixture, point, normal, fraction)
+            All fixtures that lie on the ray between point1 and point2
+            fixture: the fixture hit by the ray
+            point: the point of initial intersection
+            normal: the normal vector at the point of intersection
+        '''
+        for info, resp in self.raycast_iterable(point1, point2):
+            yield info
+            resp.continue_without_clipping()
+
+    def raycast_first(self, point1, point2):
+        '''Cast a ray from point1 to point2
+
+        Get the first fixture that lies between point1 and point2.
+
+        Parameters
+        ----------
+        point1 : Vec2
+        point2 : Vec2
+
+        Returns
+        -------
+        info : RaycastInfo(body, fixture, point, normal, fraction)
+            The first fixture that lies on the ray between point1 and point2
+            fixture: the fixture hit by the ray
+            point: the point of initial intersection
+            normal: the normal vector at the point of intersection
+        '''
+        info = None
+        for info, resp in self.raycast_iterable(point1, point2):
+            resp.stop()
+
+        return info
+
+    def raycast_iterable(self, point1, point2):
+        '''Cast a ray from point1 to point2
+
+        Get the first fixture that lies between point1 and point2.
+
+        Parameters
+        ----------
+        point1 : Vec2
+        point2 : Vec2
+
+        Yields
+        ------
+        info : RaycastInfo(body, fixture, point, normal, fraction)
+            The first fixture that lies on the ray between point1 and point2
+            fixture: the fixture hit by the ray
+            point: the point of initial intersection
+            normal: the normal vector at the point of intersection
+        resp : RaycastResponseWrapper
+            Control how the raycast proceeds by interacting with this object.
+
+            Use resp.set(value), where value is:
+                -1.0: ignore this fixture and continue
+                 0.0: terminate the ray cast
+            fraction: clip the ray to this point
+                 1.0: don't clip the ray and continue
+
+            Alternatively, use the convenience methods of
+            RaycastResponseWrapper (ignore_fixture, continue_without_clipping,
+            etc.)
+        '''
+        return RaycastIterable(self, point1, point2)

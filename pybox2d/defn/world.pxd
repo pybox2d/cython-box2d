@@ -1,6 +1,7 @@
 from defn.math cimport *
 from defn.body cimport (b2BodyDef, b2Body)
-from defn.world_callbacks cimport b2DestructionListener
+from defn.world_callbacks cimport (b2DestructionListener,
+                                   b2RayCastCallback)
 from defn.joint cimport (b2Joint, b2JointDef)
 from defn.shape cimport *
 
@@ -21,8 +22,8 @@ cdef extern from "b2World.h" nogil:
         void ClearForces()
         void DrawDebugData()
         # void QueryAABB(b2QueryCallback* callback, const b2AABB& aabb) const
-        # void RayCast(b2RayCastCallback* callback, const b2Vec2& point1,
-        #              const b2Vec2& point2) const
+        void RayCast(b2RayCastCallback* callback, const b2Vec2& point1,
+                     const b2Vec2& point2) const
         # b2Body* GetBodyList()
         const b2Body* GetBodyList() const
         # b2Joint* GetJointList()

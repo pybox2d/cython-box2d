@@ -1,5 +1,3 @@
-from contextlib import closing
-
 import pybox2d
 
 # ugly import syntax, otherwise linter detects test args as shadowing
