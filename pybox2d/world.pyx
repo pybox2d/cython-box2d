@@ -446,8 +446,6 @@ cdef class World:
         defn.collideConnected = collide_connected
         defn.dampingRatio = damping_ratio
         defn.frequencyHz = frequency_hz
-        print('def', defn.dampingRatio, defn.frequencyHz, defn.length,
-              to_vec2(defn.localAnchorA), to_vec2(defn.localAnchorB), )
         return self.create_joint_from_defn((<b2JointDef*>&defn), body_a, body_b)
 
     def create_friction_joint(self, bodies, *, collide_connected=False,

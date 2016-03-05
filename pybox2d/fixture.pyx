@@ -18,7 +18,8 @@ cdef class FixtureDef(Base):
             del self.thisptr
 
     def __init__(self, shape=None, friction=0.2, restitution=0.0,
-                 density=0.0, sensor=False, data=None, filter_=None):
+                 density=0.0, sensor=False, data=None, filter_=None,
+                 category_bits=0x01, mask_bits=0xFFFF, group_index=0):
         self._shape = None
         self.friction = friction
         self.restitution = restitution
@@ -26,10 +27,12 @@ cdef class FixtureDef(Base):
         self.sensor = sensor
         self.data = data
 
-        if filter_ is None:
-            filter_ = default_filter
-
-        self.filter_ = filter_
+        if filter_ is not None:
+            self.filter_ = filter_
+        else:
+            self.thisptr.filter.categoryBits = category_bits
+            self.thisptr.filter.maskBits = mask_bits
+            self.thisptr.filter.groupIndex = group_index
 
         if shape is not None:
             self.shape = shape
