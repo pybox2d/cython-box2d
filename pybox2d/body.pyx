@@ -21,6 +21,9 @@ cdef class Body(Base):
             raise ValueError('Underlying object was destroyed')
         return pointer_as_key(self.thisptr)
 
+    cdef get_fixture(self, b2Fixture *fixture):
+        return self._fixtures[pointer_as_key(fixture)]
+
     cpdef destroyed(self):
         '''Destruction callback, overrideable in python'''
         pass
@@ -47,10 +50,13 @@ cdef class Body(Base):
         body.thisptr = b2body
         return body
 
-    @safe_property
-    def angle(self):
+    @safe_rw_property
+    def angle(self, angle):
         '''The current world rotation angle in radians.'''
-        return self.thisptr.GetAngle()
+        if angle is None:
+            return self.thisptr.GetAngle()
+
+        self.thisptr.SetTransform(self.thisptr.GetPosition(), angle)
 
     @safe_property
     def world_center(self):
@@ -155,7 +161,7 @@ cdef class Body(Base):
         '''Create a fixture from a FixtureDef'''
 
         fptr = self.thisptr.CreateFixture(fixture_defn.thisptr)
-        fixture = Fixture.from_b2Fixture(fptr)
+        fixture = Fixture.from_b2Fixture(fptr, self)
         key = hash(fixture)
         self._fixtures[key] = fixture
 
@@ -367,10 +373,13 @@ cdef class Body(Base):
         '''
         return self.thisptr.GetInertia()
 
-    @safe_property
-    def position(self):
+    @safe_rw_property
+    def position(self, position):
         '''Get the world body origin position.'''
-        return to_vec2(self.thisptr.GetPosition())
+        if position is None:
+            return to_vec2(self.thisptr.GetPosition())
+
+        self.thisptr.SetTransform(to_b2vec2(position), self.angle)
 
     @safe_method
     def apply_force(self, force, point, bool wake=True):
