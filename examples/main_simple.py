@@ -1,71 +1,30 @@
-try:
-    import pygame_sdl2
-except ImportError:
-    pass
-else:
-    print('Using pygame_sdl2')
-    pygame_sdl2.import_as_pygame()
-
+from pygame_renderer import PygameRenderer as Renderer
 
 import pygame
 from pygame.locals import (QUIT, KEYUP, KEYDOWN, K_ESCAPE)
-from pybox2d import (World, FixtureDef)
-from pybox2d import (EdgeShape, CircleShape, PolygonShape)
 
-from renderer import RendererBase
-
-# Box2D deals with meters, but we want to display pixels,
-# so define a conversion factor:
-PPM = 12.0  # pixels per meter
+from pybox2d import World
 
 
-class Renderer(RendererBase):
-    colors = {'static': (255, 255, 255, 255),
-              'kinematic': (127, 127, 127, 255),
-              'dynamic': (127, 100, 100, 255),
-              }
+def setup_backend(screen_width=640, screen_height=480, ppm=12.0):
+    '''Setup the backend
 
-    def __init__(self, screen_width, screen_height):
-        super().__init__()
+    Parameters
+    ----------
+    screen_width : int
+        Screen width in pixels
+    screen_height : int
+        Screen height in pixels
+    ppm : float
+        Box2D deals with meters, but we want to display pixels, so define a
+        conversion factor of pixels per meter
 
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.screen = pygame.display.set_mode((screen_width, screen_height),
-                                              0, 32)
-
-    def fix_vertices(self, vertices):
-        half_width = self.screen_width / 2.
-        # convert from meters to pixels
-        # flip in y
-        # move over a bit in x
-        return [(int(v0 * PPM + half_width),
-                 int(self.screen_height - v1 * PPM))
-                for v0, v1 in vertices]
-
-    def draw_edge_fixture(self, body, fixture):
-        edge = fixture.shape
-        vertices = [body.transform * v
-                    for v in edge.main_vertices]
-        v0, v1 = self.fix_vertices(vertices)
-        pygame.draw.line(self.screen, self.colors[body.type], v0, v1)
-
-    def draw_polygon_fixture(self, body, fixture):
-        polygon = fixture.shape
-        vertices = [body.transform * v
-                    for v in polygon.vertices]
-        vertices = self.fix_vertices(vertices)
-        pygame.draw.polygon(self.screen, self.colors[body.type], vertices)
-
-    def draw_circle_fixture(self, body, fixture):
-        circle = fixture.shape
-        center = self.fix_vertices([body.transform * circle.center])[0]
-        pygame.draw.circle(self.screen, self.colors[body.type], center,
-                           int(circle.radius * PPM),
-                           width=1)
-
-
-def setup_backend(screen_width=640, screen_height=480):
-    return Renderer(screen_width, screen_height)
+    Returns
+    -------
+    renderer : subclass of RendererBase
+        The renderer instance
+    '''
+    return Renderer(screen_width, screen_height, ppm=ppm)
 
 
 def default_keyboard_hook(world, key, down):
@@ -142,24 +101,16 @@ def main(setup_function, target_fps=60.0,
 
 def simple_setup(world):
     '''no demo selected'''
-    ground_shape = EdgeShape(vertices=[(-40, 5), (40, 5)])
-    world.create_static_body(
-        fixtures=[FixtureDef(shape=ground_shape)],
-    )
-
-    fixture = FixtureDef(
-        shape=PolygonShape(vertices=[(-0.5, 10.0),
-                                     (0.5, 10.0),
-                                     (0.0, 11.5),
-                                     ]),
-        density=1.0
-    )
+    ground = world.create_static_body()
+    ground.create_edge_fixture(vertices=[(-40, 5), (40, 5)])
 
     for i in range(2):
-        world.create_dynamic_body(
-            position=(-8 + 8 * i, 12),
-            fixtures=fixture,
-        )
+        body = world.create_dynamic_body(position=(-8 + 8 * i, 12))
+        body.create_polygon_fixture(vertices=[(-0.5, 10.0),
+                                              (0.5, 10.0),
+                                              (0.0, 11.5),
+                                              ],
+                                    density=1.0)
 
 
 if __name__ == '__main__':
