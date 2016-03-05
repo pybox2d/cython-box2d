@@ -6,14 +6,11 @@ def setup(world, joint_gravity=10.0):
     world.gravity = (0.0, 0.0)
 
     # The boundaries
-    ground = world.create_static_body(position=(0, 20))
-    # ground.create_edge_chain(
-    #     [(-20, -20),
-    #      (-20, 20),
-    #      (20, 20),
-    #      (20, -20),
-    #      (-20, -20)]
-    # )
+    ground = world.create_static_body(position=(0, 12))
+    ground.create_edge_chain([(-11, -11), (-11, 11),
+                              (11, 11), (11, -11),
+                              ],
+                             closed=True)
 
     # create the ship body
     ship = world.create_dynamic_body(position=(0, 2), angle=pi,

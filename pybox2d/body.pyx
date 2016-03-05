@@ -224,6 +224,44 @@ cdef class Body(Base):
         return self.create_fixture(shape=shape, **fx_kwargs)
 
     @safe_method
+    def create_edge_chain(self, vertices, closed=False, **fx_kwargs):
+        '''Create a chain of edge shapes
+
+        For the two ways to specify the vertices, see `create_edge_fixture`
+
+        Parameters
+        ----------
+        vertices : list of Vec2
+            Must have at least two vertices
+        closed : bool, optional
+            Close the edge chain, where the last specified vertex is connected
+            to the first.
+        kwargs : dict, optional
+            Additional keyword arguments are set on the FixtureDef
+
+        Returns
+        -------
+        fixtures : list of Fixture
+            List of created fixtures
+        '''
+        if 'shape' in fx_kwargs:
+            raise ValueError('Shape is implicit in this method')
+
+        if len(vertices) < 2:
+            raise ValueError('Must specify at least 2 vertices')
+
+        fixtures = []
+        for v1, v2 in zip(vertices, vertices[1:]):
+            fixtures.append(self.create_edge_fixture((v1, v2), **fx_kwargs))
+
+        if closed:
+            fixture = self.create_edge_fixture((vertices[-1], vertices[0]),
+                                               **fx_kwargs)
+            fixtures.append(fixture)
+
+        return fixtures
+
+    @safe_method
     def create_circle_fixture(self, radius, center=None, **fx_kwargs):
         '''Create a fixture and attach a circle shape to it
 
