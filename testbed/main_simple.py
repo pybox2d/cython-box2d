@@ -8,7 +8,7 @@ else:
 
 
 import pygame
-from pygame.locals import (QUIT, KEYDOWN, K_ESCAPE)
+from pygame.locals import (QUIT, KEYUP, KEYDOWN, K_ESCAPE)
 from pybox2d import (World, CircleShape, PolygonShape)
 from pybox2d import (FixtureDef, EdgeShape)
 
@@ -64,7 +64,21 @@ def setup_backend(screen_width=640, screen_height=480):
     return screen, draw_registry
 
 
-def main_loop(screen, world, draw_registry, target_fps=60.0):
+def keyboard_hook(world, key, down):
+    print('key', key, 'pressed (down=', down, ')')
+
+
+def main_loop(screen, world, draw_registry, target_fps=60.0,
+              hooks=None):
+
+    if hooks is None:
+        hooks = {}
+
+    if 'keyboard' not in hooks:
+        hooks['keyboard'] = keyboard_hook
+
+    keyboard_hook = hooks['keyboard']
+
     if 'title' in world.state:
         pygame.display.set_caption(world.state['title'])
 
@@ -79,6 +93,9 @@ def main_loop(screen, world, draw_registry, target_fps=60.0):
             if event.type == QUIT or escape_pressed:
                 # The user closed the window or pressed escape
                 running = False
+            elif event.type in (KEYDOWN, KEYUP):
+                key_name = pygame.key.name(event.key).decode('utf-8')
+                keyboard_hook(world, key_name.lower(), (event.type == KEYDOWN))
 
         screen.fill((0, 0, 0, 0))
 
@@ -109,7 +126,8 @@ class TestbedWorld(World):
     state = {}
 
 
-def main(setup_function, target_fps=60.0):
+def main(setup_function, target_fps=60.0,
+         keyboard_hook=None):
     world = TestbedWorld(gravity=(0, -10))
     setup_function(world)
 
@@ -117,9 +135,11 @@ def main(setup_function, target_fps=60.0):
         world.state['title'] = setup_function.__doc__
 
     screen, draw_registry = setup_backend()
+    hooks = {'keyboard': keyboard_hook
+             }
     print(screen)
     return main_loop(screen=screen, world=world, draw_registry=draw_registry,
-                     target_fps=target_fps)
+                     target_fps=target_fps, hooks=hooks)
 
 
 def simple_setup(world):
