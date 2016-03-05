@@ -76,6 +76,7 @@ def keyboard(world, key, pressed):
                 continue
 
             world.destroy_joint(joint)
+            break
 
 
 if __name__ == '__main__':

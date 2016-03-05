@@ -67,6 +67,11 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
             for fixture in body.fixtures:
                 renderer.draw_fixture(body, fixture)
 
+        for joint in world.joints:
+            body1, body2 = joint.bodies
+            renderer.draw_line_segment(body1.position, body2.position,
+                                       (255, 255, 255, 127))
+
         # Make Box2D simulate the physics of our world for one step.
         world.step(time_step, 10, 10)
 
