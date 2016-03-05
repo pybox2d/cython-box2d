@@ -245,19 +245,24 @@ cdef class World:
         joint : Joint
             The joint to remove
         '''
-        if joint in self._linked_joints:
-            for other_joint in self._linked_joints[joint]:
+        if not joint.valid:
+            raise RuntimeError('Joint no longer valid')
+
+        key = hash(joint)
+        if key in self._linked_joints:
+            for other_joint in self._linked_joints[key]:
+                other_key = hash(other_joint)
                 # first clear the other joint's reference to this one
-                self._linked_joints[other_joint].remove(joint)
+                self._linked_joints[other_key].remove(joint)
 
                 if isinstance(other_joint, CompositeJoint):
                     # if the other joint is a composite linking this one, it
                     # should be deleted first
                     self.destroy_joint(other_joint)
 
-            del self._linked_joints[joint]
+            del self._linked_joints[key]
 
-        del self._joints[joint]
+        del self._joints[key]
 
         joint.body_a._joints.remove(joint)
         joint.body_b._joints.remove(joint)
@@ -282,7 +287,7 @@ cdef class World:
         (<Joint>joint).body_b = body_b
         body_b._joints.append(joint)
 
-        self._joints[joint] = joint
+        self._joints[pointer_as_key(jptr)] = joint
         return joint
 
     def create_revolute_joint(self, bodies, *, anchor=None,
@@ -584,10 +589,12 @@ cdef class World:
     cdef _link_joint(self, Joint joint1, Joint joint2):
         '''Link a b2Joint `jptr` to a Joint, so when one is destructed the
         other can be cleaned up'''
-        if joint1 not in self._linked_joints:
-            self._linked_joints[joint1] = []
+        key = hash(joint1)
 
-        self._linked_joints[joint1].append(joint2)
+        if key not in self._linked_joints:
+            self._linked_joints[key] = []
+
+        self._linked_joints[key].append(joint2)
 
     def create_motor_joint(self, bodies, *, collide_connected=False,
                            angular_offset=None, correction_factor=0.3,

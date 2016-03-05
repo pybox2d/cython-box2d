@@ -11,7 +11,7 @@ cdef class Joint(Base):
 
     def __hash__(self):
         if self.joint == NULL:
-            raise ValueError('Underlying object was destroyed')
+            raise RuntimeError('Underlying object was destroyed')
         return pointer_as_key(self.joint)
 
     @property
