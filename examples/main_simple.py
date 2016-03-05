@@ -9,71 +9,71 @@ else:
 
 import pygame
 from pygame.locals import (QUIT, KEYUP, KEYDOWN, K_ESCAPE)
-from pybox2d import (World, CircleShape, PolygonShape)
-from pybox2d import (FixtureDef, EdgeShape)
+from pybox2d import (World, FixtureDef)
+from pybox2d import (EdgeShape, CircleShape, PolygonShape)
+
+from renderer import RendererBase
 
 # Box2D deals with meters, but we want to display pixels,
 # so define a conversion factor:
 PPM = 12.0  # pixels per meter
 
-colors = {
-    'static': (255, 255, 255, 255),
-    'kinematic': (127, 127, 127, 255),
-    'dynamic': (127, 100, 100, 255),
-}
 
+class Renderer(RendererBase):
+    colors = {'static': (255, 255, 255, 255),
+              'kinematic': (127, 127, 127, 255),
+              'dynamic': (127, 100, 100, 255),
+              }
 
-def fix_vertices(screen, vertices):
-    screen_width, screen_height = screen.get_width(), screen.get_height()
-    half_width = screen_width / 2.
-    # convert from meters to pixels
-    # flip in y
-    # move over a bit in x
-    return [(int(v0 * PPM + half_width),
-             int(screen_height - v1 * PPM))
-            for v0, v1 in vertices]
+    def __init__(self, screen_width, screen_height):
+        super().__init__()
 
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.screen = pygame.display.set_mode((screen_width, screen_height),
+                                              0, 32)
 
-def draw_edge_shape(screen, body, fixture):
-    edge = fixture.shape
-    vertices = [body.transform * v
-                for v in edge.main_vertices]
-    v0, v1 = fix_vertices(screen, vertices)
-    pygame.draw.line(screen, colors[body.type], v0, v1)
+    def fix_vertices(self, vertices):
+        half_width = self.screen_width / 2.
+        # convert from meters to pixels
+        # flip in y
+        # move over a bit in x
+        return [(int(v0 * PPM + half_width),
+                 int(self.screen_height - v1 * PPM))
+                for v0, v1 in vertices]
 
+    def draw_edge_fixture(self, body, fixture):
+        edge = fixture.shape
+        vertices = [body.transform * v
+                    for v in edge.main_vertices]
+        v0, v1 = self.fix_vertices(vertices)
+        pygame.draw.line(self.screen, self.colors[body.type], v0, v1)
 
-def draw_polygon_shape(screen, body, fixture):
-    polygon = fixture.shape
-    vertices = [body.transform * v
-                for v in polygon.vertices]
-    vertices = fix_vertices(screen, vertices)
-    pygame.draw.polygon(screen, colors[body.type], vertices)
+    def draw_polygon_fixture(self, body, fixture):
+        polygon = fixture.shape
+        vertices = [body.transform * v
+                    for v in polygon.vertices]
+        vertices = self.fix_vertices(vertices)
+        pygame.draw.polygon(self.screen, self.colors[body.type], vertices)
 
-
-def draw_circle_shape(screen, body, fixture):
-    circle = fixture.shape
-    center = fix_vertices(screen, [body.transform * circle.center])[0]
-    pygame.draw.circle(screen, colors[body.type], center,
-                       int(circle.radius * PPM),
-                       width=1)
+    def draw_circle_fixture(self, body, fixture):
+        circle = fixture.shape
+        center = self.fix_vertices([body.transform * circle.center])[0]
+        pygame.draw.circle(self.screen, self.colors[body.type], center,
+                           int(circle.radius * PPM),
+                           width=1)
 
 
 def setup_backend(screen_width=640, screen_height=480):
-    screen = pygame.display.set_mode((screen_width, screen_height), 0, 32)
-
-    draw_registry = {}
-    draw_registry[CircleShape] = draw_circle_shape
-    draw_registry[PolygonShape] = draw_polygon_shape
-    draw_registry[EdgeShape] = draw_edge_shape
-    return screen, draw_registry
+    return Renderer(screen_width, screen_height)
 
 
 def default_keyboard_hook(world, key, down):
     print('key', key, 'pressed (down=', down, ')')
 
 
-def main_loop(screen, world, draw_registry, target_fps=60.0,
-              hooks=None):
+def main_loop(renderer, world, target_fps=60.0, hooks=None):
+    screen = renderer.screen
 
     if hooks is None:
         hooks = {}
@@ -106,8 +106,7 @@ def main_loop(screen, world, draw_registry, target_fps=60.0,
         # Draw the world
         for body in world.bodies:
             for fixture in body.fixtures:
-                draw_function = draw_registry[type(fixture.shape)]
-                draw_function(screen, body, fixture)
+                renderer.draw_fixture(body, fixture)
 
         # Make Box2D simulate the physics of our world for one step.
         world.step(time_step, 10, 10)
@@ -131,14 +130,14 @@ def main(setup_function, target_fps=60.0,
     if 'title' not in world.state and setup_function.__doc__:
         world.state['title'] = setup_function.__doc__
 
-    screen, draw_registry = setup_backend()
+    renderer = setup_backend()
     hooks = {}
 
     if keyboard_hook is not None:
         hooks['keyboard'] = keyboard_hook
 
-    return main_loop(screen=screen, world=world, draw_registry=draw_registry,
-                     target_fps=target_fps, hooks=hooks)
+    return main_loop(renderer=renderer, world=world, target_fps=target_fps,
+                     hooks=hooks)
 
 
 def simple_setup(world):
