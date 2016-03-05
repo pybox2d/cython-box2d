@@ -51,6 +51,38 @@ cdef class Body(Base):
         '''The world position of the center of mass.'''
         return to_vec2(self.thisptr.GetWorldCenter())
 
+    @safe_method
+    def get_world_vector(self, local_vector):
+        '''Get the world coordinates of a vector given the local coordinates.
+
+        Parameters
+        ----------
+        local_vector : Vec2
+            a vector fixed in the body.
+
+        Returns
+        -------
+        world_vector : Vec2
+            the same vector expressed in world coordinates.
+        '''
+        return to_vec2(self.thisptr.GetWorldVector(to_b2vec2(local_vector)))
+
+    @safe_method
+    def get_world_point(self, local_point):
+        '''Get the world coordinates of a point given the local coordinates.
+
+        Parameters
+        ----------
+        local_point : Vec2
+            a point on the body measured relative the the body's origin.
+
+        Returns
+        -------
+        world_point : Vec2
+            the same point expressed in world coordinates.
+        '''
+        return to_vec2(self.thisptr.GetWorldPoint(to_b2vec2(local_point)))
+
     @safe_property
     def local_center(self):
         '''The local position of the center of mass.'''
