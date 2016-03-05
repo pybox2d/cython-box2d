@@ -17,9 +17,9 @@ from pybox2d import (FixtureDef, EdgeShape)
 PPM = 20.0  # pixels per meter
 
 colors = {
-    0: (255, 255, 255, 255),  # static
-    1: (127, 127, 127, 255),  # kinematic
-    2: (127, 100, 100, 255),  # dynamic
+    'static': (255, 255, 255, 255),
+    'kinematic': (127, 127, 127, 255),
+    'dynamic': (127, 100, 100, 255),
 }
 
 def fix_vertices(screen, vertices):

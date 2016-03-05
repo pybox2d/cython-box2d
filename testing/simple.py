@@ -45,9 +45,9 @@ dbody.create_fixture_from_def(fdef)
 
 
 colors = {
-    0: (255, 255, 255, 255),  # static
-    1: (127, 127, 127, 255),  # kinematic
-    2: (127, 100, 100, 255),  # dynamic
+    'static': (255, 255, 255, 255),
+    'kinematic': (127, 127, 127, 255),
+    'dynamic': (127, 100, 100, 255),
 }
 
 # Let's play with extending the shape classes to draw for us.
