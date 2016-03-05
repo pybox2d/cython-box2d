@@ -14,13 +14,14 @@ from pybox2d import (FixtureDef, EdgeShape)
 
 # Box2D deals with meters, but we want to display pixels,
 # so define a conversion factor:
-PPM = 20.0  # pixels per meter
+PPM = 12.0  # pixels per meter
 
 colors = {
     'static': (255, 255, 255, 255),
     'kinematic': (127, 127, 127, 255),
     'dynamic': (127, 100, 100, 255),
 }
+
 
 def fix_vertices(screen, vertices):
     screen_width, screen_height = screen.get_width(), screen.get_height()
@@ -64,7 +65,7 @@ def setup_backend(screen_width=640, screen_height=480):
     return screen, draw_registry
 
 
-def keyboard_hook(world, key, down):
+def default_keyboard_hook(world, key, down):
     print('key', key, 'pressed (down=', down, ')')
 
 
@@ -75,9 +76,9 @@ def main_loop(screen, world, draw_registry, target_fps=60.0,
         hooks = {}
 
     if 'keyboard' not in hooks:
-        hooks['keyboard'] = keyboard_hook
-
-    keyboard_hook = hooks['keyboard']
+        keyboard_hook = default_keyboard_hook
+    else:
+        keyboard_hook = hooks['keyboard']
 
     if 'title' in world.state:
         pygame.display.set_caption(world.state['title'])
@@ -135,9 +136,11 @@ def main(setup_function, target_fps=60.0,
         world.state['title'] = setup_function.__doc__
 
     screen, draw_registry = setup_backend()
-    hooks = {'keyboard': keyboard_hook
-             }
-    print(screen)
+    hooks = {}
+
+    if keyboard_hook is not None:
+        hooks['keyboard'] = keyboard_hook
+
     return main_loop(screen=screen, world=world, draw_registry=draw_registry,
                      target_fps=target_fps, hooks=hooks)
 

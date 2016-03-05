@@ -6,9 +6,9 @@ def setup(world, joint_gravity=10.0):
     world.gravity = (0.0, 0.0)
 
     # The boundaries
-    ground = world.create_static_body(position=(0, 12))
-    ground.create_edge_chain([(-11, -11), (-11, 11),
-                              (11, 11), (11, -11),
+    ground = world.create_static_body(position=(0, 19))
+    ground.create_edge_chain([(-18, -18), (-18, 18),
+                              (18, 18), (18, -18),
                               ],
                              closed=True)
 
