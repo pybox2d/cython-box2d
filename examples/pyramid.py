@@ -1,5 +1,4 @@
-from pybox2d import (FixtureDef, PolygonShape, Transform, Rotation,
-                     Vec2)
+from pybox2d import (FixtureDef, PolygonShape, Vec2)
 
 
 def create_pyramid(world, box_half_size=None, rows=20, start_x=None,
@@ -48,7 +47,6 @@ def setup(world):
                    delta_y=(1.125, 0),
                    density=5.0,
                    )
-
 
 
 if __name__ == '__main__':
