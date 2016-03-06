@@ -26,32 +26,30 @@ def setup(world):
     fixture = FixtureDef(shape=PolygonShape(box=(0.5, 0.5)),
                          density=5, friction=0.2)
 
-    bodies = [
-        world.create_dynamic_body(position=pos, fixtures=fixture,
-                                  body_class=MyBodyClass)
-        for pos in ((-5, 5),
-                    (5, 5),
-                    (5, 15),
-                    (-5, 15))
-    ]
+    bodies = [world.create_dynamic_body(position=pos, fixtures=fixture,
+                                        body_class=MyBodyClass)
+              for pos in ((-5, 5), (5, 5),
+                          (5, 15), (-5, 15))
+              ]
 
     for body, name in zip(bodies, 'ABCD'):
         body.name = name
 
     # Create the joints between each of the bodies and also the ground
     #        bodies                   local anchors
-    sets = [((ground,    bodies[0]), ((-10, 0), (-0.5, -0.5))),
-            ((ground,    bodies[1]), ((10, 0),  (0.5, -0.5))),
-            ((ground,    bodies[2]), ((10, 20), (0.5, 0.5))),
-            ((ground,    bodies[3]), ((-10, 20), (-0.5, 0.5))),
+    sets = [((ground, bodies[0]), ((-10, 0), (-0.5, -0.5))),
+            ((ground, bodies[1]), ((10, 0), (0.5, -0.5))),
+            ((ground, bodies[2]), ((10, 20), (0.5, 0.5))),
+            ((ground, bodies[3]), ((-10, 20), (-0.5, 0.5))),
+
             ((bodies[0], bodies[1]), ((0.5, 0), (-0.5, 0))),
             ((bodies[1], bodies[2]), ((0, 0.5), (0, -0.5))),
             ((bodies[2], bodies[3]), ((-0.5, 0), (0.5, 0))),
             ((bodies[3], bodies[0]), ((0, -0.5), (0, 0.5))),
             ]
 
-    # We will define the positions in the local body coordinates, the length
-    # will automatically be set by the __init__ of the DistanceJointDef
+    # We will define the positions in the local body coordinates, and the
+    # length will be automatically set
     joints = [world.create_distance_joint(bodies, local_anchors=local_anchors,
                                           frequency_hz=4.0,
                                           damping_ratio=0.5)
