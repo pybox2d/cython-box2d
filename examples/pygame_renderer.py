@@ -69,6 +69,9 @@ class PygameRenderer(RendererBase):
         pygame.draw.polygon(self.screen, half_color, vertices, width=0)
         # TODO pygame_sdl2 has issues with non-filled polygons:
         # pygame.draw.polygon(self.screen, color, vertices, width=1.0)
+        for v1, v2 in zip(vertices, vertices[1:]):
+            pygame.draw.aaline(self.screen, color, v1, v2)
+        pygame.draw.aaline(self.screen, color, vertices[-1], vertices[0])
 
     def draw_polygon(self, vertices, color):
         """Draw a wireframe polygon given the screen vertices with the

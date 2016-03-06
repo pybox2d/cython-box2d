@@ -1,3 +1,6 @@
 pybox2d/*.cpp
 *.so
 __pycache__
+build/
+tags
+.cache/
