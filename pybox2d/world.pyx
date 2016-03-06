@@ -322,8 +322,9 @@ cdef class World:
             If unspecified, reference_angle and local_anchors must be
             specified.
         reference_angle : float, optional
-            Reference angle in radians (body_b angle minus body_a angle)
-            Required if 'anchor' is unspecified.
+            Reference angle in radians
+            If unspecified, reference_angle is automatically calculated to be
+                body_b.angle - body_a.angle
         local_anchors : (anchor_a, anchor_b), Vec2, optional
             Local anchor points relative to (body_a, body_b).
             Required if 'anchor' is unspecified.
@@ -350,19 +351,22 @@ cdef class World:
         cdef b2Body *ba=(<Body>body_a).thisptr
         cdef b2Body *bb=(<Body>body_b).thisptr
 
-        if anchor is None:
-            if reference_angle is None or local_anchors is None:
-                raise ValueError('If specifying reference angles or local '
-                                 'anchors, both are required')
-
+        if local_anchors is not None:
             anchora, anchorb = local_anchors
             defn.bodyA = ba
             defn.bodyB = bb
             defn.localAnchorA = to_b2vec2(anchora)
             defn.localAnchorB = to_b2vec2(anchorb)
+
+            if reference_angle is None:
+                reference_angle = body_b.angle - body_a.angle
+
             defn.referenceAngle = reference_angle
-        else:
+        elif anchor is not None:
             defn.Initialize(ba, bb, to_b2vec2(anchor))
+        else:
+            raise ValueError('Must specify either local_anchors or anchor')
+
 
         enable_limit = (angle_limit is not None)
         if angle_limit is None:
@@ -731,7 +735,10 @@ cdef class World:
 
         Two options for initialization:
         1. Specify (world) anchor and axis
-        2. Specify local_anchors, local_axis_a, and reference_angle
+        2. Specify local_anchors, local_axis_a
+
+        If unspecified, reference_angle is automatically calculated to be
+            body_b.angle - body_a.angle
 
         Parameters
         ----------
@@ -788,20 +795,20 @@ cdef class World:
         defn.bodyB = bb
         if anchor is not None or axis is not None:
             if anchor is None or axis is None:
-                raise ValueError('Must specify anchor and axis')
+                raise ValueError('Must specify both anchor and axis')
 
             # Initialize the bodies, anchors, axis, and reference angle using
             # the world anchor and unit world axis.
             defn.Initialize(ba, bb, to_b2vec2(anchor), to_b2vec2(axis))
-        elif (local_anchors is not None or reference_angle is not None or
-                local_axis_a is not None):
+        elif (local_anchors is not None or local_axis_a is not None):
             if local_axis_a is None:
                 local_axis_a = (1.0, 0.0)
 
-            if (local_anchors is None or reference_angle is None or
-                    local_axis_a is None):
-                raise ValueError('Must specify local_anchors, reference_angle, '
-                                 'local_axis_a')
+            if reference_angle is None:
+                reference_angle = body_b.angle - body_a.angle
+
+            if (local_anchors is None or local_axis_a is None):
+                raise ValueError('Must specify local_anchors, local_axis_a')
 
             local_anchor_a, local_anchor_b = local_anchors
             defn.localAnchorA = to_b2vec2(local_anchor_a)
@@ -1000,6 +1007,9 @@ cdef class World:
             softness with a value of 0.
         reference_angle : float, optional
             The bodyB angle minus bodyA angle in the reference state (radians).
+            If unspecified, reference_angle is automatically calculated to be
+                body_b.angle - body_a.angle
+
         '''
         body_a, body_b = bodies
 
