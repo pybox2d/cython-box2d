@@ -533,9 +533,6 @@ cdef class World:
         and the other joint is a prismatic joint, then the ratio will have
         units of length or units of 1/length.
 
-        Warning: You have to manually destroy the gear joint if joint1 or
-        joint2 is destroyed. (#TODO)
-
         Parameters
         ----------
         joints : (joint_a, joint_b), Joint instances
