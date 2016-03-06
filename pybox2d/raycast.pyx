@@ -123,7 +123,8 @@ cdef class RaycastIterable:
         self.new_fixture_event = threading.Event()
         self.response_event = threading.Event()
 
-        self.thread = threading.Thread(target=self.run_raycast, daemon=True)
+        self.thread = threading.Thread(target=self.run_raycast)
+        self.thread.daemon = True
         self.thread.start()
 
         try:
