@@ -1,5 +1,5 @@
 from __future__ import division
-from pybox2d import (CircleShape, EdgeShape, FixtureDef, PolygonShape)
+from pybox2d import (CircleShape, FixtureDef, PolygonShape)
 
 
 def create_bridge(world, ground, size, offset, plank_count, friction=0.6,
@@ -44,10 +44,8 @@ def create_bridge(world, ground, size, offset, plank_count, friction=0.6,
 
 def setup(world):
     '''bridge test'''
-    ground_shape = EdgeShape(vertices=[(-40, 0), (40, 0)])
-    ground = world.create_static_body(
-        fixtures=[FixtureDef(shape=ground_shape)],
-    )
+    ground = world.create_static_body()
+    ground.create_edge_fixture(vertices=[(-40, 0), (40, 0)])
 
     bodies = create_bridge(world, ground=ground,
                            size=(1.0, 0.25),
