@@ -1,6 +1,7 @@
 include "defn/common.pxd"
 include "defn/settings.pxd"
 include "defn/allocator.pxd"
+include "defn/contact.pxd"
 include "defn/collision.pxd"
 include "defn/broadphase.pxd"
 include "defn/math.pxd"

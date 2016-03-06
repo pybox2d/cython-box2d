@@ -1,11 +1,13 @@
 from defn.world cimport b2World
 from defn.joint cimport (b2Joint, b2JointDef, b2RevoluteJointDef)
 
+
 cdef class World:
     cdef b2World *world
     cdef dict _bodies
     cdef dict _joints
     cdef dict _linked_joints
+    cdef dict _contact_monitoring
     cdef object _default_body_class
 
     def __cinit__(self):
@@ -13,6 +15,7 @@ cdef class World:
         self._bodies = {}
         self._joints = {}
         self._linked_joints = {}
+        self._contact_monitoring = {}
 
     def __dealloc__(self):
         if self._joints:
@@ -1234,3 +1237,28 @@ cdef class World:
             etc.)
         '''
         return RaycastIterable(self, point1, point2)
+
+    def monitor_contacts(self, body_class_a, body_class_b):
+        '''Monitor contacts between bodies of body_class_a and body_class_b.
+
+        Contacts will be recorded in body_a.contacts and body_b.contacts after
+        every world.step() call.
+
+        Parameters
+        ----------
+        body_class_a : subclass of Body
+            The body subclass to monitor contacts with...
+        body_class_b : subclass of Body
+            this body subclass.
+        '''
+
+        if not issubclass(body_class_a, Body):
+            raise TypeError('body_class_a must be a subclass of Body')
+        if not issubclass(body_class_b, Body):
+            raise TypeError('body_class_b must be a subclass of Body')
+
+        self._contact_monitoring[body_class_a] = body_class_b
+        self._contact_monitoring[body_class_b] = body_class_a
+
+        # if self._contact_monitoring:
+        #     self.

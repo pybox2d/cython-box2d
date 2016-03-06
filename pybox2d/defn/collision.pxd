@@ -118,6 +118,16 @@ cdef extern from "b2Collision.h":
                                    const b2Vec2& normal, float32 offset, int32 vertexIndexA)
 
 
+
     cdef bool b2TestOverlap(const b2Shape* shapeA, int32 indexA,
                             const b2Shape* shapeB, int32 indexB,
                             const b2Transform& xfA, const b2Transform& xfB)
+
+
+cdef extern from "b2WorldCallbacks.h":
+    # TODO this belongs in world_callbacks.pxd, but i'm having trouble with
+    #      DEF cimports
+    cdef cppclass b2ContactImpulse:
+        float32 normalImpulses[b2_maxManifoldPoints]
+        float32 tangentImpulses[b2_maxManifoldPoints]
+        int32 count
