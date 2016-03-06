@@ -46,8 +46,25 @@ cdef class Vec2:
         else:
             raise ValueError('Can only compare equality of a Vec2')
 
+    def dot(Vec2 self, other):
+        return self.x * other[0] + self.y * other[1]
+
+    @property
+    def length(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    def normalized(self):
+        length = self.length
+        if self.length == 0.0:
+            return Vec2(0.0, 0.0)
+
+        return self / length
+
     def __add__(Vec2 self, other):
         return Vec2(self.x + other[0], self.y + other[1])
+
+    def __neg__(self):
+        return Vec2(-self.x, -self.y)
 
     def __sub__(Vec2 self, other):
         return Vec2(self.x - other[0], self.y - other[1])
@@ -55,8 +72,14 @@ cdef class Vec2:
     def __div__(Vec2 self, other):
         return Vec2(self.x / other, self.y / other)
 
-    def __mul__(Vec2 self, other):
-        return Vec2(self.x * other, self.y * other)
+    def __truediv__(Vec2 self, other):
+        return Vec2(self.x / other, self.y / other)
+
+    def __mul__(a, b):
+        if isinstance(a, Vec2):
+            return Vec2(a.x * b, a.y * b)
+        else:
+            return Vec2(b.x * a, b.y * a)
 
     def __iter__(self):
         return iter((self.x, self.y))
