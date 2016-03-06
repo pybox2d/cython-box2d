@@ -22,12 +22,14 @@ class PygameRenderer(RendererBase):
               'dynamic': (127, 100, 100, 255),
               }
 
-    def __init__(self, screen_width, screen_height, ppm=12.0):
+    def __init__(self, screen_width, screen_height, ppm=12.0,
+                 target_fps=60.0):
         super().__init__()
 
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.ppm = ppm
+        self.target_fps = target_fps
         self.screen = pygame.display.set_mode((screen_width, screen_height),
                                               0, 32)
 

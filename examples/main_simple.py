@@ -1,3 +1,4 @@
+import time
 from pygame_renderer import PygameRenderer as Renderer
 
 import pygame
@@ -6,7 +7,8 @@ from pygame.locals import (QUIT, KEYUP, KEYDOWN, K_ESCAPE)
 from pybox2d import World
 
 
-def setup_backend(screen_width=640, screen_height=480, ppm=12.0):
+def setup_backend(screen_width=640, screen_height=480, ppm=12.0,
+                  target_fps=60.0):
     '''Setup the backend
 
     Parameters
@@ -18,13 +20,16 @@ def setup_backend(screen_width=640, screen_height=480, ppm=12.0):
     ppm : float
         Box2D deals with meters, but we want to display pixels, so define a
         conversion factor of pixels per meter
+    target_fps : float
+        Target frames per second to reach
 
     Returns
     -------
     renderer : subclass of RendererBase
         The renderer instance
     '''
-    return Renderer(screen_width, screen_height, ppm=ppm)
+    return Renderer(screen_width, screen_height, ppm=ppm,
+                    target_fps=target_fps)
 
 
 def default_keyboard_hook(world, key, down):
@@ -67,6 +72,9 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
     clock = pygame.time.Clock()
     time_step = 1.0 / target_fps
 
+    render_time = 0.0
+    frame_count = 0
+
     while running:
         # Check the event queue
         for event in pygame.event.get():
@@ -80,6 +88,7 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
 
         screen.fill((0, 0, 0, 0))
 
+        t0 = time.time()
         # Draw the world
         for body in world.bodies:
             for fixture in body.fixtures:
@@ -89,6 +98,16 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
             body1, body2 = joint.bodies
             renderer.draw_line_segment(body1.position, body2.position,
                                        (255, 255, 255, 127))
+
+        render_time += time.time() - t0
+        frame_count += 1
+
+        if render_time > 10.0:
+            print('Rendering statistics: %d frames in %f sec (%f fps)'
+                  '' % (frame_count, render_time, frame_count / render_time))
+            render_time = 0.0
+            frame_count = 0
+
 
         pre_step_hook(world, renderer)
 

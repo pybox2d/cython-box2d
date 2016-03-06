@@ -2,6 +2,11 @@ from pybox2d import (CircleShape, PolygonShape, EdgeShape)
 
 
 class RendererBase(object):
+    screen_width = 640
+    screen_height = 480
+    ppm = 10.0
+    target_fps = 60.0
+
     def __init__(self):
         self.draw_registry = {}
         self.draw_registry[CircleShape] = self.draw_circle_fixture
