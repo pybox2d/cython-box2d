@@ -1,6 +1,8 @@
 from defn.common cimport *
 
 cdef extern from "b2Math.h":
+    inline float32 b2Distance(const b2Vec2& a, const b2Vec2& b)
+
     cdef cppclass b2Vec2:
         b2Vec2()
         b2Vec2(float32 x, float32 y)

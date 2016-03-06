@@ -2,16 +2,16 @@ from pybox2d import (FixtureDef, PolygonShape, Body)
 
 
 class MyBodyClass(Body):
-    # test_value = 'abcd'
+    name = None
 
     def destroyed(self):
-        print("{}: I'm being destroyed! ({})".format(self, self.position))
+        print("{}: I'm being destroyed! ({})".format(self.name, self.position))
 
-    # it's possible to extend the repr, like so:
-    # def _get_repr_info(self):
-    #     repr_info = super(MyBodyClass, self)._get_repr_info()
-    #     repr_info.append(('test_value', self.test_value))
-    #     return repr_info
+    #  it's possible to extend the repr, like so:
+    def _get_repr_info(self):
+        repr_info = super(MyBodyClass, self)._get_repr_info()
+        repr_info.append(('name', self.name))
+        return repr_info
 
 
 def setup(world):
@@ -34,6 +34,9 @@ def setup(world):
                     (5, 15),
                     (-5, 15))
     ]
+
+    for body, name in zip(bodies, 'ABCD'):
+        body.name = name
 
     # Create the joints between each of the bodies and also the ground
     #        bodies                   local anchors

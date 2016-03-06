@@ -379,7 +379,7 @@ cdef class World:
 
     def create_distance_joint(self, bodies, *, collide_connected=False,
                               anchors=None, damping_ratio=0.0,
-                              frequency_hz=0.0, length=1.0,
+                              frequency_hz=0.0, length=None,
                               local_anchors=None):
         '''Create a distance joint between two bodies
 
@@ -388,9 +388,8 @@ cdef class World:
         rod.
 
         Two options for initialization of the joint:
-        1. set local_anchors, and length manually
-        2. set anchors in world coordinates, and length will be calculated
-           automatically
+        1. set local_anchors (and optionally length)
+        2. set anchors in world coordinates, length is calculated automatically
 
         Parameters
         ----------
@@ -440,6 +439,9 @@ cdef class World:
             # anchors.
             defn.localAnchorA = to_b2vec2(local_anchor_a)
             defn.localAnchorB = to_b2vec2(local_anchor_b)
+            if length is None:
+                length = b2Distance(ba.GetWorldPoint(defn.localAnchorA),
+                                    bb.GetWorldPoint(defn.localAnchorB))
             defn.length = length
         elif anchors is not None:
             # Initialize the bodies, anchors, and length using the world anchors.
