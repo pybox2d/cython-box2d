@@ -23,19 +23,11 @@ cdef class Joint(Base):
         '''The bodies attached to this joint'''
         return (self.body_a, self.body_b)
 
-    @property
+    @safe_property
     def anchors(self):
-        return (self.anchor_a, self.anchor_b)
-
-    @safe_property
-    def anchor_a(self):
-        '''Get the anchor point on bodyA in world coordinates.'''
-        return to_vec2(self.joint.GetAnchorA())
-
-    @safe_property
-    def anchor_b(self):
         '''Get the anchor point on bodyB in world coordinates.'''
-        return to_vec2(self.joint.GetAnchorB())
+        return (to_vec2(self.joint.GetAnchorA()),
+                to_vec2(self.joint.GetAnchorB()))
 
     @safe_method
     def get_reaction_force(self, inv_dt):
@@ -64,10 +56,8 @@ cdef class Joint(Base):
 
     cpdef _get_repr_info(self):
         return [('valid', self.valid),
-                ('body_a', self.body_a),
-                ('anchor_a', self.anchor_a),
-                ('body_b', self.body_b),
-                ('anchor_b', self.anchor_b),
+                ('bodies', self.bodies),
+                ('anchors', self.anchors),
                 ('active', self.active),
                 ('collide_connected', self.collide_connected),
                 ]
@@ -120,12 +110,12 @@ cdef class RevoluteJoint(Joint):
         return (<b2RevoluteJoint *>self.joint).GetReferenceAngle()
 
     @safe_property
-    def joint_angle(self):
+    def angle(self):
         '''The current joint angle, in radians.'''
         return (<b2RevoluteJoint *>self.joint).GetJointAngle()
 
     @safe_property
-    def joint_speed(self):
+    def speed(self):
         '''The current joint angle speed in radians per second.'''
         return (<b2RevoluteJoint *>self.joint).GetJointSpeed()
 
@@ -136,6 +126,17 @@ cdef class RevoluteJoint(Joint):
             return (<b2RevoluteJoint *>self.joint).IsLimitEnabled()
 
         (<b2RevoluteJoint *>self.joint).EnableLimit(enable)
+
+    @safe_rw_property
+    def limits(self, limits):
+        '''The (lower joint limit, upper joint limit) in radians.'''
+        if limits is None:
+            lower_limit = (<b2RevoluteJoint *>self.joint).GetLowerLimit()
+            upper_limit = (<b2RevoluteJoint *>self.joint).GetUpperLimit()
+            return lower_limit, upper_limit
+
+        lower_limit, upper_limit = limits
+        (<b2RevoluteJoint *>self.joint).SetLimits(lower_limit, upper_limit)
 
     @safe_rw_property
     def lower_limit(self, limit):
@@ -180,11 +181,10 @@ cdef class RevoluteJoint(Joint):
     cpdef _get_repr_info(self):
         repr_info = Joint._get_repr_info(self)
         repr_info.extend([('reference_angle', self.reference_angle),
-                          ('joint_angle', self.joint_angle),
-                          ('joint_speed', self.joint_speed),
+                          ('angle', self.angle),
+                          ('speed', self.speed),
                           ('limit_enabled', self.limit_enabled),
-                          ('lower_limit', self.lower_limit),
-                          ('upper_limit', self.upper_limit),
+                          ('limits', self.limits),
                           ('motor_enabled', self.motor_enabled),
                           ('motor_speed', self.motor_speed),
                           ('max_motor_torque', self.max_motor_torque),
@@ -219,36 +219,27 @@ cdef class DistanceJoint(Joint):
         (<b2DistanceJoint *>self.joint).SetLength(length)
 
     @safe_property
-    def local_anchor_a(self):
-        '''The local anchor point relative to bodyA's origin.'''
-        return to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorA())
-
-    @safe_property
-    def local_anchor_b(self):
-        '''The local anchor point relative to bodyB's origin.'''
-        return to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorB())
+    def local_anchors(self):
+        '''The local anchor points relative to body_a, body_b's origins.'''
+        return (to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorA()),
+                to_vec2((<b2DistanceJoint *>self.joint).GetLocalAnchorB()))
 
     cpdef _get_repr_info(self):
         repr_info = Joint._get_repr_info(self)
         repr_info.extend([('damping_ratio', self.damping_ratio),
                           ('frequency', self.frequency),
                           ('length', self.length),
-                          ('local_anchor_a', self.local_anchor_a),
-                          ('local_anchor_b', self.local_anchor_b),
+                          ('local_anchors', self.local_anchors),
                           ])
         return repr_info
 
 
 cdef class FrictionJoint(Joint):
     @safe_property
-    def local_anchor_a(self):
-        '''The local anchor point relative to bodyA's origin.'''
-        return to_vec2((<b2FrictionJoint *>self.joint).GetLocalAnchorA())
-
-    @safe_property
-    def local_anchor_b(self):
-        '''The local anchor point relative to bodyB's origin.'''
-        return to_vec2((<b2FrictionJoint *>self.joint).GetLocalAnchorB())
+    def local_anchors(self):
+        '''The local anchor points relative to body_a, body_b's origins.'''
+        return (to_vec2((<b2FrictionJoint *>self.joint).GetLocalAnchorA()),
+                to_vec2((<b2FrictionJoint *>self.joint).GetLocalAnchorB()))
 
     @safe_rw_property
     def max_force(self, max_force):
@@ -268,8 +259,7 @@ cdef class FrictionJoint(Joint):
 
     cpdef _get_repr_info(self):
         repr_info = Joint._get_repr_info(self)
-        repr_info.extend([('local_anchor_a', self.local_anchor_a),
-                          ('local_anchor_b', self.local_anchor_b),
+        repr_info.extend([('local_anchors', self.local_anchors),
                           ('max_force', self.max_force),
                           ('max_torque', self.max_torque),
                           ])
@@ -410,14 +400,10 @@ cdef class PrismaticJoint(Joint):
         return (<b2PrismaticJoint *>self.joint).IsLimitEnabled()
 
     @safe_property
-    def local_anchor_a(self):
-        '''The local anchor point relative to bodyA's origin.'''
-        return to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAnchorA())
-
-    @safe_property
-    def local_anchor_b(self):
-        '''The local anchor point relative to bodyB's origin.'''
-        return to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAnchorB())
+    def local_anchors(self):
+        '''The local anchor points relative to body_a, body_b's origins.'''
+        return (to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAnchorA()),
+                to_vec2((<b2PrismaticJoint *>self.joint).GetLocalAnchorB()))
 
     @safe_property
     def local_axis_a(self):
@@ -457,6 +443,17 @@ cdef class PrismaticJoint(Joint):
         return (<b2PrismaticJoint *>self.joint).GetReferenceAngle()
 
     @safe_rw_property
+    def limits(self, limits):
+        '''The (lower joint limit, upper joint limit) in meters.'''
+        if limits is None:
+            lower_limit = (<b2PrismaticJoint *>self.joint).GetLowerLimit()
+            upper_limit = (<b2PrismaticJoint *>self.joint).GetUpperLimit()
+            return lower_limit, upper_limit
+
+        lower_limit, upper_limit = limits
+        (<b2PrismaticJoint *>self.joint).SetLimits(lower_limit, upper_limit)
+
+    @safe_rw_property
     def lower_limit(self, limit):
         '''The lower joint limit in meters.'''
         if limit is None:
@@ -478,15 +475,13 @@ cdef class PrismaticJoint(Joint):
             ('joint_speed', self.joint_speed),
             ('joint_translation', self.joint_translation),
             ('limit_enabled', self.limit_enabled),
-            ('local_anchor_a', self.local_anchor_a),
-            ('local_anchor_b', self.local_anchor_b),
+            ('local_anchors', self.local_anchors),
             ('local_axis_a', self.local_axis_a),
             ('max_motor_force', self.max_motor_force),
             ('motor_enabled', self.motor_enabled),
             ('motor_speed', self.motor_speed),
             ('reference_angle', self.reference_angle),
-            ('lower_limit', self.lower_limit),
-            ('upper_limit', self.upper_limit),
+            ('limits', self.limits),
             ])
 
         return repr_info
@@ -494,34 +489,22 @@ cdef class PrismaticJoint(Joint):
 
 cdef class PulleyJoint(Joint):
     @safe_property
-    def current_length_a(self):
-        '''Get the current length of the segment attached to bodyA.'''
-        return (<b2PulleyJoint *>self.joint).GetCurrentLengthA()
+    def current_lengths(self):
+        '''Get the current length of the segment attached to bodyA, bodyB.'''
+        return ((<b2PulleyJoint *>self.joint).GetCurrentLengthA(),
+                (<b2PulleyJoint *>self.joint).GetCurrentLengthB())
 
     @safe_property
-    def current_length_b(self):
-        '''Get the current length of the segment attached to bodyB.'''
-        return (<b2PulleyJoint *>self.joint).GetCurrentLengthB()
+    def ground_anchors(self):
+        '''Get the ground anchors.'''
+        return (to_vec2((<b2PulleyJoint *>self.joint).GetGroundAnchorA()),
+                to_vec2((<b2PulleyJoint *>self.joint).GetGroundAnchorB()))
 
     @safe_property
-    def ground_anchor_a(self):
-        '''Get the first ground anchor.'''
-        return to_vec2((<b2PulleyJoint *>self.joint).GetGroundAnchorA())
-
-    @safe_property
-    def ground_anchor_b(self):
-        '''Get the second ground anchor.'''
-        return to_vec2((<b2PulleyJoint *>self.joint).GetGroundAnchorB())
-
-    @safe_property
-    def length_a(self):
-        '''Get the current length of the segment attached to bodyA.'''
-        return (<b2PulleyJoint *>self.joint).GetLengthA()
-
-    @safe_property
-    def length_b(self):
-        '''Get the current length of the segment attached to bodyB.'''
-        return (<b2PulleyJoint *>self.joint).GetLengthB()
+    def lengths(self):
+        '''Get the current length of the segment attached to the bodies.'''
+        return ((<b2PulleyJoint *>self.joint).GetLengthA(),
+                (<b2PulleyJoint *>self.joint).GetLengthB())
 
     @safe_property
     def ratio(self):
@@ -532,12 +515,9 @@ cdef class PulleyJoint(Joint):
         repr_info = Joint._get_repr_info(self)
 
         repr_info.extend([
-            ('current_length_a', self.current_length_a),
-            ('current_length_b', self.current_length_b),
-            ('ground_anchor_a', self.ground_anchor_a),
-            ('ground_anchor_b', self.ground_anchor_b),
-            ('length_a', self.length_a),
-            ('length_b', self.length_b),
+            ('current_lengths', self.current_lengths),
+            ('ground_anchors', self.ground_anchors),
+            ('lengths', self.lengths),
             ('ratio', self.ratio),
             ])
         return repr_info
@@ -550,14 +530,10 @@ cdef class RopeJoint(Joint):
         return (<b2RopeJoint *>self.joint).GetLimitState()
 
     @safe_property
-    def local_anchor_a(self):
-        '''The local anchor point relative to bodyA's origin.'''
-        return to_vec2((<b2RopeJoint *>self.joint).GetLocalAnchorA())
-
-    @safe_property
-    def local_anchor_b(self):
-        '''The local anchor point relative to bodyB's origin.'''
-        return to_vec2((<b2RopeJoint *>self.joint).GetLocalAnchorB())
+    def local_anchors(self):
+        '''The local anchor points relative to body_a, body_b's origins.'''
+        return (to_vec2((<b2RopeJoint *>self.joint).GetLocalAnchorA()),
+                to_vec2((<b2RopeJoint *>self.joint).GetLocalAnchorB()))
 
     @safe_rw_property
     def max_length(self, max_length):
@@ -571,8 +547,7 @@ cdef class RopeJoint(Joint):
         repr_info = Joint._get_repr_info(self)
 
         repr_info.extend([('limit_state', self.limit_state),
-                          ('local_anchor_a', self.local_anchor_a),
-                          ('local_anchor_b', self.local_anchor_b),
+                          ('local_anchors', self.local_anchors),
                           ('max_length', self.max_length),
                           ])
         return repr_info
@@ -596,14 +571,10 @@ cdef class WeldJoint(Joint):
         (<b2WeldJoint *>self.joint).SetFrequency(frequency)
 
     @safe_property
-    def local_anchor_a(self):
-        '''The local anchor point relative to bodyA's origin.'''
-        return to_vec2((<b2WeldJoint *>self.joint).GetLocalAnchorA())
-
-    @safe_property
-    def local_anchor_b(self):
-        '''The local anchor point relative to bodyB's origin.'''
-        return to_vec2((<b2WeldJoint *>self.joint).GetLocalAnchorB())
+    def local_anchors(self):
+        '''The local anchor points relative to body_a, body_b's origins.'''
+        return (to_vec2((<b2WeldJoint *>self.joint).GetLocalAnchorA()),
+                to_vec2((<b2WeldJoint *>self.joint).GetLocalAnchorB()))
 
     @safe_property
     def reference_angle(self):
@@ -615,8 +586,7 @@ cdef class WeldJoint(Joint):
 
         repr_info.extend([('damping_ratio', self.damping_ratio),
                           ('frequency', self.frequency),
-                          ('local_anchor_a', self.local_anchor_a),
-                          ('local_anchor_b', self.local_anchor_b),
+                          ('local_anchors', self.local_anchors),
                           ('reference_angle', self.reference_angle),
                           ])
         return repr_info
@@ -635,14 +605,10 @@ cdef class WheelJoint(Joint):
         return (<b2WheelJoint *>self.joint).GetJointTranslation()
 
     @safe_property
-    def local_anchor_a(self):
-        '''The local anchor point relative to bodyA's origin.'''
-        return to_vec2((<b2WheelJoint *>self.joint).GetLocalAnchorA())
-
-    @safe_property
-    def local_anchor_b(self):
-        '''The local anchor point relative to bodyB's origin.'''
-        return to_vec2((<b2WheelJoint *>self.joint).GetLocalAnchorB())
+    def local_anchors(self):
+        '''The local anchor points relative to body_a, body_b's origins.'''
+        return (to_vec2((<b2WheelJoint *>self.joint).GetLocalAnchorA()),
+                to_vec2((<b2WheelJoint *>self.joint).GetLocalAnchorB()))
 
     @safe_property
     def local_axis_a(self):
@@ -698,8 +664,7 @@ cdef class WheelJoint(Joint):
         repr_info.extend([
             ('joint_speed', self.joint_speed),
             ('joint_translation', self.joint_translation),
-            ('local_anchor_a', self.local_anchor_a),
-            ('local_anchor_b', self.local_anchor_b),
+            ('local_anchors', self.local_anchors),
             ('local_axis_a', self.local_axis_a),
             ('max_motor_torque', self.max_motor_torque),
             ('motor_enabled', self.motor_enabled),
