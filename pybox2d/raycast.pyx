@@ -24,13 +24,16 @@ cdef cppclass RayCastCallback(b2RayCastCallback):
 
 
 
-RaycastTuple = namedtuple('RaycastTuple', 'body fixture point normal fraction')
-RaycastTuple.__doc__ = '''RaycastTuple
+_RaycastTuple = namedtuple('RaycastTuple', 'body fixture point normal fraction')
+class RaycastTuple(_RaycastTuple):
+    '''RaycastTuple
 
-fixture: the fixture hit by the ray
-point: the point of initial intersection
-normal: the normal vector at the point of intersection
-'''
+    fixture: the fixture hit by the ray
+    point: the point of initial intersection
+    normal: the normal vector at the point of intersection
+    '''
+    __slots__ = ()
+    # ref: http://stackoverflow.com/questions/1606436
 
 
 class RaycastResponseWrapper(Base):
