@@ -7,11 +7,13 @@ cdef class Body(Base):
     cdef public object data
     cdef dict _fixtures
     cdef list _joints
+    cdef public list monitor_contacts
 
     def __cinit__(self):
         self.data = None
         self._fixtures = {}
         self._joints = []
+        self.monitor_contacts = []
 
     def __init__(self):
         pass

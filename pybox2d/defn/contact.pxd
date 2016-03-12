@@ -22,10 +22,8 @@ cdef extern from "b2Contact.h":
         bool IsEnabled() const
         b2Contact* GetNext()
         const b2Contact* GetNext() const
-        b2Fixture* GetFixtureA()
         const b2Fixture* GetFixtureA() const
         int32 GetChildIndexA() const
-        b2Fixture* GetFixtureB()
         const b2Fixture* GetFixtureB() const
         int32 GetChildIndexB() const
         void SetFriction(float32 friction)

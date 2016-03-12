@@ -1,7 +1,7 @@
 from __future__ import division
 
 import math
-from pybox2d import Body
+from pybox2d import (Body, ContactBeginInfo, ContactEndInfo)
 
 
 class GroundArea(Body):
@@ -23,7 +23,7 @@ class Tire(Body):
         self.max_backward_speed = max_backward_speed
         self.max_drive_force = max_drive_force
         self.max_lateral_impulse = max_lateral_impulse
-        self.ground_areas = []
+        self.ground_areas = set()
 
         self.create_polygon_fixture(box=dimensions, density=density)
 
@@ -90,17 +90,17 @@ class Tire(Body):
 
         self.apply_torque(desired_torque, True)
 
-    def add_ground_area(self, ud):
-        if ud not in self.ground_areas:
-            self.ground_areas.append(ud)
-            self.update_traction()
-
-    def remove_ground_area(self, ud):
-        if ud in self.ground_areas:
-            self.ground_areas.remove(ud)
-            self.update_traction()
-
     def update_traction(self):
+        new_contacts = [contact for contact in self.monitor_contacts
+                        if isinstance(contact, ContactBeginInfo)]
+
+        for contact in self.monitor_contacts:
+            ground = contact.get_other_body(self)
+            if isinstance(contact, ContactBeginInfo):
+                self.ground_areas.add(ground)
+            else:
+                self.ground_areas.remove(ground)
+
         if not self.ground_areas:
             self.current_traction = 1
         else:
@@ -239,6 +239,11 @@ def pre_step(world, renderer):
     for car in world.state['cars']:
         car.update(keys=world.state['key_status'],
                    hz=renderer.target_fps)
+        for i, tire in enumerate(car.tires):
+            # for contact in tire.monitor_contacts:
+            #     print('tire monitor contacts', i,
+            #           [body.__class__.__name__ for body in contact.bodies])
+            tire.update_traction()
 
 
 def pre_render(world, renderer):

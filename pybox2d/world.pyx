@@ -158,6 +158,10 @@ cdef class World:
         position_iterations :
             Number of iterations for the position constraint solver.
         '''
+        if self._contact_listener != NULL and self._monitor_mode == 'bulk':
+            for body in self._bodies.values():
+                del body.monitor_contacts[:]
+
         self.world.Step(time_step, velocity_iterations, position_iterations)
 
     def create_body_from_def(self, BodyDef body_defn, *, body_class=None):
@@ -1281,14 +1285,14 @@ cdef class World:
         See MonitorModeType
         '''
         def __get__(self):
-            return self._monitor_mode.value
+            return self._monitor_mode
 
         def __set__(self, mode):
             was_enabled = (self._contact_listener != NULL)
             if was_enabled:
                 self.disable_contact_monitoring()
 
-            self._monitor_mode = MonitorModeType(mode)
+            self._monitor_mode = MonitorModeType(mode).value
 
             if was_enabled:
                 self.enable_contact_monitoring()
@@ -1408,13 +1412,43 @@ cdef class World:
         if allow_disable and not self._contact_classes:
             self.disable_contact_monitoring()
 
+    cdef _filter_contact(self, b2Contact *contact):
+        cdef const b2Body *bptr_a = contact.GetFixtureA().GetBody()
+
+        # TODO this dict access is done twice, the other time in
+        #      ContactInfo._setup
+        body_a = self._bodies[pointer_as_key(<void*>bptr_a)]
+
+        # TODO some level of intelligent caching, this is really bad
+        cls_a = body_a.__class__
+        if cls_a in self._contact_classes:
+            return True
+
+        for cls in self._contact_classes.keys():
+            if issubclass(cls_a, cls):
+                return True
+
+        # contact classes contain both a<->b and b<->a, so only need to
+        # check a
+        return False
+
     cdef _begin_contact(self, b2Contact *contact):
-        print('begin contact')
-        pass
+        cdef ContactBeginInfo c = ContactBeginInfo()
+        if self._filter_contact(contact):
+            c._setup(self, contact)
+            if self._monitor_mode == 'bulk':
+                body_a, body_b = c.bodies
+                body_a.monitor_contacts.append(c)
+                body_b.monitor_contacts.append(c)
 
     cdef _end_contact(self, b2Contact *contact):
-        print('end contact')
-        pass
+        cdef ContactEndInfo c = ContactEndInfo()
+        if self._filter_contact(contact):
+            c._setup(self, contact)
+            if self._monitor_mode == 'bulk':
+                body_a, body_b = c.bodies
+                body_a.monitor_contacts.append(c)
+                body_b.monitor_contacts.append(c)
 
     cdef _pre_solve(self, b2Contact *contact, const b2Manifold *old_manifold):
         pass

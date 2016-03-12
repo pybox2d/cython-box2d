@@ -1,5 +1,8 @@
 from cpython.ref cimport PyObject, Py_INCREF, Py_DECREF
 from defn.world_callbacks cimport b2ContactListener
+from collections import namedtuple
+
+
 
 # TODO: inheritance with cdef cppclass? super().__init__() doesn't work,
 #       c++-ish syntax doesn't work either
@@ -103,5 +106,82 @@ callbacks: get begin_contact and end_contact callbacks on monitored body
            classes
 full_callbacks: get begin_contact, end_contact, pre_solve, and post_solve
                 callbacks on monitored body classes
-'''
-    )
+''')
+
+
+
+cdef class ContactInfo(Base):
+    '''Contact information
+
+    Attributes
+    ----------
+    body_a : Body
+        The first body in the contact event
+    body_b : Body
+        The second body in the contact event
+    fixture_a : Fixture
+        The fixture of body_a in the contact event
+    fixture_b : Fixture
+        The fixture of body_b in the contact event
+    '''
+    cdef public Body body_a
+    cdef public Body body_b
+    cdef public Fixture fixture_a
+    cdef public Fixture fixture_b
+    cdef public float32 friction
+    cdef public float32 restitution
+    cdef public float32 tangent_speed
+
+    cdef _setup(self, World world, b2Contact *contact):
+        cdef const b2Fixture *fptr_a = contact.GetFixtureA()
+        cdef const b2Body *bptr_a = fptr_a.GetBody()
+
+        cdef const b2Fixture *fptr_b = contact.GetFixtureB()
+        cdef const b2Body *bptr_b = fptr_b.GetBody()
+
+        self.body_a = world._bodies[pointer_as_key(<void*>bptr_a)]
+        self.fixture_a = self.body_a._fixtures[pointer_as_key(<void*>fptr_a)]
+        self.body_b = world._bodies[pointer_as_key(<void*>bptr_b)]
+        self.fixture_b = self.body_b._fixtures[pointer_as_key(<void*>fptr_b)]
+
+        self.friction = contact.GetFriction()
+        self.restitution = contact.GetRestitution()
+        self.tangent_speed = contact.GetTangentSpeed()
+
+    @property
+    def bodies(self):
+        return (self.body_a, self.body_b)
+
+    @property
+    def fixtures(self):
+        return (self.fixture_a, self.fixture_b)
+
+    cpdef _get_repr_info(self):
+        slots = ['body_a', 'body_b', 'fixture_a', 'fixture_b',
+                 'friction', 'restitution', 'tangent_speed']
+        return [(attr, getattr(self, attr))
+                for attr in slots]
+
+    def get_other_body(self, Body body):
+        if body is self.body_a:
+            return self.body_b
+        else:
+            return self.body_a
+
+
+cdef class ContactBeginInfo(ContactInfo):
+    '''ContactBeginInfo
+
+    Attributes
+    ----------
+    '''
+    pass
+
+
+cdef class ContactEndInfo(ContactInfo):
+    '''ContactEndInfo
+
+    Attributes
+    ----------
+    '''
+    pass
