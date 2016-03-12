@@ -157,8 +157,8 @@ cdef class ContactInfo(Base):
         return (self.fixture_a, self.fixture_b)
 
     cpdef _get_repr_info(self):
-        slots = ['body_a', 'body_b', 'fixture_a', 'fixture_b',
-                 'friction', 'restitution', 'tangent_speed']
+        slots = ['bodies', 'fixtures', 'friction', 'restitution',
+                 'tangent_speed']
         return [(attr, getattr(self, attr))
                 for attr in slots]
 
