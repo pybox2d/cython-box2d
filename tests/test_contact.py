@@ -74,3 +74,6 @@ def test_bulk_contact(world):
     assert set(contact_data(body1)) == {'1', '2'}
     assert set(contact_data(body2)) == {'1', '2'}
     assert len(body3.monitor_contacts) == 0
+
+    c0 = body1.my_contacts[0]
+    print(c0)

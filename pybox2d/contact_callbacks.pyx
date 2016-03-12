@@ -136,6 +136,12 @@ cdef class ContactID(Base):
         self.type_b = type_b
         self.key = key
 
+    cpdef _get_repr_info(self):
+        return [(attr, getattr(self, attr))
+                for attr in ['type_a', 'type_b',
+                             'index_a', 'index_b',
+                             'key']]
+
     @staticmethod
     cdef from_b2ContactID(b2ContactID &b2id):
         return ContactID(b2id.cf.indexA, b2id.cf.indexB,
@@ -158,11 +164,22 @@ cdef class ManifoldPoint(Base):
         mp.contact_id = ContactID.from_b2ContactID(b2p.id)
         return mp
 
+    cpdef _get_repr_info(self):
+        return [(attr, getattr(self, attr))
+                for attr in ['local_point', 'normal_impulse',
+                             'tangent_impulse', 'contact_id']
+                ]
+
 
 cdef class WorldManifold(Base):
     cdef public Vec2 normal
     cdef public tuple points
     cdef public tuple separations
+
+    cpdef _get_repr_info(self):
+        return [(attr, getattr(self, attr))
+                for attr in ['normal', 'points', 'separations']
+                ]
 
 
 cdef class Manifold(Base):
@@ -191,6 +208,12 @@ cdef class Manifold(Base):
     '''
     cdef b2Manifold *_manifold
 
+    cpdef _get_repr_info(self):
+        return [(attr, getattr(self, attr))
+                for attr in ['points', 'local_normal', 'local_point',
+                             'type_']
+                ]
+
     @property
     def points(self):
         return [ManifoldPoint.from_b2ManifoldPoint(self._manifold.points[point])
@@ -206,7 +229,7 @@ cdef class Manifold(Base):
 
     @property
     def type_(self):
-        return ManifoldType(self._manifold.type)
+        return str(ManifoldType(self._manifold.type))
 
     @staticmethod
     cdef from_b2manifold(b2Manifold *b2manifold):
@@ -292,10 +315,10 @@ cdef class ContactInfo(Base):
         return (self.child_index_a, self.child_index_b)
 
     cpdef _get_repr_info(self):
-        slots = ['bodies', 'fixtures', 'friction', 'restitution',
-                 'tangent_speed']
         return [(attr, getattr(self, attr))
-                for attr in slots]
+                for attr in ['bodies', 'fixtures', 'friction', 'restitution',
+                             'tangent_speed', 'child_indices', 'enabled',
+                             'touching', 'manifold']]
 
     def get_other_body(self, Body body):
         if body is self.body_a:
