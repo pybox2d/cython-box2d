@@ -182,6 +182,30 @@ cdef class WorldManifold(Base):
                 ]
 
 
+cdef class ContactImpulse(Base):
+    cdef readonly tuple normal_impulses
+    cdef readonly tuple tangent_impulses
+
+    def __init__(self, normal_impulses=None, tangent_impulses=None):
+        self.normal_impulses = normal_impulses
+        self.tangent_impulses = tangent_impulses
+
+    cpdef _get_repr_info(self):
+        return [(attr, getattr(self, attr))
+                for attr in ['normal_impulses', 'tangent_impulses']
+                ]
+
+    @staticmethod
+    cdef from_b2ContactImpulse(const b2ContactImpulse *b2impulse):
+        normal = tuple(b2impulse.normalImpulses[i]
+                       for i in range(b2impulse.count))
+        tangent = tuple(b2impulse.tangentImpulses[i]
+                        for i in range(b2impulse.count))
+        impulse = ContactImpulse(normal_impulses=normal,
+                                 tangent_impulses=tangent)
+        return impulse
+
+
 cdef class Manifold(Base):
     '''
     A manifold for two touching convex shapes.
@@ -232,9 +256,9 @@ cdef class Manifold(Base):
         return str(ManifoldType(self._manifold.type))
 
     @staticmethod
-    cdef from_b2manifold(b2Manifold *b2manifold):
+    cdef from_b2Manifold(const b2Manifold *b2manifold):
         manifold = Manifold()
-        manifold._manifold = b2manifold
+        manifold._manifold = <b2Manifold *>b2manifold
         return manifold
 
 
@@ -296,7 +320,7 @@ cdef class ContactInfo(Base):
         a segmentation fault (or unexpected results) will occur
         '''
         if self._manifold is None:
-            self._manifold = Manifold.from_b2manifold(self._b2manifold)
+            self._manifold = Manifold.from_b2Manifold(self._b2manifold)
         return self._manifold
 
     @property
@@ -328,18 +352,16 @@ cdef class ContactInfo(Base):
 
 
 cdef class ContactBeginInfo(ContactInfo):
-    '''ContactBeginInfo
-
-    Attributes
-    ----------
-    '''
     pass
 
 
 cdef class ContactEndInfo(ContactInfo):
-    '''ContactEndInfo
+    pass
 
-    Attributes
-    ----------
-    '''
+
+cdef class ContactPreSolveInfo(ContactInfo):
+    pass
+
+
+cdef class ContactPostSolveInfo(ContactInfo):
     pass

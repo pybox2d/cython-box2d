@@ -1475,11 +1475,25 @@ cdef class World:
             body_a.contact_end(c)
             body_b.contact_end(c)
 
-    cdef _pre_solve(self, b2Contact *contact, const b2Manifold *old_manifold):
-        pass
+    cdef _pre_solve(self, b2Contact *contact, const b2Manifold *b2manifold):
+        cdef ContactPreSolveInfo c = ContactPreSolveInfo()
+        if self._filter_contact(contact):
+            c._setup(self, contact)
+            body_a, body_b = c.bodies
 
-    cdef _post_solve(self, b2Contact *contact, const b2ContactImpulse *impulse):
-        pass
+            old_manifold = Manifold.from_b2Manifold(b2manifold)
+            body_a.contact_pre_solve(c, old_manifold)
+            body_b.contact_pre_solve(c, old_manifold)
+
+    cdef _post_solve(self, b2Contact *contact,
+                     const b2ContactImpulse *b2impulse):
+        cdef ContactPostSolveInfo c = ContactPostSolveInfo()
+        if self._filter_contact(contact):
+            c._setup(self, contact)
+            body_a, body_b = c.bodies
+            impulse = ContactImpulse.from_b2ContactImpulse(b2impulse)
+            body_a.contact_post_solve(c, impulse)
+            body_b.contact_post_solve(c, impulse)
 
     @property
     def status(self):
