@@ -64,6 +64,7 @@ cdef safe_method(method):
     return wrapped
 
 
+# this class needs to go; it's terrible
 class EnumBase(object):
     def __init__(self, value):
         self._value = self.to_string(value)

@@ -1343,17 +1343,14 @@ cdef class World:
     def _remove_contact_monitor(self, cls_a, cls_b):
         try:
             others = self._contact_classes[cls_a]
-            print('removing', others)
         except KeyError:
             return
 
         del self._contact_classes[cls_a]
 
         for other in others:
-            print('removing', other)
             self._contact_classes[other].remove(cls_a)
             if not self._contact_classes[other]:
-                print('clearing', other)
                 del self._contact_classes[other]
 
     def enable_contact_monitoring(self):
@@ -1446,23 +1443,37 @@ cdef class World:
 
         return False
 
-    cdef _begin_contact(self, b2Contact *contact):
+    cdef _begin_bulk_contact(self, b2Contact *contact):
         cdef ContactBeginInfo c = ContactBeginInfo()
         if self._filter_contact(contact):
             c._setup(self, contact)
-            if self._monitor_mode == 'bulk':
-                body_a, body_b = c.bodies
-                body_a.monitor_contacts.append(c)
-                body_b.monitor_contacts.append(c)
+            body_a, body_b = c.bodies
+            body_a.monitor_contacts.append(c)
+            body_b.monitor_contacts.append(c)
 
-    cdef _end_contact(self, b2Contact *contact):
+    cdef _end_bulk_contact(self, b2Contact *contact):
         cdef ContactEndInfo c = ContactEndInfo()
         if self._filter_contact(contact):
             c._setup(self, contact)
-            if self._monitor_mode == 'bulk':
-                body_a, body_b = c.bodies
-                body_a.monitor_contacts.append(c)
-                body_b.monitor_contacts.append(c)
+            body_a, body_b = c.bodies
+            body_a.monitor_contacts.append(c)
+            body_b.monitor_contacts.append(c)
+
+    cdef _begin_contact_callback(self, b2Contact *contact):
+        cdef ContactBeginInfo c = ContactBeginInfo()
+        if self._filter_contact(contact):
+            c._setup(self, contact)
+            body_a, body_b = c.bodies
+            body_a.contact_begin(c)
+            body_b.contact_begin(c)
+
+    cdef _end_contact_callback(self, b2Contact *contact):
+        cdef ContactEndInfo c = ContactEndInfo()
+        if self._filter_contact(contact):
+            c._setup(self, contact)
+            body_a, body_b = c.bodies
+            body_a.contact_end(c)
+            body_b.contact_end(c)
 
     cdef _pre_solve(self, b2Contact *contact, const b2Manifold *old_manifold):
         pass

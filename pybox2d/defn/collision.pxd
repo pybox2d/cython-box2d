@@ -26,7 +26,7 @@ cdef extern from "b2Collision.h":
         b2ContactID id
 
     cdef enum b2ManifoldType:
-        e_circles
+        e_circles = 0
         e_faceA
         e_faceB
 
@@ -34,7 +34,7 @@ cdef extern from "b2Collision.h":
         b2ManifoldPoint points[b2_maxManifoldPoints]
         b2Vec2 localNormal
         b2Vec2 localPoint
-        b2ManifoldType type
+        int type
         int32 pointCount
 
     cdef struct b2WorldManifold:

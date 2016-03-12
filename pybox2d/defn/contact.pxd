@@ -14,7 +14,6 @@ cdef extern from "b2Contact.h":
 
     cdef cppclass b2Contact:
         b2Manifold* GetManifold()
-        const b2Manifold* GetManifold() const
 
         void GetWorldManifold(b2WorldManifold* worldManifold) const
         bool IsTouching() const

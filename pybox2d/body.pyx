@@ -30,12 +30,6 @@ cdef class Body(Base):
         '''Destruction callback, overrideable in python'''
         pass
 
-    cdef _contact_begin(self, contact):
-        pass
-
-    cdef _contact_end(self, contact):
-        pass
-
     cpdef contact_begin(self, contact):
         '''Contact has begun'''
         pass
