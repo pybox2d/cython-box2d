@@ -65,6 +65,28 @@ cdef safe_method(method):
 
 
 class EnumBase(object):
+    def __init__(self, value):
+        self._value = self.to_string(value)
+
+    @property
+    def value(self):
+        return self._value
+
+    def __repr__(self):
+        return '{}({!r})'.format(self.__class__.__name__, self._value)
+
+    def __str__(self):
+        return self._value
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            try:
+                other = self.__class__(other)
+            except ValueError:
+                return False
+
+        return self._value == other._value
+
     @classmethod
     def to_enum(cls, value):
         try:
@@ -80,21 +102,27 @@ class EnumBase(object):
             raise ValueError('Invalid {}: {}'.format(cls.__name__, value))
 
 
-cdef new_enum_type(name, type_map):
+cdef new_enum_type(name, type_map, doc=''):
     to_string = dict(type_map)
     to_string.update({str_: str_
                       for enum_val, str_ in type_map.items()})
 
     to_enum = {str_: enum_val
                for enum_val, str_ in type_map.items()}
+    string_attrs = dict(to_enum)
     to_enum.update({enum_val: enum_val
                     for enum_val, str_ in type_map.items()})
     return type(name, (EnumBase, ), dict(_to_string=to_string,
-                                         _to_enum=to_enum))
+                                         _to_enum=to_enum,
+                                         __doc__=doc,
+                                         **string_attrs))
 
 
-BodyType = new_enum_type('BodyType', {b2_staticBody: 'static',
-                                      b2_kinematicBody: 'kinematic',
-                                      b2_dynamicBody: 'dynamic'
-                                      }
-                         )
+BodyType = new_enum_type(
+    'BodyType',
+    {b2_staticBody: 'static',
+     b2_kinematicBody: 'kinematic',
+     b2_dynamicBody: 'dynamic'
+     },
+    doc='''Body type'''
+    )

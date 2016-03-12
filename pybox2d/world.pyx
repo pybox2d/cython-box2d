@@ -3,27 +3,58 @@ from defn.world cimport b2World
 from defn.joint cimport (b2Joint, b2JointDef, b2RevoluteJointDef)
 
 
-WorldStatusTuple = namedtuple('WorldStatusTuple',
-                              'tree_height tree_balance tree_quality '
-                              'proxy_count body_count joint_count '
-                              'contact_count')
+_WorldStatusTuple = namedtuple('WorldStatusTuple',
+                               'tree_height tree_balance tree_quality '
+                               'proxy_count body_count joint_count '
+                               'contact_count')
+
+class WorldStatusTuple(_WorldStatusTuple):
+    '''WorldStatusTuple
+
+    Attributes
+    ----------
+    tree_height : int
+        height of the broadphase dynamic tree
+    tree_balance : int
+        balance of the broadphase dynamic tree
+    tree_quality : float
+        quality of the broadphase dynamic tree, where the smaller the value,
+        the better (minimum is 1)
+    proxy_count : int
+        number of broadphase proxies
+    body_count : int
+        total number of bodies in the world
+    joint_count : int
+        total number of joints in the world
+    contact_count : int
+        total number of contacts in the world, with 0 or more contact points
+    '''
+    __slots__ = ()
+
 
 cdef class World:
     cdef b2World *world
     cdef dict _bodies
     cdef dict _joints
     cdef dict _linked_joints
-    cdef dict _contact_monitoring
     cdef object _default_body_class
+
+    cdef dict _contact_classes
+    cdef ContactListener *_contact_listener
+    cdef object _monitor_mode
 
     def __cinit__(self):
         self.world = new b2World(b2Vec2(0.0, 0.0))
         self._bodies = {}
         self._joints = {}
         self._linked_joints = {}
-        self._contact_monitoring = {}
+        self._contact_classes = {}
+        self._contact_listener = NULL
+        self._monitor_mode = MonitorModeType('bulk')
 
     def __dealloc__(self):
+        self.disable_contact_monitoring()
+
         if self._joints:
             for joint in self._joints.values():
                 (<Joint>joint).invalidate()
@@ -1244,11 +1275,38 @@ cdef class World:
         '''
         return RaycastIterable(self, point1, point2)
 
-    def monitor_contacts(self, body_class_a, body_class_b):
+    property monitor_mode:
+        '''Monitor mode
+
+        See MonitorModeType
+        '''
+        def __get__(self):
+            return self._monitor_mode.value
+
+        def __set__(self, mode):
+            was_enabled = (self._contact_listener != NULL)
+            if was_enabled:
+                self.disable_contact_monitoring()
+
+            self._monitor_mode = MonitorModeType(mode)
+
+            if was_enabled:
+                self.enable_contact_monitoring()
+
+    def monitor_contacts(self, body_class_a, body_class_b, *, enable=True):
         '''Monitor contacts between bodies of body_class_a and body_class_b.
 
         Contacts will be recorded in body_a.contacts and body_b.contacts after
         every world.step() call.
+
+        Benefits of this over monitor_contacts:
+        It's fast and will cause the least burden with making numerous Python
+        calls per step.
+
+        Possible downsides:
+        It's possible that this can miss contacts, as sub-stepping will have a
+        contact begin and end in a single call to World.step.  It is not
+        possible to control what happens exactly when contacts happen.
 
         Parameters
         ----------
@@ -1256,6 +1314,9 @@ cdef class World:
             The body subclass to monitor contacts with...
         body_class_b : subclass of Body
             this body subclass.
+        enable : bool, optional
+            Enable contact monitoring, if not already enabled (defaults to
+            True)
         '''
 
         if not issubclass(body_class_a, Body):
@@ -1263,11 +1324,103 @@ cdef class World:
         if not issubclass(body_class_b, Body):
             raise TypeError('body_class_b must be a subclass of Body')
 
-        self._contact_monitoring[body_class_a] = body_class_b
-        self._contact_monitoring[body_class_b] = body_class_a
+        self._add_contact_monitor(body_class_a, body_class_b)
+        self._add_contact_monitor(body_class_b, body_class_a)
 
-        # if self._contact_monitoring:
-        #     self.
+        if enable:
+            self.enable_contact_monitoring()
+
+    def _add_contact_monitor(self, cls_a, cls_b):
+        try:
+            self._contact_classes[cls_a].add(cls_b)
+        except KeyError:
+            self._contact_classes[cls_a] = set([cls_b])
+
+    def _remove_contact_monitor(self, cls_a, cls_b):
+        try:
+            others = self._contact_classes[cls_a]
+            print('removing', others)
+        except KeyError:
+            return
+
+        del self._contact_classes[cls_a]
+
+        for other in others:
+            print('removing', other)
+            self._contact_classes[other].remove(cls_a)
+            if not self._contact_classes[other]:
+                print('clearing', other)
+                del self._contact_classes[other]
+
+    def enable_contact_monitoring(self):
+        '''Enable contact monitoring
+
+        See monitor_contacts and monitor_bulk_contacts for more information.
+        '''
+        if self._contact_listener:
+            return
+
+        if self._monitor_mode == MonitorModeType.bulk:
+            self._contact_listener = new BulkContactListener(self)
+        elif self._monitor_mode == MonitorModeType.callbacks:
+            self._contact_listener = new OnlyContactListener(self)
+        else:
+            self._contact_listener = new FullContactListener(self)
+
+    def disable_contact_monitoring(self):
+        '''Temporarily stop monitoring all contacts
+
+        See monitor_contacts and monitor_bulk_contacts for more information.
+        '''
+        if self._contact_listener:
+            del self._contact_listener
+            self._contact_listener = NULL
+
+    def clear_contact_monitoring(self, body_class_a=None,
+                                 body_class_b=None, *, allow_disable=True):
+        '''Stop monitoring contacts
+
+        If body_class_a and body_class_b are unspecified, all contact
+        monitoring will be cleared.
+
+        See monitor_contacts and monitor_bulk_contacts for more information.
+
+        Parameters
+        ----------
+        body_class_a : subclass of Body, optional
+            The body subclass to monitor contacts with...
+        body_class_b : subclass of Body, optional
+            this body subclass.
+        allow_disable : bool, optional
+            Allow disabling of contact monitoring if none are left
+        '''
+        if body_class_a is not None and body_class_b is not None:
+            self._remove_contact_monitor(body_class_a, body_class_b)
+        elif body_class_a is not None:
+            if body_class_a not in self._contact_classes:
+                return
+
+            for other_class in list(self._contact_classes[body_class_a]):
+                self._remove_contact_monitor(body_class_a, other_class)
+        else:
+            self._contact_classes.clear()
+
+        if allow_disable and not self._contact_classes:
+            self.disable_contact_monitoring()
+
+    cdef _begin_contact(self, b2Contact *contact):
+        print('begin contact')
+        pass
+
+    cdef _end_contact(self, b2Contact *contact):
+        print('end contact')
+        pass
+
+    cdef _pre_solve(self, b2Contact *contact, const b2Manifold *old_manifold):
+        pass
+
+    cdef _post_solve(self, b2Contact *contact, const b2ContactImpulse *impulse):
+        pass
 
     @property
     def status(self):
@@ -1276,15 +1429,7 @@ cdef class World:
         Returns
         -------
         status_tuple : WorldStatusTuple
-            tree_height: height of the broadphase dynamic tree
-            tree_balance: balance of the broadphase dynamic tree
-            tree_quality: quality of the broadphase dynamic tree, where the
-                          smaller the value, the better (minimum is 1)
-            proxy_count: number of broadphase proxies
-            body_count: total number of bodies in the world
-            joint_count: total number of joints in the world
-            contact_count: total number of contacts in the world, with 0 or
-                           more contact points
+            see WorldStatusTuple for more information
         '''
         cdef const b2ContactManager *cm = &self.world.GetContactManager()
         cdef const b2BroadPhase *bp = &cm.m_broadPhase

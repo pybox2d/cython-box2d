@@ -225,8 +225,9 @@ def setup(world):
     ground_area_2 = world.create_static_body(body_class=GroundArea)
     ground_area_2.friction_modifier = 0.2
 
-    # world.monitor_contacts(Tire, GroundArea)
-    world.clear_monitoring(Tire, GroundArea)
+    world.monitor_mode = 'bulk'
+    world.monitor_contacts(Tire, GroundArea)
+    # world.clear_contact_monitoring(Tire, GroundArea)
 
     # Set the fixture as a sensor so that the car doesn't collide
     ground_area_2.create_polygon_fixture(

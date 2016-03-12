@@ -1,7 +1,7 @@
 from defn.math cimport *
 from defn.body cimport (b2BodyDef, b2Body)
-from defn.world_callbacks cimport (b2DestructionListener,
-                                   b2RayCastCallback)
+from defn.world_callbacks cimport (b2DestructionListener, b2RayCastCallback,
+                                   b2ContactListener)
 from defn.joint cimport (b2Joint, b2JointDef)
 from defn.contact cimport b2ContactManager
 from defn.shape cimport *
@@ -12,7 +12,7 @@ cdef extern from "b2World.h" nogil:
         b2World(const b2Vec2& gravity)
         void SetDestructionListener(b2DestructionListener* listener)
         # void SetContactFilter(b2ContactFilter* filter)
-        # void SetContactListener(b2ContactListener* listener)
+        void SetContactListener(b2ContactListener* listener)
         # void SetDebugDraw(b2Draw* debugDraw)
         b2Body* CreateBody(const b2BodyDef* defn)
         void DestroyBody(b2Body* body)

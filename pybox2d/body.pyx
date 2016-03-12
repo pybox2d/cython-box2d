@@ -28,6 +28,28 @@ cdef class Body(Base):
         '''Destruction callback, overrideable in python'''
         pass
 
+    cdef _contact_begin(self, contact):
+        pass
+
+    cdef _contact_end(self, contact):
+        pass
+
+    cpdef contact_begin(self, contact):
+        '''Contact has begun'''
+        pass
+
+    cpdef contact_end(self, contact):
+        '''Contact has finished'''
+        pass
+
+    cpdef contact_pre_solve(self, contact, old_manifold):
+        '''Contact has begun'''
+        pass
+
+    cpdef contact_post_solve(self, contact, impulse):
+        '''Contact has finished'''
+        pass
+
     cdef invalidate(self):
         self.destroyed()
 
