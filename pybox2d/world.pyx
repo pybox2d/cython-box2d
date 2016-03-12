@@ -1421,15 +1421,29 @@ cdef class World:
 
         # TODO some level of intelligent caching, this is really bad
         cls_a = body_a.__class__
-        if cls_a in self._contact_classes:
+        other_classes = None
+        try:
+            other_classes = self._contact_classes[cls_a]
+        except KeyError:
+            for cls in self._contact_classes.keys():
+                if issubclass(cls_a, cls):
+                    other_classes = self._contact_classes[cls_a]
+                    break
+
+        if other_classes is None:
+            return False
+
+        cdef const b2Body *bptr_b = contact.GetFixtureB().GetBody()
+        body_b = self._bodies[pointer_as_key(<void*>bptr_b)]
+        cls_b = body_b.__class__
+
+        if cls_b in self._contact_classes:
             return True
+        else:
+            for cls in self._contact_classes.keys():
+                if issubclass(cls_b, cls):
+                    return True
 
-        for cls in self._contact_classes.keys():
-            if issubclass(cls_a, cls):
-                return True
-
-        # contact classes contain both a<->b and b<->a, so only need to
-        # check a
         return False
 
     cdef _begin_contact(self, b2Contact *contact):
