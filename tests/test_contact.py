@@ -48,7 +48,7 @@ class BodyWithContactCallbacks(pybox2d.Body):
         self.my_contacts.append(contact)
 
 
-def test_bulk_contact(world):
+def test_contact_callbacks_1(world):
     world.monitor_mode = 'callbacks'
     world.monitor_contacts(BodyWithContactCallbacks, BodyWithContactCallbacks)
 
