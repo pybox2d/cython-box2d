@@ -32,11 +32,11 @@ def setup(world):
     create_pyramid(world)
 
 
-def post_step_hook(world):
-    # TODO none of this is currently exposed
-    cm = world.contact_manager
-    height = cm.broad_phase.tree_height
-    leaf_count = cm.broad_phase.proxy_count
+def pre_render_hook(world, renderer):
+    status = world.status
+    print(status)
+    height = status.tree_height
+    leaf_count = status.proxy_count
     min_node_count = 2 * leaf_count - 1
     min_height = ceil(log(float(min_node_count)) / log(2))
     print('Dynamic tree height=%d, min=%d' % (height, min_height))
@@ -44,5 +44,4 @@ def post_step_hook(world):
 
 if __name__ == '__main__':
     from main_simple import main
-    # main(setup, post_step_hook=step_hook)
-    main(setup)
+    world = main(setup, pre_render_hook=pre_render_hook)

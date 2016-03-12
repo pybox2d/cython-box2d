@@ -3,6 +3,7 @@ from defn.body cimport (b2BodyDef, b2Body)
 from defn.world_callbacks cimport (b2DestructionListener,
                                    b2RayCastCallback)
 from defn.joint cimport (b2Joint, b2JointDef)
+from defn.contact cimport b2ContactManager
 from defn.shape cimport *
 
 
@@ -53,6 +54,6 @@ cdef extern from "b2World.h" nogil:
         void SetAutoClearForces(bool flag)
         bool GetAutoClearForces() const
         void ShiftOrigin(const b2Vec2& newOrigin)
-        # const b2ContactManager& GetContactManager() const
+        const b2ContactManager& GetContactManager() const
         # const b2Profile& GetProfile() const
         void Dump()

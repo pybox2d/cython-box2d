@@ -120,6 +120,7 @@ def main_loop(renderer, world, target_fps=60.0, hooks=None):
         clock.tick(target_fps)
 
     pygame.quit()
+    return world
 
 
 class TestbedWorld(World):

@@ -1,6 +1,12 @@
+from collections import namedtuple
 from defn.world cimport b2World
 from defn.joint cimport (b2Joint, b2JointDef, b2RevoluteJointDef)
 
+
+WorldStatusTuple = namedtuple('WorldStatusTuple',
+                              'tree_height tree_balance tree_quality '
+                              'proxy_count body_count joint_count '
+                              'contact_count')
 
 cdef class World:
     cdef b2World *world
@@ -1262,3 +1268,31 @@ cdef class World:
 
         # if self._contact_monitoring:
         #     self.
+
+    @property
+    def status(self):
+        '''Status of low-level things in the world
+
+        Returns
+        -------
+        status_tuple : WorldStatusTuple
+            tree_height: height of the broadphase dynamic tree
+            tree_balance: balance of the broadphase dynamic tree
+            tree_quality: quality of the broadphase dynamic tree, where the
+                          smaller the value, the better (minimum is 1)
+            proxy_count: number of broadphase proxies
+            body_count: total number of bodies in the world
+            joint_count: total number of joints in the world
+            contact_count: total number of contacts in the world, with 0 or
+                           more contact points
+        '''
+        cdef const b2ContactManager *cm = &self.world.GetContactManager()
+        cdef const b2BroadPhase *bp = &cm.m_broadPhase
+        return WorldStatusTuple(tree_height=bp.GetTreeHeight(),
+                                tree_balance=bp.GetTreeBalance(),
+                                tree_quality=bp.GetTreeQuality(),
+                                proxy_count=self.world.GetProxyCount(),
+                                body_count=self.world.GetBodyCount(),
+                                joint_count=self.world.GetJointCount(),
+                                contact_count=self.world.GetContactCount(),
+                                )
