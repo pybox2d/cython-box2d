@@ -263,34 +263,25 @@ cdef class Manifold(Base):
 
 
 cdef class ContactInfo(Base):
-    '''Contact information
-
-    Attributes
-    ----------
-    body_a : Body
-        The first body in the contact event
-    body_b : Body
-        The second body in the contact event
-    fixture_a : Fixture
-        The fixture of body_a in the contact event
-    fixture_b : Fixture
-        The fixture of body_b in the contact event
-    '''
+    '''Contact information'''
     cdef public Body body_a
     cdef public Body body_b
     cdef public Fixture fixture_a
     cdef public Fixture fixture_b
-    cdef public float32 friction
-    cdef public float32 restitution
-    cdef public float32 tangent_speed
     cdef public int child_index_a
     cdef public int child_index_b
-    cdef public bool enabled
     cdef public bool touching
     cdef b2Manifold *_b2manifold
     cdef Manifold _manifold
+    cdef b2Contact *contact
 
-    cdef _setup(self, World world, b2Contact *contact):
+    cdef float32 _friction
+    cdef float32 _restitution
+    cdef float32 _tangent_speed
+    cdef bool _enabled
+
+    cdef _setup(self, World world, b2Contact *contact,
+                bool allow_modification=False):
         cdef const b2Fixture *fptr_a = contact.GetFixtureA()
         cdef const b2Body *bptr_a = fptr_a.GetBody()
 
@@ -302,14 +293,20 @@ cdef class ContactInfo(Base):
         self.body_b = world._bodies[pointer_as_key(<void*>bptr_b)]
         self.fixture_b = self.body_b._fixtures[pointer_as_key(<void*>fptr_b)]
 
-        self.friction = contact.GetFriction()
-        self.restitution = contact.GetRestitution()
-        self.tangent_speed = contact.GetTangentSpeed()
         self.child_index_a = contact.GetChildIndexA()
         self.child_index_b = contact.GetChildIndexB()
-        self.enabled = contact.IsEnabled()
         self.touching = contact.IsTouching()
         self._b2manifold = contact.GetManifold()
+
+        self._friction = contact.GetFriction()
+        self._restitution = contact.GetRestitution()
+        self._enabled = contact.IsEnabled()
+        self._tangent_speed = contact.GetTangentSpeed()
+
+        if allow_modification:
+            self.contact = contact
+        else:
+            self.contact = NULL
 
     @property
     def manifold(self):
@@ -343,6 +340,85 @@ cdef class ContactInfo(Base):
                 for attr in ['bodies', 'fixtures', 'friction', 'restitution',
                              'tangent_speed', 'child_indices', 'enabled',
                              'touching', 'manifold']]
+
+    property friction:
+        '''Contact friction'''
+        def __get__(self):
+            if self.contact != NULL:
+                return self.contact.GetFriction()
+            else:
+                return self._friction
+
+        def __set__(self, friction):
+            if self.contact != NULL:
+                self.contact.SetFriction(friction)
+            else:
+                raise RuntimeError('Contact is no longer valid')
+
+    property restitution:
+        '''Contact restitution'''
+        def __get__(self):
+            if self.contact != NULL:
+                return self.contact.GetRestitution()
+            else:
+                return self._restitution
+
+        def __set__(self, restitution):
+            if self.contact != NULL:
+                self.contact.SetRestitution(restitution)
+            else:
+                raise RuntimeError('Contact is no longer valid')
+
+    property enabled:
+        '''Contact enabled
+
+        Enable/disable this contact. This can be used inside the pre-solve
+        contact listener. The contact is only disabled for the current time
+        step (or sub-step in continuous collisions).
+        '''
+        def __get__(self):
+            if self.contact != NULL:
+                return self.contact.IsEnabled()
+            else:
+                return self._enabled
+
+        def __set__(self, enabled):
+            if self.contact != NULL:
+                self.contact.SetEnabled(enabled)
+            else:
+                raise RuntimeError('Contact is no longer valid')
+
+    property tangent_speed:
+        '''Contact tangent speed
+
+        Set the desired tangent speed for a conveyor belt behavior. In meters
+        per second.
+        '''
+        def __get__(self):
+            if self.contact != NULL:
+                return self.contact.GetTangentSpeed()
+            else:
+                return self._tangent_speed
+
+        def __set__(self, tangent_speed):
+            if self.contact != NULL:
+                self.contact.SetTangentSpeed(tangent_speed)
+            else:
+                raise RuntimeError('Contact is no longer valid')
+
+    def reset_friction(self):
+        '''Reset the contact friction to the default value'''
+        if self.contact != NULL:
+            return self.contact.ResetFriction()
+        else:
+            raise RuntimeError('Contact is no longer valid')
+
+    def reset_restitution(self):
+        '''Reset the contact restitution to the default value'''
+        if self.contact != NULL:
+            return self.contact.ResetRestitution()
+        else:
+            raise RuntimeError('Contact is no longer valid')
 
     def get_other_body(self, Body body):
         if body is self.body_a:
