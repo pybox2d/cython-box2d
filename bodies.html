@@ -1,0 +1,614 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Bodies &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+    <link rel="next" title="Joints" href="joints.html" />
+    <link rel="prev" title="Shapes and Fixtures" href="fixtures.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybox2d">
+<span id="bodies"></span><h1>Bodies<a class="headerlink" href="#module-pybox2d" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybox2d.BodyDef">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">BodyDef</code><span class="sig-paren">(</span><em>type_='static'</em>, <em>position=None</em>, <em>angle=0.0</em>, <em>angular_velocity=0.0</em>, <em>linear_damping=0.0</em>, <em>angular_damping=0.0</em>, <em>allow_sleep=True</em>, <em>awake=True</em>, <em>fixed_rotation=False</em>, <em>bullet=False</em>, <em>active=True</em>, <em>gravity_scale=1.0</em>, <em>data=None</em>, <em>fixtures=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.BodyDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="utilities.html#pybox2d.Base" title="pybox2d.Base"><code class="xref py py-class docutils literal"><span class="pre">pybox2d.Base</span></code></a></p>
+<dl class="attribute">
+<dt id="pybox2d.BodyDef.data">
+<code class="descname">data</code><a class="headerlink" href="#pybox2d.BodyDef.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data: object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.BodyDef.fixtures">
+<code class="descname">fixtures</code><a class="headerlink" href="#pybox2d.BodyDef.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd><p>fixtures: list</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.StaticBodyDef">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">StaticBodyDef</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.StaticBodyDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.KinematicBodyDef">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">KinematicBodyDef</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.KinematicBodyDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.DynamicBodyDef">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">DynamicBodyDef</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.DynamicBodyDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.Body">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">Body</code><a class="headerlink" href="#pybox2d.Body" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.Body.active">
+<code class="descname">active</code><a class="headerlink" href="#pybox2d.Body.active" title="Permalink to this definition">¶</a></dt>
+<dd><p>The active state of the body.</p>
+<p>An inactive body is not simulated and cannot be collided with or woken
+up.  If you pass a flag of true, all fixtures will be added to the
+broad-phase.</p>
+<p>If you pass a flag of false, all fixtures will be removed from the
+broad-phase and all contacts will be destroyed.  Fixtures and joints
+are otherwise unaffected. You may continue to create/destroy fixtures
+and joints on inactive bodies.</p>
+<p>Fixtures on an inactive body are implicitly inactive and will not
+participate in collisions, ray-casts, or queries.  Joints connected to
+an inactive body are implicitly inactive.  An inactive body is still
+owned by a b2World object and remains in the body list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.angle">
+<code class="descname">angle</code><a class="headerlink" href="#pybox2d.Body.angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current world rotation angle in radians.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.angular_damping">
+<code class="descname">angular_damping</code><a class="headerlink" href="#pybox2d.Body.angular_damping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Angular damping is use to reduce the angular velocity.</p>
+<p>The damping parameter can be larger than 1.0 but the damping effect
+becomes sensitive to the time step when the damping parameter is large.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.angular_velocity">
+<code class="descname">angular_velocity</code><a class="headerlink" href="#pybox2d.Body.angular_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular velocity in radians/second.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.apply_angular_impulse">
+<code class="descname">apply_angular_impulse</code><span class="sig-paren">(</span><em>self</em>, <em>float impulse</em>, <em>bool wake=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.apply_angular_impulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply an angular impulse.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>impulse</strong> (<em>float</em>) &#8211; impulse the angular impulse in units of kg*m*m/s</li>
+<li><strong>wake</strong> (<em>bool, optional</em>) &#8211; also wake up the body</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.apply_force">
+<code class="descname">apply_force</code><span class="sig-paren">(</span><em>self</em>, <em>force</em>, <em>point</em>, <em>bool wake=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.apply_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a force at a world point.</p>
+<p>If the force is not applied at the center of mass, it will generate a
+torque and affect the angular velocity. This wakes up the body.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>force</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; the world force vector, usually in Newtons (N).</li>
+<li><strong>point</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; the world position of the point of application.</li>
+<li><strong>wake</strong> (<em>bool, optional</em>) &#8211; also wake up the body</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.apply_linear_impulse">
+<code class="descname">apply_linear_impulse</code><span class="sig-paren">(</span><em>self</em>, <em>impulse</em>, <em>point</em>, <em>bool wake=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.apply_linear_impulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply an impulse at a point.</p>
+<p>This immediately modifies the velocity.  It also modifies the angular
+velocity if the point of application is not at the center of mass. This
+wakes up the body.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>impulse</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; the world impulse vector, usually in N-seconds or kg-m/s</li>
+<li><strong>point</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; the world position of the point of application.</li>
+<li><strong>wake</strong> (<em>bool, optional</em>) &#8211; also wake up the body</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.apply_torque">
+<code class="descname">apply_torque</code><span class="sig-paren">(</span><em>self</em>, <em>float torque</em>, <em>bool wake=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.apply_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a torque.</p>
+<p>This affects the angular velocity without affecting the linear velocity
+of the center of mass.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>torque</strong> (<em>float</em>) &#8211; about the z-axis (out of the screen), usually in N-m.</li>
+<li><strong>wake</strong> (<em>bool, optional</em>) &#8211; also wake up the body</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.awake">
+<code class="descname">awake</code><a class="headerlink" href="#pybox2d.Body.awake" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the sleep state of the body.</p>
+<p>A sleeping body has very low CPU cost.</p>
+<p>If set to True, the body will be awoken.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.bullet">
+<code class="descname">bullet</code><a class="headerlink" href="#pybox2d.Body.bullet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Body treated like a bullet for continuous collision detection?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.contact_begin">
+<code class="descname">contact_begin</code><span class="sig-paren">(</span><em>self</em>, <em>contact</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.contact_begin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact has begun</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.contact_end">
+<code class="descname">contact_end</code><span class="sig-paren">(</span><em>self</em>, <em>contact</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.contact_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact has finished</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.contact_post_solve">
+<code class="descname">contact_post_solve</code><span class="sig-paren">(</span><em>self</em>, <em>contact</em>, <em>impulse</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.contact_post_solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact has finished</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.contact_pre_solve">
+<code class="descname">contact_pre_solve</code><span class="sig-paren">(</span><em>self</em>, <em>contact</em>, <em>old_manifold</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.contact_pre_solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact has begun</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.create_circle_fixture">
+<code class="descname">create_circle_fixture</code><span class="sig-paren">(</span><em>self</em>, <em>radius</em>, <em>center=None</em>, <em>**fx_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.create_circle_fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fixture and attach a circle shape to it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>radius</strong> (<em>float</em>) &#8211; The radius of the circle</li>
+<li><strong>center</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; The center position of the circle</li>
+<li><strong>kwargs</strong> (<em>dict, optional</em>) &#8211; Additional keyword arguments are set on the FixtureDef</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.create_edge_chain">
+<code class="descname">create_edge_chain</code><span class="sig-paren">(</span><em>self</em>, <em>vertices</em>, <em>closed=False</em>, <em>**fx_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.create_edge_chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a chain of edge shapes</p>
+<p>For the two ways to specify the vertices, see <cite>create_edge_fixture</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vertices</strong> (<em>list of Vec2</em>) &#8211; Must have at least two vertices</li>
+<li><strong>closed</strong> (<em>bool, optional</em>) &#8211; Close the edge chain, where the last specified vertex is connected
+to the first.</li>
+<li><strong>kwargs</strong> (<em>dict, optional</em>) &#8211; Additional keyword arguments are set on the FixtureDef</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fixtures</strong> &#8211;
+List of created fixtures</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of Fixture</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.create_edge_fixture">
+<code class="descname">create_edge_fixture</code><span class="sig-paren">(</span><em>self</em>, <em>vertices</em>, <em>**fx_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.create_edge_fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fixture and attach an edge shape to it</p>
+<dl class="docutils">
+<dt>There are two ways to specify the vertices:</dt>
+<dd>vertices = (vertex1, vertex2)
+where the edge shape goes from vertex1 to vertex2</dd>
+<dt>and</dt>
+<dd>vertices = (vertex0, vertex1, vertex2, vertex3)
+where the edge shape goes from vertex1 to vertex2, but vertex0 and
+vertex3 are adjacent vertices. These are used for smooth collision.
+Chances are you don&#8217;t need this option.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vertices</strong> (<em>list of Vec2</em>) &#8211; Create an edge fixture with the vertices given. Must be either 2 or
+4 vertices.</li>
+<li><strong>kwargs</strong> (<em>dict, optional</em>) &#8211; Additional keyword arguments are set on the FixtureDef</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.create_fixture">
+<code class="descname">create_fixture</code><span class="sig-paren">(</span><em>self</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.create_fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fixture without first creating a FixtureDef</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) &#8211; Keyword arguments are all passed to a temporary FixtureDef
+definition.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.create_fixture_from_def">
+<code class="descname">create_fixture_from_def</code><span class="sig-paren">(</span><em>self</em>, <em>FixtureDef fixture_defn</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.create_fixture_from_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fixture from a FixtureDef</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.create_polygon_fixture">
+<code class="descname">create_polygon_fixture</code><span class="sig-paren">(</span><em>self</em>, <em>box=None</em>, <em>vertices=None</em>, <em>**fx_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.create_polygon_fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fixture and attach a polygon shape to it</p>
+<p>There are two ways to specify the vertices:</p>
+<ol class="arabic simple">
+<li>as the &#8216;box&#8217; parameter, which specifies the half-width and
+half-height of the generated rectangle</li>
+<li>as a list of vertices</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vertices</strong> (<em>list of Vec2, optional</em>) &#8211; Create a polygon with the vertices given.  If specified, there must
+be at least 3 vertices.</li>
+<li><strong>box</strong> (<em>(half-width, half-height), float, optional</em>) &#8211; Creates a box with these half-dimensions</li>
+<li><strong>kwargs</strong> (<em>dict, optional</em>) &#8211; Additional keyword arguments are set on the FixtureDef</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.data">
+<code class="descname">data</code><a class="headerlink" href="#pybox2d.Body.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data: object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.destroy_fixture">
+<code class="descname">destroy_fixture</code><span class="sig-paren">(</span><em>self</em>, <em>Fixture fixture</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.destroy_fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy (remove) a fixture from this body</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fixture</strong> (<a class="reference internal" href="fixtures.html#pybox2d.Fixture" title="pybox2d.Fixture"><em>Fixture</em></a>) &#8211; The fixture to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.destroyed">
+<code class="descname">destroyed</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.destroyed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destruction callback, overrideable in python</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.fixed_rotation">
+<code class="descname">fixed_rotation</code><a class="headerlink" href="#pybox2d.Body.fixed_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fixed rotation.</p>
+<p>Setting this causes the mass to be reset.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.fixtures">
+<code class="descname">fixtures</code><a class="headerlink" href="#pybox2d.Body.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd><p>The fixtures attached to the body</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.get_world_point">
+<code class="descname">get_world_point</code><span class="sig-paren">(</span><em>self</em>, <em>local_point</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.get_world_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the world coordinates of a point given the local coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>local_point</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; a point on the body measured relative the the body&#8217;s origin.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>world_point</strong> &#8211;
+the same point expressed in world coordinates.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2">Vec2</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.get_world_vector">
+<code class="descname">get_world_vector</code><span class="sig-paren">(</span><em>self</em>, <em>local_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.get_world_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the world coordinates of a vector given the local coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>local_vector</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; a vector fixed in the body.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>world_vector</strong> &#8211;
+the same vector expressed in world coordinates.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2">Vec2</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.gravity_scale">
+<code class="descname">gravity_scale</code><a class="headerlink" href="#pybox2d.Body.gravity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>The gravity scale of the body.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.inertia">
+<code class="descname">inertia</code><a class="headerlink" href="#pybox2d.Body.inertia" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the rotational inertia of the body about the local origin
+Usually in kg-m^2.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.joints">
+<code class="descname">joints</code><a class="headerlink" href="#pybox2d.Body.joints" title="Permalink to this definition">¶</a></dt>
+<dd><p>The joints which attach this body to another</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.linear_damping">
+<code class="descname">linear_damping</code><a class="headerlink" href="#pybox2d.Body.linear_damping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linear damping is use to reduce the linear velocity.</p>
+<p>The damping parameter can be larger than 1.0 but the damping effect
+becomes sensitive to the time step when the damping parameter is large.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.linear_velocity">
+<code class="descname">linear_velocity</code><a class="headerlink" href="#pybox2d.Body.linear_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The linear velocity of the center of mass.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.local_center">
+<code class="descname">local_center</code><a class="headerlink" href="#pybox2d.Body.local_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local position of the center of mass.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.mass">
+<code class="descname">mass</code><a class="headerlink" href="#pybox2d.Body.mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the total mass of the body, usually in kilograms (kg).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.mass_data">
+<code class="descname">mass_data</code><a class="headerlink" href="#pybox2d.Body.mass_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set the mass properties of the body</p>
+<p>It can be used to override the mass properties of the fixtures.</p>
+<p>Note that this changes the center of mass position.
+Note that creating or destroying fixtures can also alter the mass.
+This function has no effect if the body isn&#8217;t dynamic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mass_data</strong> (<em>(mass, center, inertia) or MassData</em>) &#8211; Where:
+The mass of the shape, usually in kilograms.
+The position of the shape&#8217;s centroid relative to the shape&#8217;s
+origin.
+The rotational inertia of the shape about the local origin.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.monitor_contacts">
+<code class="descname">monitor_contacts</code><a class="headerlink" href="#pybox2d.Body.monitor_contacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>monitor_contacts: list</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.position">
+<code class="descname">position</code><a class="headerlink" href="#pybox2d.Body.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the world body origin position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Body.reset_mass_data">
+<code class="descname">reset_mass_data</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Body.reset_mass_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the mass properties to the sum of the mass properties of the
+fixtures.  This normally does not need to be called unless you called
+set_mass_data to override the mass and you later want to reset the
+mass.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.sleeping_allowed">
+<code class="descname">sleeping_allowed</code><a class="headerlink" href="#pybox2d.Body.sleeping_allowed" title="Permalink to this definition">¶</a></dt>
+<dd><p>You can disable sleeping on this body. If you disable sleeping, the
+body will be woken.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.transform">
+<code class="descname">transform</code><a class="headerlink" href="#pybox2d.Body.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>The world transform of the body&#8217;s origin.</p>
+<p>This is the position of the body&#8217;s origin and rotation.</p>
+<p>Manipulating a body&#8217;s transform may cause non-physical behavior.
+Note: contacts are updated on the next call to World.step.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.type">
+<code class="descname">type</code><a class="headerlink" href="#pybox2d.Body.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.valid">
+<code class="descname">valid</code><a class="headerlink" href="#pybox2d.Body.valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the underlying Box2D Body is still valid</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Body.world_center">
+<code class="descname">world_center</code><a class="headerlink" href="#pybox2d.Body.world_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The world position of the center of mass.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="fixtures.html" title="previous chapter">Shapes and Fixtures</a></li>
+      <li>Next: <a href="joints.html" title="next chapter">Joints</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/bodies.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, kne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/bodies.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Contacts &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+    <link rel="next" title="Utilities" href="utilities.html" />
+    <link rel="prev" title="Math" href="math.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybox2d">
+<span id="contacts"></span><h1>Contacts<a class="headerlink" href="#module-pybox2d" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybox2d.ContactID">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactID</code><span class="sig-paren">(</span><em>index_a</em>, <em>index_b</em>, <em>type_a</em>, <em>type_b</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.ContactID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ManifoldPoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ManifoldPoint</code><a class="headerlink" href="#pybox2d.ManifoldPoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.ManifoldPoint.contact_id">
+<code class="descname">contact_id</code><a class="headerlink" href="#pybox2d.ManifoldPoint.contact_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>contact_id: pybox2d.ContactID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ManifoldPoint.local_point">
+<code class="descname">local_point</code><a class="headerlink" href="#pybox2d.ManifoldPoint.local_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>local_point: pybox2d.Vec2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ManifoldPoint.normal_impulse">
+<code class="descname">normal_impulse</code><a class="headerlink" href="#pybox2d.ManifoldPoint.normal_impulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>normal_impulse: &#8216;float32&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ManifoldPoint.tangent_impulse">
+<code class="descname">tangent_impulse</code><a class="headerlink" href="#pybox2d.ManifoldPoint.tangent_impulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>tangent_impulse: &#8216;float32&#8217;</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.WorldManifold">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">WorldManifold</code><a class="headerlink" href="#pybox2d.WorldManifold" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.WorldManifold.normal">
+<code class="descname">normal</code><a class="headerlink" href="#pybox2d.WorldManifold.normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>normal: pybox2d.Vec2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldManifold.points">
+<code class="descname">points</code><a class="headerlink" href="#pybox2d.WorldManifold.points" title="Permalink to this definition">¶</a></dt>
+<dd><p>points: tuple</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldManifold.separations">
+<code class="descname">separations</code><a class="headerlink" href="#pybox2d.WorldManifold.separations" title="Permalink to this definition">¶</a></dt>
+<dd><p>separations: tuple</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ContactImpulse">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactImpulse</code><span class="sig-paren">(</span><em>normal_impulses=None</em>, <em>tangent_impulses=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.ContactImpulse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.Manifold">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">Manifold</code><a class="headerlink" href="#pybox2d.Manifold" title="Permalink to this definition">¶</a></dt>
+<dd><p>A manifold for two touching convex shapes.</p>
+<p>Box2D supports multiple types of contact:
+- clip point versus plane with radius
+- point versus point with radius (circles)</p>
+<p>The local point usage depends on the manifold type:
+- circles: the local center of circleA
+- face_a: the center of faceA
+- face_b: the center of faceB</p>
+<p>Similarly the local normal usage:
+- circles: not used
+- face_a: the normal on polygonA
+- face_b: the normal on polygonB</p>
+<p>We store contacts in this way so that position correction can account for
+movement, which is critical for continuous physics.</p>
+<p>All contact scenarios must be expressed in one of these types.  This
+structure is stored across time steps, so we keep it small.</p>
+<dl class="attribute">
+<dt id="pybox2d.Manifold.local_normal">
+<code class="descname">local_normal</code><a class="headerlink" href="#pybox2d.Manifold.local_normal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Manifold.local_point">
+<code class="descname">local_point</code><a class="headerlink" href="#pybox2d.Manifold.local_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Manifold.points">
+<code class="descname">points</code><a class="headerlink" href="#pybox2d.Manifold.points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Manifold.type_">
+<code class="descname">type_</code><a class="headerlink" href="#pybox2d.Manifold.type_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ContactInfo">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactInfo</code><a class="headerlink" href="#pybox2d.ContactInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact information</p>
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.bodies">
+<code class="descname">bodies</code><a class="headerlink" href="#pybox2d.ContactInfo.bodies" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bodies involved in the contact</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.body_a">
+<code class="descname">body_a</code><a class="headerlink" href="#pybox2d.ContactInfo.body_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>body_a: pybox2d.Body</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.body_b">
+<code class="descname">body_b</code><a class="headerlink" href="#pybox2d.ContactInfo.body_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>body_b: pybox2d.Body</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.child_index_a">
+<code class="descname">child_index_a</code><a class="headerlink" href="#pybox2d.ContactInfo.child_index_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>child_index_a: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.child_index_b">
+<code class="descname">child_index_b</code><a class="headerlink" href="#pybox2d.ContactInfo.child_index_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>child_index_b: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.child_indices">
+<code class="descname">child_indices</code><a class="headerlink" href="#pybox2d.ContactInfo.child_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the child primitive index for the fixtures</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.enabled">
+<code class="descname">enabled</code><a class="headerlink" href="#pybox2d.ContactInfo.enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact enabled</p>
+<p>Enable/disable this contact. This can be used inside the pre-solve
+contact listener. The contact is only disabled for the current time
+step (or sub-step in continuous collisions).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.fixture_a">
+<code class="descname">fixture_a</code><a class="headerlink" href="#pybox2d.ContactInfo.fixture_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>fixture_a: pybox2d.Fixture</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.fixture_b">
+<code class="descname">fixture_b</code><a class="headerlink" href="#pybox2d.ContactInfo.fixture_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>fixture_b: pybox2d.Fixture</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.fixtures">
+<code class="descname">fixtures</code><a class="headerlink" href="#pybox2d.ContactInfo.fixtures" title="Permalink to this definition">¶</a></dt>
+<dd><p>The fixtures involved in the contact</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.friction">
+<code class="descname">friction</code><a class="headerlink" href="#pybox2d.ContactInfo.friction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact friction</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.ContactInfo.get_other_body">
+<code class="descname">get_other_body</code><span class="sig-paren">(</span><em>self</em>, <em>Body body</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.ContactInfo.get_other_body" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.manifold">
+<code class="descname">manifold</code><a class="headerlink" href="#pybox2d.ContactInfo.manifold" title="Permalink to this definition">¶</a></dt>
+<dd><p>The manifold for two touching convex shapes (see Manifold)</p>
+<p>NOTE/TODO: this is not a safe method, and probably shouldn&#8217;t be
+for speed reasons. If you access this beyond when you should,
+a segmentation fault (or unexpected results) will occur</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.ContactInfo.reset_friction">
+<code class="descname">reset_friction</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.ContactInfo.reset_friction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the contact friction to the default value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.ContactInfo.reset_restitution">
+<code class="descname">reset_restitution</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.ContactInfo.reset_restitution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the contact restitution to the default value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.restitution">
+<code class="descname">restitution</code><a class="headerlink" href="#pybox2d.ContactInfo.restitution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact restitution</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.tangent_speed">
+<code class="descname">tangent_speed</code><a class="headerlink" href="#pybox2d.ContactInfo.tangent_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact tangent speed</p>
+<p>Set the desired tangent speed for a conveyor belt behavior. In meters
+per second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.ContactInfo.touching">
+<code class="descname">touching</code><a class="headerlink" href="#pybox2d.ContactInfo.touching" title="Permalink to this definition">¶</a></dt>
+<dd><p>touching: &#8216;bool&#8217;</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ContactBeginInfo">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactBeginInfo</code><a class="headerlink" href="#pybox2d.ContactBeginInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ContactEndInfo">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactEndInfo</code><a class="headerlink" href="#pybox2d.ContactEndInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ContactPreSolveInfo">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactPreSolveInfo</code><a class="headerlink" href="#pybox2d.ContactPreSolveInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.ContactPostSolveInfo">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">ContactPostSolveInfo</code><a class="headerlink" href="#pybox2d.ContactPostSolveInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="math.html" title="previous chapter">Math</a></li>
+      <li>Next: <a href="utilities.html" title="next chapter">Utilities</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/contacts.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, kne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/contacts.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

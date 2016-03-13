@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Raycasting &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+    <link rel="next" title="Math" href="math.html" />
+    <link rel="prev" title="Joints" href="joints.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybox2d">
+<span id="raycasting"></span><h1>Raycasting<a class="headerlink" href="#module-pybox2d" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybox2d.RaycastIterable">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">RaycastIterable</code><span class="sig-paren">(</span><em>World world</em>, <em>point1</em>, <em>point2</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastIterable" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.RaycastIterable.body">
+<code class="descname">body</code><a class="headerlink" href="#pybox2d.RaycastIterable.body" title="Permalink to this definition">¶</a></dt>
+<dd><p>body: object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastIterable.fixture">
+<code class="descname">fixture</code><a class="headerlink" href="#pybox2d.RaycastIterable.fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>fixture: pybox2d.Fixture</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastIterable.fraction">
+<code class="descname">fraction</code><a class="headerlink" href="#pybox2d.RaycastIterable.fraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>fraction: &#8216;float32&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastIterable.normal">
+<code class="descname">normal</code><a class="headerlink" href="#pybox2d.RaycastIterable.normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>normal: pybox2d.Vec2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastIterable.point">
+<code class="descname">point</code><a class="headerlink" href="#pybox2d.RaycastIterable.point" title="Permalink to this definition">¶</a></dt>
+<dd><p>point: pybox2d.Vec2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastIterable.response">
+<code class="descname">response</code><a class="headerlink" href="#pybox2d.RaycastIterable.response" title="Permalink to this definition">¶</a></dt>
+<dd><p>response: &#8216;float32&#8217;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.RaycastIterable.run_raycast">
+<code class="descname">run_raycast</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastIterable.run_raycast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastIterable.world">
+<code class="descname">world</code><a class="headerlink" href="#pybox2d.RaycastIterable.world" title="Permalink to this definition">¶</a></dt>
+<dd><p>world: pybox2d.World</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.RaycastInfo">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">RaycastInfo</code><span class="sig-paren">(</span><em>fixture=None</em>, <em>body=None</em>, <em>point=None</em>, <em>normal=None</em>, <em>fraction=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>RaycastInfo</p>
+<dl class="attribute">
+<dt id="pybox2d.RaycastInfo.fixture">
+<code class="descname">fixture</code><a class="headerlink" href="#pybox2d.RaycastInfo.fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Fixture</em></p>
+<p>the fixture hit by the ray</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastInfo.body">
+<code class="descname">body</code><a class="headerlink" href="#pybox2d.RaycastInfo.body" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Body</em></p>
+<p>the body which contains the fixture</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastInfo.point">
+<code class="descname">point</code><a class="headerlink" href="#pybox2d.RaycastInfo.point" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Vec2</em></p>
+<p>the point of initial intersection</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastInfo.normal">
+<code class="descname">normal</code><a class="headerlink" href="#pybox2d.RaycastInfo.normal" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Vec2</em></p>
+<p>the normal vector at the point of intersection</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RaycastInfo.fraction">
+<code class="descname">fraction</code><a class="headerlink" href="#pybox2d.RaycastInfo.fraction" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">body</code></dt>
+<dd><p>body: pybox2d.Body</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">fixture</code></dt>
+<dd><p>fixture: pybox2d.Fixture</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">fraction</code></dt>
+<dd><p>fraction: &#8216;float32&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">normal</code></dt>
+<dd><p>normal: pybox2d.Vec2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">point</code></dt>
+<dd><p>point: pybox2d.Vec2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.RaycastResponseWrapper">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">RaycastResponseWrapper</code><a class="headerlink" href="#pybox2d.RaycastResponseWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raycast control response object</p>
+<p>You control how the ray cast proceeds by setting a floating point value:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">value</th>
+<th class="head">Result</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-1.0</td>
+<td>ignore this fixture and continue</td>
+</tr>
+<tr class="row-odd"><td>0.0</td>
+<td>terminate the ray cast</td>
+</tr>
+<tr class="row-even"><td>fraction</td>
+<td>clip the ray to this point</td>
+</tr>
+<tr class="row-odd"><td>1.0</td>
+<td>don&#8217;t clip the ray and continue (default)</td>
+</tr>
+</tbody>
+</table>
+<p>Alternatively, see below for convenience methods to set these values.</p>
+<dl class="attribute">
+<dt id="pybox2d.RaycastResponseWrapper.value">
+<code class="descname">value</code><a class="headerlink" href="#pybox2d.RaycastResponseWrapper.value" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+<p>The response value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.RaycastResponseWrapper.continue_without_clipping">
+<code class="descname">continue_without_clipping</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastResponseWrapper.continue_without_clipping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response: continue without clipping</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.RaycastResponseWrapper.ignore_fixture">
+<code class="descname">ignore_fixture</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastResponseWrapper.ignore_fixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response: ignore the fixture</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.RaycastResponseWrapper.set">
+<code class="descname">set</code><span class="sig-paren">(</span><em>self</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastResponseWrapper.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response: set the value specifically</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.RaycastResponseWrapper.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.RaycastResponseWrapper.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response: stop the raycast</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="joints.html" title="previous chapter">Joints</a></li>
+      <li>Next: <a href="math.html" title="next chapter">Math</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/raycasting.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, kne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/raycasting.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

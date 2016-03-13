@@ -1,0 +1,588 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Joints &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+    <link rel="next" title="Raycasting" href="raycasting.html" />
+    <link rel="prev" title="Bodies" href="bodies.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybox2d">
+<span id="joints"></span><h1>Joints<a class="headerlink" href="#module-pybox2d" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybox2d.Joint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">Joint</code><a class="headerlink" href="#pybox2d.Joint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.Joint.active">
+<code class="descname">active</code><a class="headerlink" href="#pybox2d.Joint.active" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is either body active?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Joint.anchors">
+<code class="descname">anchors</code><a class="headerlink" href="#pybox2d.Joint.anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the anchor point on bodyB in world coordinates.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Joint.bodies">
+<code class="descname">bodies</code><a class="headerlink" href="#pybox2d.Joint.bodies" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bodies attached to this joint</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Joint.collide_connected">
+<code class="descname">collide_connected</code><a class="headerlink" href="#pybox2d.Joint.collide_connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collide connected bodies?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Joint.get_reaction_force">
+<code class="descname">get_reaction_force</code><span class="sig-paren">(</span><em>self</em>, <em>inv_dt</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Joint.get_reaction_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reaction force on bodyB at the joint anchor in Newtons.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Joint.get_reaction_torque">
+<code class="descname">get_reaction_torque</code><span class="sig-paren">(</span><em>self</em>, <em>inv_dt</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Joint.get_reaction_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reaction torque on bodyB in N*m.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Joint.shift_origin">
+<code class="descname">shift_origin</code><span class="sig-paren">(</span><em>self</em>, <em>new_origin</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Joint.shift_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift the origin for any points stored in world coordinates.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Joint.valid">
+<code class="descname">valid</code><a class="headerlink" href="#pybox2d.Joint.valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.RevoluteJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">RevoluteJoint</code><a class="headerlink" href="#pybox2d.RevoluteJoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>A revolute joint constrains two bodies to share a common point while they
+are free to rotate about the point. The relative rotation about the shared
+point is the joint angle. You can limit the relative rotation with a joint
+limit that specifies a lower and upper angle. You can use a motor to drive
+the relative rotation about the shared point. A maximum motor torque is
+provided so that infinite forces are not generated.</p>
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.angle">
+<code class="descname">angle</code><a class="headerlink" href="#pybox2d.RevoluteJoint.angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current joint angle, in radians.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.limit_enabled">
+<code class="descname">limit_enabled</code><a class="headerlink" href="#pybox2d.RevoluteJoint.limit_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the joint limit enabled?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.limits">
+<code class="descname">limits</code><a class="headerlink" href="#pybox2d.RevoluteJoint.limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>The (lower joint limit, upper joint limit) in radians.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.lower_limit">
+<code class="descname">lower_limit</code><a class="headerlink" href="#pybox2d.RevoluteJoint.lower_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The lower joint limit in radians.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.max_motor_torque">
+<code class="descname">max_motor_torque</code><a class="headerlink" href="#pybox2d.RevoluteJoint.max_motor_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum motor torque, usually in N-m.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.motor_enabled">
+<code class="descname">motor_enabled</code><a class="headerlink" href="#pybox2d.RevoluteJoint.motor_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the joint motor enabled?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.motor_speed">
+<code class="descname">motor_speed</code><a class="headerlink" href="#pybox2d.RevoluteJoint.motor_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>The motor speed in radians per second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.reference_angle">
+<code class="descname">reference_angle</code><a class="headerlink" href="#pybox2d.RevoluteJoint.reference_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The reference angle, in radians</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.speed">
+<code class="descname">speed</code><a class="headerlink" href="#pybox2d.RevoluteJoint.speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current joint angle speed in radians per second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RevoluteJoint.upper_limit">
+<code class="descname">upper_limit</code><a class="headerlink" href="#pybox2d.RevoluteJoint.upper_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The upper joint limit in radians.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.DistanceJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">DistanceJoint</code><a class="headerlink" href="#pybox2d.DistanceJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.DistanceJoint.damping_ratio">
+<code class="descname">damping_ratio</code><a class="headerlink" href="#pybox2d.DistanceJoint.damping_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get damping ratio.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.DistanceJoint.frequency">
+<code class="descname">frequency</code><a class="headerlink" href="#pybox2d.DistanceJoint.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get frequency in Hz.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.DistanceJoint.length">
+<code class="descname">length</code><a class="headerlink" href="#pybox2d.DistanceJoint.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get the natural length. Manipulating the length can lead to non-
+physical behavior when the frequency is zero.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.DistanceJoint.local_anchors">
+<code class="descname">local_anchors</code><a class="headerlink" href="#pybox2d.DistanceJoint.local_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local anchor points relative to body_a, body_b&#8217;s origins.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.FrictionJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">FrictionJoint</code><a class="headerlink" href="#pybox2d.FrictionJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.FrictionJoint.local_anchors">
+<code class="descname">local_anchors</code><a class="headerlink" href="#pybox2d.FrictionJoint.local_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local anchor points relative to body_a, body_b&#8217;s origins.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.FrictionJoint.max_force">
+<code class="descname">max_force</code><a class="headerlink" href="#pybox2d.FrictionJoint.max_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the maximum friction force in N.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.FrictionJoint.max_torque">
+<code class="descname">max_torque</code><a class="headerlink" href="#pybox2d.FrictionJoint.max_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the maximum friction torque in N*m.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.CompositeJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">CompositeJoint</code><a class="headerlink" href="#pybox2d.CompositeJoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.GearJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">GearJoint</code><a class="headerlink" href="#pybox2d.GearJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.GearJoint.ratio">
+<code class="descname">ratio</code><a class="headerlink" href="#pybox2d.GearJoint.ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get the gear ratio.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.MotorJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">MotorJoint</code><a class="headerlink" href="#pybox2d.MotorJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.MotorJoint.angular_offset">
+<code class="descname">angular_offset</code><a class="headerlink" href="#pybox2d.MotorJoint.angular_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get the target angular offset, in radians.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MotorJoint.correction_factor">
+<code class="descname">correction_factor</code><a class="headerlink" href="#pybox2d.MotorJoint.correction_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position correction factor in the range [0,1].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MotorJoint.linear_offset">
+<code class="descname">linear_offset</code><a class="headerlink" href="#pybox2d.MotorJoint.linear_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get the target linear offset, in frame A, in meters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MotorJoint.max_force">
+<code class="descname">max_force</code><a class="headerlink" href="#pybox2d.MotorJoint.max_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the maximum friction force in N.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MotorJoint.max_torque">
+<code class="descname">max_torque</code><a class="headerlink" href="#pybox2d.MotorJoint.max_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the maximum friction torque in N*m.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.MouseJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">MouseJoint</code><a class="headerlink" href="#pybox2d.MouseJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.MouseJoint.damping_ratio">
+<code class="descname">damping_ratio</code><a class="headerlink" href="#pybox2d.MouseJoint.damping_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get the damping ratio (dimensionless).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MouseJoint.frequency">
+<code class="descname">frequency</code><a class="headerlink" href="#pybox2d.MouseJoint.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get the frequency in Hertz.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MouseJoint.max_force">
+<code class="descname">max_force</code><a class="headerlink" href="#pybox2d.MouseJoint.max_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get the maximum force in Newtons.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MouseJoint.target">
+<code class="descname">target</code><a class="headerlink" href="#pybox2d.MouseJoint.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this to update the target point.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.PrismaticJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">PrismaticJoint</code><a class="headerlink" href="#pybox2d.PrismaticJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pybox2d.PrismaticJoint.get_motor_force">
+<code class="descname">get_motor_force</code><span class="sig-paren">(</span><em>self</em>, <em>inv_dt</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.PrismaticJoint.get_motor_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current motor force given the inverse time step, usually in
+N.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.joint_speed">
+<code class="descname">joint_speed</code><a class="headerlink" href="#pybox2d.PrismaticJoint.joint_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current joint translation speed, usually in meters per
+second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.joint_translation">
+<code class="descname">joint_translation</code><a class="headerlink" href="#pybox2d.PrismaticJoint.joint_translation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current joint translation, usually in meters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.limit_enabled">
+<code class="descname">limit_enabled</code><a class="headerlink" href="#pybox2d.PrismaticJoint.limit_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the joint limit enabled?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.limits">
+<code class="descname">limits</code><a class="headerlink" href="#pybox2d.PrismaticJoint.limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>The (lower joint limit, upper joint limit) in meters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.local_anchors">
+<code class="descname">local_anchors</code><a class="headerlink" href="#pybox2d.PrismaticJoint.local_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local anchor points relative to body_a, body_b&#8217;s origins.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.local_axis_a">
+<code class="descname">local_axis_a</code><a class="headerlink" href="#pybox2d.PrismaticJoint.local_axis_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local joint axis relative to bodyA.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.lower_limit">
+<code class="descname">lower_limit</code><a class="headerlink" href="#pybox2d.PrismaticJoint.lower_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The lower joint limit in meters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.max_motor_force">
+<code class="descname">max_motor_force</code><a class="headerlink" href="#pybox2d.PrismaticJoint.max_motor_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the maximum motor force, usually in N.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.motor_enabled">
+<code class="descname">motor_enabled</code><a class="headerlink" href="#pybox2d.PrismaticJoint.motor_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the joint motor enabled?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.motor_speed">
+<code class="descname">motor_speed</code><a class="headerlink" href="#pybox2d.PrismaticJoint.motor_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the motor speed, usually in meters per second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.reference_angle">
+<code class="descname">reference_angle</code><a class="headerlink" href="#pybox2d.PrismaticJoint.reference_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reference angle.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PrismaticJoint.upper_limit">
+<code class="descname">upper_limit</code><a class="headerlink" href="#pybox2d.PrismaticJoint.upper_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The upper joint limit in meters.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.PulleyJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">PulleyJoint</code><a class="headerlink" href="#pybox2d.PulleyJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.PulleyJoint.current_lengths">
+<code class="descname">current_lengths</code><a class="headerlink" href="#pybox2d.PulleyJoint.current_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current length of the segment attached to bodyA, bodyB.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PulleyJoint.ground_anchors">
+<code class="descname">ground_anchors</code><a class="headerlink" href="#pybox2d.PulleyJoint.ground_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ground anchors.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PulleyJoint.lengths">
+<code class="descname">lengths</code><a class="headerlink" href="#pybox2d.PulleyJoint.lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current length of the segment attached to the bodies.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PulleyJoint.ratio">
+<code class="descname">ratio</code><a class="headerlink" href="#pybox2d.PulleyJoint.ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the pulley ratio.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.RopeJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">RopeJoint</code><a class="headerlink" href="#pybox2d.RopeJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.RopeJoint.limit_state">
+<code class="descname">limit_state</code><a class="headerlink" href="#pybox2d.RopeJoint.limit_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RopeJoint.local_anchors">
+<code class="descname">local_anchors</code><a class="headerlink" href="#pybox2d.RopeJoint.local_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local anchor points relative to body_a, body_b&#8217;s origins.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.RopeJoint.max_length">
+<code class="descname">max_length</code><a class="headerlink" href="#pybox2d.RopeJoint.max_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get the maximum length of the rope.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.WeldJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">WeldJoint</code><a class="headerlink" href="#pybox2d.WeldJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.WeldJoint.damping_ratio">
+<code class="descname">damping_ratio</code><a class="headerlink" href="#pybox2d.WeldJoint.damping_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get damping ratio.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WeldJoint.frequency">
+<code class="descname">frequency</code><a class="headerlink" href="#pybox2d.WeldJoint.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/get frequency in Hz.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WeldJoint.local_anchors">
+<code class="descname">local_anchors</code><a class="headerlink" href="#pybox2d.WeldJoint.local_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local anchor points relative to body_a, body_b&#8217;s origins.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WeldJoint.reference_angle">
+<code class="descname">reference_angle</code><a class="headerlink" href="#pybox2d.WeldJoint.reference_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reference angle.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.WheelJoint">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">WheelJoint</code><a class="headerlink" href="#pybox2d.WheelJoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pybox2d.WheelJoint.get_motor_torque">
+<code class="descname">get_motor_torque</code><span class="sig-paren">(</span><em>self</em>, <em>inv_dt</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.WheelJoint.get_motor_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current motor torque given the inverse time step, usually in
+N-m.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.joint_speed">
+<code class="descname">joint_speed</code><a class="headerlink" href="#pybox2d.WheelJoint.joint_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current joint translation speed, usually in meters per
+second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.joint_translation">
+<code class="descname">joint_translation</code><a class="headerlink" href="#pybox2d.WheelJoint.joint_translation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current joint translation, usually in meters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.local_anchors">
+<code class="descname">local_anchors</code><a class="headerlink" href="#pybox2d.WheelJoint.local_anchors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local anchor points relative to body_a, body_b&#8217;s origins.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.local_axis_a">
+<code class="descname">local_axis_a</code><a class="headerlink" href="#pybox2d.WheelJoint.local_axis_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local joint axis relative to bodyA.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.max_motor_torque">
+<code class="descname">max_motor_torque</code><a class="headerlink" href="#pybox2d.WheelJoint.max_motor_torque" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get the maximum motor force, usually in N-m.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.motor_enabled">
+<code class="descname">motor_enabled</code><a class="headerlink" href="#pybox2d.WheelJoint.motor_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the joint motor enabled?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.motor_speed">
+<code class="descname">motor_speed</code><a class="headerlink" href="#pybox2d.WheelJoint.motor_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the motor speed, usually in radians per second.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.spring_damping_ratio">
+<code class="descname">spring_damping_ratio</code><a class="headerlink" href="#pybox2d.WheelJoint.spring_damping_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get the spring damping ratio</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WheelJoint.spring_frequency_hz">
+<code class="descname">spring_frequency_hz</code><a class="headerlink" href="#pybox2d.WheelJoint.spring_frequency_hz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get the spring frequency in hertz. Setting the frequency to zero
+disables the spring.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="bodies.html" title="previous chapter">Bodies</a></li>
+      <li>Next: <a href="raycasting.html" title="next chapter">Raycasting</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/joints.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, kne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/joints.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

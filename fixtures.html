@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Shapes and Fixtures &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+    <link rel="next" title="Bodies" href="bodies.html" />
+    <link rel="prev" title="World" href="world.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybox2d">
+<span id="shapes-and-fixtures"></span><h1>Shapes and Fixtures<a class="headerlink" href="#module-pybox2d" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybox2d.Shape">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">Shape</code><a class="headerlink" href="#pybox2d.Shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="utilities.html#pybox2d.Base" title="pybox2d.Base"><code class="xref py py-class docutils literal"><span class="pre">pybox2d.Base</span></code></a></p>
+<dl class="attribute">
+<dt id="pybox2d.Shape.child_count">
+<code class="descname">child_count</code><a class="headerlink" href="#pybox2d.Shape.child_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of child primitives.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Shape.compute_mass">
+<code class="descname">compute_mass</code><span class="sig-paren">(</span><em>self</em>, <em>density</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Shape.compute_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mass properties of this shape using its dimensions and
+density.</p>
+<p>The inertia tensor is computed about the local origin.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>density</strong> (<em>float</em>) &#8211; The density in kilograms per meter squared.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>massdata</strong> (<em>(mass, center, inertia)</em>)</li>
+<li><em>The mass of the shape, usually in kilograms.</em></li>
+<li><em>The position of the shape&#8217;s centroid relative to the shape&#8217;s origin.</em></li>
+<li><em>The rotational inertia of the shape about the local origin.</em></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Shape.radius">
+<code class="descname">radius</code><a class="headerlink" href="#pybox2d.Shape.radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape radius</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Shape.valid">
+<code class="descname">valid</code><a class="headerlink" href="#pybox2d.Shape.valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.CircleShape">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">CircleShape</code><span class="sig-paren">(</span><em>radius=0.0</em>, <em>center=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.CircleShape" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.CircleShape.center">
+<code class="descname">center</code><a class="headerlink" href="#pybox2d.CircleShape.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center of the circle</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.CircleShape.radius">
+<code class="descname">radius</code><a class="headerlink" href="#pybox2d.CircleShape.radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>The circle radius</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.EdgeShape">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">EdgeShape</code><span class="sig-paren">(</span><em>vertices=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.EdgeShape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.PolygonShape">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">PolygonShape</code><span class="sig-paren">(</span><em>vertices=None</em>, <em>box=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.PolygonShape" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.PolygonShape.centroid">
+<code class="descname">centroid</code><a class="headerlink" href="#pybox2d.PolygonShape.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The polygon centroid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.PolygonShape.compute_mass">
+<code class="descname">compute_mass</code><span class="sig-paren">(</span><em>self</em>, <em>density</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.PolygonShape.compute_mass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PolygonShape.normals">
+<code class="descname">normals</code><a class="headerlink" href="#pybox2d.PolygonShape.normals" title="Permalink to this definition">¶</a></dt>
+<dd><p>The polygon normals</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.PolygonShape.set_as_box">
+<code class="descname">set_as_box</code><span class="sig-paren">(</span><em>self</em>, <em>float hx</em>, <em>float hy</em>, <em>center=None</em>, <em>angle=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.PolygonShape.set_as_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the polygon to be a box shape</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hx</strong> (<em>float</em>) &#8211; half horizontal width</li>
+<li><strong>hy</strong> (<em>float</em>) &#8211; half vertical height</li>
+<li><strong>center</strong> (<em>Vec2, optional</em>) &#8211; local center position, defaults to (0, 0)</li>
+<li><strong>angle</strong> (<em>float</em>) &#8211; rotation angle</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PolygonShape.valid_polygon">
+<code class="descname">valid_polygon</code><a class="headerlink" href="#pybox2d.PolygonShape.valid_polygon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.PolygonShape.vertices">
+<code class="descname">vertices</code><a class="headerlink" href="#pybox2d.PolygonShape.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The polygon vertices</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.FixtureDef">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">FixtureDef</code><span class="sig-paren">(</span><em>shape=None</em>, <em>friction=0.2</em>, <em>restitution=0.0</em>, <em>density=0.0</em>, <em>sensor=False</em>, <em>data=None</em>, <em>filter_=None</em>, <em>category_bits=1</em>, <em>mask_bits=65535</em>, <em>group_index=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.FixtureDef" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.FixtureDef.data">
+<code class="descname">data</code><a class="headerlink" href="#pybox2d.FixtureDef.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data: object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.Fixture">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">Fixture</code><a class="headerlink" href="#pybox2d.Fixture" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.Fixture.data">
+<code class="descname">data</code><a class="headerlink" href="#pybox2d.Fixture.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data: object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Fixture.density">
+<code class="descname">density</code><a class="headerlink" href="#pybox2d.Fixture.density" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Fixture.friction">
+<code class="descname">friction</code><a class="headerlink" href="#pybox2d.Fixture.friction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.Fixture.invalidate">
+<code class="descname">invalidate</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.Fixture.invalidate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Fixture.mass_data">
+<code class="descname">mass_data</code><a class="headerlink" href="#pybox2d.Fixture.mass_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mass data associated with the shape and this fixture&#8217;s density</p>
+<p>See Shape.compute_mass for more information.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Fixture.restitution">
+<code class="descname">restitution</code><a class="headerlink" href="#pybox2d.Fixture.restitution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Fixture.sensor">
+<code class="descname">sensor</code><a class="headerlink" href="#pybox2d.Fixture.sensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.Fixture.valid">
+<code class="descname">valid</code><a class="headerlink" href="#pybox2d.Fixture.valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.MassData">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">MassData</code><span class="sig-paren">(</span><em>mass=0.0</em>, <em>center=None</em>, <em>inertia=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.MassData" title="Permalink to this definition">¶</a></dt>
+<dd><p>This holds the mass data computed for a shape.</p>
+<dl class="attribute">
+<dt id="pybox2d.MassData.mass">
+<code class="descname">mass</code><a class="headerlink" href="#pybox2d.MassData.mass" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+<p>The mass of the shape, usually in kilograms.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MassData.center">
+<code class="descname">center</code><a class="headerlink" href="#pybox2d.MassData.center" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Vec2</em></p>
+<p>The position of the shape&#8217;s centroid relative to the shape&#8217;s origin.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.MassData.inertia">
+<code class="descname">inertia</code><a class="headerlink" href="#pybox2d.MassData.inertia" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+<p>The rotational inertia of the shape about the local origin.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">center</code></dt>
+<dd><p>center: pybox2d.Vec2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">inertia</code></dt>
+<dd><p>inertia: &#8216;float32&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">mass</code></dt>
+<dd><p>mass: &#8216;float32&#8217;</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="world.html" title="previous chapter">World</a></li>
+      <li>Next: <a href="bodies.html" title="next chapter">Bodies</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/fixtures.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, kne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/fixtures.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

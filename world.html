@@ -1,0 +1,956 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>World &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+    <link rel="next" title="Shapes and Fixtures" href="fixtures.html" />
+    <link rel="prev" title="pybox2d’s documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pybox2d">
+<span id="world"></span><h1>World<a class="headerlink" href="#module-pybox2d" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pybox2d.World">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">World</code><span class="sig-paren">(</span><em>gravity=None</em>, <em>default_body_class=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pybox2d.World.bodies">
+<code class="descname">bodies</code><a class="headerlink" href="#pybox2d.World.bodies" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all bodies in the world</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.clear_contact_monitoring">
+<code class="descname">clear_contact_monitoring</code><span class="sig-paren">(</span><em>self</em>, <em>body_class_a=None</em>, <em>body_class_b=None</em>, <em>*</em>, <em>allow_disable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.clear_contact_monitoring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop monitoring contacts</p>
+<p>If body_class_a and body_class_b are unspecified, all contact
+monitoring will be cleared.</p>
+<p>See monitor_contacts and monitor_bulk_contacts for more information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>body_class_a</strong> (<em>subclass of Body, optional</em>) &#8211; The body subclass to monitor contacts with...</li>
+<li><strong>body_class_b</strong> (<em>subclass of Body, optional</em>) &#8211; this body subclass.</li>
+<li><strong>allow_disable</strong> (<em>bool, optional</em>) &#8211; Allow disabling of contact monitoring if none are left</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_body_from_def">
+<code class="descname">create_body_from_def</code><span class="sig-paren">(</span><em>self</em>, <em>BodyDef body_defn</em>, <em>*</em>, <em>body_class=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_body_from_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a body from a BodyDef</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>body_defn</strong> (<a class="reference internal" href="bodies.html#pybox2d.BodyDef" title="pybox2d.BodyDef"><em>BodyDef</em></a>) &#8211; The body definition</li>
+<li><strong>body_class</strong> (<em>subclass of Body, optional</em>) &#8211; The wrapped Body will be of this type.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>body</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">body_class</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_distance_joint">
+<code class="descname">create_distance_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>anchors=None</em>, <em>damping_ratio=0.0</em>, <em>frequency_hz=0.0</em>, <em>length=None</em>, <em>local_anchors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_distance_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a distance joint between two bodies</p>
+<p>A distance joint constrains two points on two bodies to remain at a
+fixed distance from each other. You can view this as a massless, rigid
+rod.</p>
+<p>Two options for initialization of the joint:</p>
+<ol class="arabic simple">
+<li>set local_anchors (and optionally length)</li>
+<li>set anchors in world coordinates, length is calculated automatically</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; body_a, body_b anchor points in world coordinates. To use, both
+anchor_a and anchor_b must be specified. <cite>length</cite> will be
+calculated automatically.</li>
+<li><strong>local_anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchors&#8217; is unspecified.</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>damping_ratio</strong> (<em>float, optional</em>) &#8211; The damping ratio. 0 = no damping, 1 = critical damping.</li>
+<li><strong>frequency_hz</strong> (<em>float, optional</em>) &#8211; The mass-spring-damper frequency in Hertz. A value of 0 disables
+softness.</li>
+<li><strong>length</strong> (<em>float, optional</em>) &#8211; The natural length between the anchor points.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_dynamic_body">
+<code class="descname">create_dynamic_body</code><span class="sig-paren">(</span><em>self</em>, <em>*</em>, <em>body_class=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_dynamic_body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dynamic body with the given keyword arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>body_class</strong> (<em>subclass of Body, optional</em>) &#8211; The wrapped Body will be of this type.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Keyword arguments for the DynamicBodyDef</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>body</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">body_class</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_friction_joint">
+<code class="descname">create_friction_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>local_anchors=None</em>, <em>anchor=None</em>, <em>max_force=0.0</em>, <em>max_torque=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_friction_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a friction joint between two bodies</p>
+<p>Friction joint. This is used for top-down friction. It provides 2D
+translational friction and angular friction.</p>
+<p>Two options for initialization of the joint:</p>
+<ol class="arabic simple">
+<li>set local_anchors for each body</li>
+<li>set a single world anchor point</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>anchor</strong> (<em>Vec2, optional</em>) &#8211; The world anchor point where the bodies will be joined
+If unspecified, local anchors must be specified.</li>
+<li><strong>local_anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>max_force</strong> (<em>float, optional</em>) &#8211; The maximum friction force in N.</li>
+<li><strong>max_torque</strong> (<em>float, optional</em>) &#8211; The maximum friction torque in N-m.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_gear_joint">
+<code class="descname">create_gear_joint</code><span class="sig-paren">(</span><em>self</em>, <em>joints</em>, <em>*</em>, <em>collide_connected=False</em>, <em>ratio=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_gear_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a gear joint between two revolute/prismatic joints</p>
+<p>A gear joint is used to connect two joints together. Either joint can
+be a revolute or prismatic joint. You specify a gear ratio to bind the
+motions together:</p>
+<p>coordinate1 + ratio * coordinate2 = constant</p>
+<p>The ratio can be negative or positive. If one joint is a revolute joint
+and the other joint is a prismatic joint, then the ratio will have
+units of length or units of 1/length.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>joints</strong> (<em>(joint_a, joint_b), Joint instances</em>) &#8211; The first revolute/prismatic joint attached to the gear joint.
+Requires two existing revolute or prismatic joints (any combination
+will work).</li>
+<li><strong>ratio</strong> (<em>float, optional</em>) &#8211; The gear ratio.</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_kinematic_body">
+<code class="descname">create_kinematic_body</code><span class="sig-paren">(</span><em>self</em>, <em>*</em>, <em>body_class=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_kinematic_body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a kinematic body with the given keyword arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>body_class</strong> (<em>subclass of Body, optional</em>) &#8211; The wrapped Body will be of this type.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Keyword arguments for the KinematicBodyDef</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>body</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">body_class</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_motor_joint">
+<code class="descname">create_motor_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>angular_offset=None</em>, <em>correction_factor=0.3</em>, <em>linear_offset=None</em>, <em>max_force=1.0</em>, <em>max_torque=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_motor_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a motor joint between two bodies</p>
+<p>A motor joint is used to control the relative motion between two
+bodies. A typical usage is to control the movement of a dynamic body
+with respect to the ground.</p>
+<p>Two options for initialization:</p>
+<ol class="arabic simple">
+<li>Specify linear_offset and angular_offset manually</li>
+<li>Specify neither, and calculate the current offsets between the
+bodies</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>angular_offset</strong> (<em>float, optional</em>) &#8211; The bodyB angle minus bodyA angle in radians.</li>
+<li><strong>correction_factor</strong> (<em>float, optional</em>) &#8211; Position correction factor in the range [0,1].</li>
+<li><strong>linear_offset</strong> (<em>Vec2, optional</em>) &#8211; Position of bodyB minus the position of bodyA, in bodyA&#8217;s frame, in
+meters.</li>
+<li><strong>max_force</strong> (<em>float, optional</em>) &#8211; The maximum motor force in N.</li>
+<li><strong>max_torque</strong> (<em>float, optional</em>) &#8211; The maximum motor torque in N-m.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_mouse_joint">
+<code class="descname">create_mouse_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>damping_ratio=0.7</em>, <em>frequency_hz=5.0</em>, <em>max_force=0.0</em>, <em>target=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_mouse_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mouse joint between two bodies</p>
+<p>A mouse joint is used to make a point on a body track a specified
+world point. This a soft constraint with a maximum force. This allows
+the constraint to stretch and without applying huge forces.</p>
+<p>NOTE: this joint is not documented in the manual because it was
+developed to be used in the testbed. If you want to learn how to use
+the mouse joint, look at the testbed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>damping_ratio</strong> (<em>float, optional</em>) &#8211; The damping ratio. 0 = no damping, 1 = critical damping.</li>
+<li><strong>frequency_hz</strong> (<em>float, optional</em>) &#8211; The response speed.</li>
+<li><strong>max_force</strong> (<em>float, optional</em>) &#8211; The maximum constraint force that can be exerted to move the
+candidate body. Usually you will express as some multiple of the
+weight (multiplier * mass * gravity).</li>
+<li><strong>target</strong> (<em>Vec2, optional</em>) &#8211; The initial world target point. This is assumed to coincide with
+the body anchor initially.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_prismatic_joint">
+<code class="descname">create_prismatic_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>local_anchors=None</em>, <em>anchor=None</em>, <em>axis=None</em>, <em>enable_limit=False</em>, <em>enable_motor=False</em>, <em>local_axis_a=None</em>, <em>lower_translation=0.0</em>, <em>max_motor_force=0.0</em>, <em>motor_speed=0.0</em>, <em>reference_angle=0.0</em>, <em>upper_translation=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_prismatic_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a prismatic joint between two bodies</p>
+<p>A prismatic joint. This joint provides one degree of freedom:
+translation along an axis fixed in bodyA. Relative rotation is
+prevented. You can use a joint limit to restrict the range of motion
+and a joint motor to drive the motion or to model joint friction.</p>
+<p>Two options for initialization:</p>
+<ol class="arabic simple">
+<li>Specify (world) anchor and axis</li>
+<li>Specify local_anchors, local_axis_a</li>
+</ol>
+<p>If unspecified, reference_angle is automatically calculated to be</p>
+<p><code class="docutils literal"><span class="pre">body_b.angle</span> <span class="pre">-</span> <span class="pre">body_a.angle</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>anchor</strong> (<em>Vec2, optional</em>) &#8211; The world anchor point where the bodies will be joined
+Requires axis to be specified as well
+If unspecified, local_anchors, local_axis_a, and reference_angle
+must be specified.</li>
+<li><strong>axis</strong> (<em>Vec2, optional</em>) &#8211; Unit world axis for the joint
+Requires anchor to be specified as well</li>
+<li><strong>local_anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>enable_limit</strong> (<em>bool, optional</em>) &#8211; Enable/disable the joint limit.</li>
+<li><strong>enable_motor</strong> (<em>bool, optional</em>) &#8211; Enable/disable the joint motor.</li>
+<li><strong>local_axis_a</strong> (<em>Vec2, optional</em>) &#8211; The local translation unit axis in bodyA.
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>lower_translation</strong> (<em>float, optional</em>) &#8211; The lower translation limit, usually in meters.</li>
+<li><strong>max_motor_force</strong> (<em>float, optional</em>) &#8211; The maximum motor torque, usually in N-m.</li>
+<li><strong>motor_speed</strong> (<em>float, optional</em>) &#8211; The desired motor speed in radians per second.</li>
+<li><strong>reference_angle</strong> (<em>float, optional</em>) &#8211; The constrained angle between the bodies:
+|   bodyB_angle - bodyA_angle
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>upper_translation</strong> (<em>float, optional</em>) &#8211; The upper translation limit, usually in meters.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_pulley_joint">
+<code class="descname">create_pulley_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=True</em>, <em>ground_anchors=None</em>, <em>local_anchors=None</em>, <em>anchors=None</em>, <em>lengths=None</em>, <em>ratio=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_pulley_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pulley joint between two bodies</p>
+<p>The pulley joint is connected to two bodies and two fixed ground
+points. The pulley supports a ratio such that:</p>
+<p>length1 + ratio * length2 &lt;= constant</p>
+<p>Yes, the force transmitted is scaled by the ratio.</p>
+<p>Warning: the pulley joint can get a bit squirrelly by itself. They
+often work better when combined with prismatic joints. You should also
+cover the the anchor points with static shapes to prevent one side
+from going to zero length.</p>
+<p>ground_anchors is required.</p>
+<p>Initialization options:</p>
+<ol class="arabic simple">
+<li>Specify anchors, and ratio</li>
+<li>Specify local_anchors, individual lengths, and ratio</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: True)</li>
+<li><strong>ground_anchors</strong> (<em>(ground_anchor_a, ground_anchor_b), Vec2</em>) &#8211; The ground anchors in world coordinates. These points never move.</li>
+<li><strong>lengths</strong> (<em>(length_a, length_b), float, optional</em>) &#8211; The reference lengths for the segment attached to the respective
+bodies.</li>
+<li><strong>local_anchors</strong> (<em>(local_anchor_a, local_anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchors&#8217; is unspecified.</li>
+<li><strong>anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; World anchor points for (body_a, body_b).
+Required if &#8216;local_anchors&#8217; is unspecified.</li>
+<li><strong>ratio</strong> (<em>float, optional</em>) &#8211; The pulley ratio, used to simulate a block-and-tackle.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_revolute_joint">
+<code class="descname">create_revolute_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>anchor=None</em>, <em>reference_angle=None</em>, <em>local_anchors=None</em>, <em>collide_connected=False</em>, <em>angle_limit=None</em>, <em>motor=False</em>, <em>motor_speed=0.0</em>, <em>max_motor_torque=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_revolute_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a revolute joint</p>
+<p>A revolute joint requires an anchor point where the bodies are joined.
+This uses local anchor points so that the initial configuration can
+violate the constraint slightly. You also need to specify the initial
+relative angle for joint limits. This helps when saving and loading a
+game.</p>
+<p>The local anchor points are measured from the body&#8217;s origin rather than
+the center of mass because:</p>
+<ol class="arabic simple">
+<li>you might not know where the center of mass will be.</li>
+<li>if you add/remove shapes from a body and recompute the mass,
+the joints will be broken.</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>anchor</strong> (<em>Vec2, optional</em>) &#8211; The world anchor point where the bodies will be joined
+If unspecified, reference_angle and local_anchors must be
+specified.</li>
+<li><strong>reference_angle</strong> (<em>float, optional</em>) &#8211; <p>Reference angle in radians
+If unspecified, reference_angle is automatically calculated to be:</p>
+<p><code class="docutils literal"><span class="pre">body_b.angle</span> <span class="pre">-</span> <span class="pre">body_a.angle</span></code></p>
+</li>
+<li><strong>local_anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>motor</strong> (<em>bool, optional</em>) &#8211; Enable the joint motor (default: False)</li>
+<li><strong>motor_speed</strong> (<em>float, optional</em>) &#8211; Desired motor speed [radians/s]</li>
+<li><strong>max_motor_torque</strong> (<em>float, optional</em>) &#8211; Maximum motor torque used to achieve the desired motor_speed [N-m]</li>
+<li><strong>angle_limit</strong> (<em>(lower_angle, upper_angle), float</em>) &#8211; Joint angle limits, in radians. If None, limits will be disabled.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_rope_joint">
+<code class="descname">create_rope_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>local_anchors=None</em>, <em>max_length=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_rope_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rope joint between two bodies</p>
+<p>A rope joint enforces a maximum distance between two points on two
+bodies. It has no other effect. Warning: if you attempt to change the
+maximum length during the simulation you will get some non-physical
+behavior. A model that would allow you to dynamically modify the length
+would have some sponginess, so Erin Catto chose not to implement it
+that way.</p>
+<p>See <cite>world.create_distance_joint</cite> if you want to dynamically control
+length.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>local_anchors</strong> (<em>(local_anchor_a, local_anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Defaults to ((-1, 0), (1, 0))</li>
+<li><strong>max_length</strong> (<em>float, optional</em>) &#8211; The maximum length of the rope. Warning: this must be larger than
+b2_linearSlop or the joint will have no effect.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_static_body">
+<code class="descname">create_static_body</code><span class="sig-paren">(</span><em>self</em>, <em>*</em>, <em>body_class=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_static_body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a static body with the given keyword arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>body_class</strong> (<em>subclass of Body, optional</em>) &#8211; The wrapped Body will be of this type.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Keyword arguments for the StaticBodyDef</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>body</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">body_class</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_weld_joint">
+<code class="descname">create_weld_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>local_anchors=None</em>, <em>anchor=None</em>, <em>damping_ratio=0.0</em>, <em>frequency_hz=0.0</em>, <em>reference_angle=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_weld_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a weld joint between two bodies</p>
+<p>A weld joint essentially glues two bodies together. A weld joint may
+distort somewhat because the island constraint solver is approximate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>local_anchors</strong> (<em>(local_anchor_a, local_anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>anchor</strong> (<em>Vec2, optional</em>) &#8211; The world anchor point where the bodies will be joined
+If unspecified, reference_angle and local_anchors must be
+specified.</li>
+<li><strong>damping_ratio</strong> (<em>float, optional</em>) &#8211; The damping ratio. 0 = no damping, 1 = critical damping.</li>
+<li><strong>frequency_hz</strong> (<em>float, optional</em>) &#8211; The mass-spring-damper frequency in Hertz. Rotation only. Disable
+softness with a value of 0.</li>
+<li><strong>reference_angle</strong> (<em>float, optional</em>) &#8211; <p>The bodyB angle minus bodyA angle in the reference state (radians).
+If unspecified, reference_angle is automatically calculated to be:</p>
+<p><code class="docutils literal"><span class="pre">body_b.angle</span> <span class="pre">-</span> <span class="pre">body_a.angle</span></code></p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.create_wheel_joint">
+<code class="descname">create_wheel_joint</code><span class="sig-paren">(</span><em>self</em>, <em>bodies</em>, <em>*</em>, <em>collide_connected=False</em>, <em>local_anchors=None</em>, <em>anchor=None</em>, <em>axis=None</em>, <em>local_axis_a=None</em>, <em>damping_ratio=0.7</em>, <em>enable_motor=False</em>, <em>frequency_hz=2.0</em>, <em>max_motor_torque=0.0</em>, <em>motor_speed=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.create_wheel_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a wheel joint between two bodies</p>
+<p>A wheel joint. This joint provides two degrees of freedom: translation
+along an axis fixed in bodyA and rotation in the plane. In other
+words, it is a point to line constraint with a rotational motor and a
+linear spring/damper. This joint is designed for vehicle suspensions.</p>
+<p>Initialization options:</p>
+<ol class="arabic simple">
+<li>Set local_anchors and local_axis_a</li>
+<li>Set world anchor point and axis</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bodies</strong> (<em>(body_a, body_b), Body instances</em>) &#8211; The bodies to join together</li>
+<li><strong>collide_connected</strong> (<em>bool, optional</em>) &#8211; Allow collision between connected bodies (default: False)</li>
+<li><strong>local_anchors</strong> (<em>(anchor_a, anchor_b), Vec2, optional</em>) &#8211; Local anchor points relative to (body_a, body_b).
+Required if &#8216;anchor&#8217; is unspecified.</li>
+<li><strong>local_axis_a</strong> (<em>Vec2, optional</em>) &#8211; The local translation axis in bodyA.</li>
+<li><strong>anchor</strong> (<em>Vec2, optional</em>) &#8211; The world anchor point where the bodies will be joined.</li>
+<li><strong>axis</strong> (<em>Vec2, optional</em>) &#8211; The world translation axis</li>
+<li><strong>damping_ratio</strong> (<em>float, optional</em>) &#8211; Suspension damping ratio, one indicates critical damping</li>
+<li><strong>enable_motor</strong> (<em>bool, optional</em>) &#8211; Enable/disable the joint motor.</li>
+<li><strong>frequency_hz</strong> (<em>float, optional</em>) &#8211; Suspension frequency, zero indicates no suspension</li>
+<li><strong>local_anchor_a</strong> (<em>Vec2, optional</em>) &#8211; The local anchor point relative to bodyA&#8217;s origin.</li>
+<li><strong>local_anchor_b</strong> (<em>Vec2, optional</em>) &#8211; The local anchor point relative to bodyB&#8217;s origin.</li>
+<li><strong>max_motor_torque</strong> (<em>float, optional</em>) &#8211; The maximum motor torque, usually in N-m.</li>
+<li><strong>motor_speed</strong> (<em>float, optional</em>) &#8211; The desired motor speed in radians per second.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.World.default_body_class">
+<code class="descname">default_body_class</code><a class="headerlink" href="#pybox2d.World.default_body_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default Body class.</p>
+<p>create_body() by default returns a pybox2d.Body instance, but you have
+the option of subclassing this for different body types in your
+simulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.destroy_body">
+<code class="descname">destroy_body</code><span class="sig-paren">(</span><em>self</em>, <em>Body body</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.destroy_body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy (remove) a body from the world</p>
+<p>All associated shapes and joints will be deleted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>body</strong> (<a class="reference internal" href="bodies.html#pybox2d.Body" title="pybox2d.Body"><em>Body</em></a>) &#8211; The body to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.destroy_joint">
+<code class="descname">destroy_joint</code><span class="sig-paren">(</span><em>self</em>, <em>Joint joint</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.destroy_joint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy (remove) a joint from the world</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>joint</strong> (<a class="reference internal" href="joints.html#pybox2d.Joint" title="pybox2d.Joint"><em>Joint</em></a>) &#8211; The joint to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.disable_contact_monitoring">
+<code class="descname">disable_contact_monitoring</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.disable_contact_monitoring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporarily stop monitoring all contacts</p>
+<p>See monitor_contacts and monitor_bulk_contacts for more information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.enable_contact_monitoring">
+<code class="descname">enable_contact_monitoring</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.enable_contact_monitoring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable contact monitoring</p>
+<p>See monitor_contacts and monitor_bulk_contacts for more information.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.World.gravity">
+<code class="descname">gravity</code><a class="headerlink" href="#pybox2d.World.gravity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The global gravity vector.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.World.joints">
+<code class="descname">joints</code><a class="headerlink" href="#pybox2d.World.joints" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all joints in the world</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.monitor_contacts">
+<code class="descname">monitor_contacts</code><span class="sig-paren">(</span><em>self</em>, <em>body_class_a</em>, <em>body_class_b</em>, <em>*</em>, <em>enable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.monitor_contacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor contacts between bodies of body_class_a and body_class_b.</p>
+<p>Contacts will be recorded in body_a.contacts and body_b.contacts after
+every world.step() call.</p>
+<p>Benefits of this over monitor_contacts:
+It&#8217;s fast and will cause the least burden with making numerous Python
+calls per step.</p>
+<p>Possible downsides:
+It&#8217;s possible that this can miss contacts, as sub-stepping will have a
+contact begin and end in a single call to World.step.  It is not
+possible to control what happens exactly when contacts happen.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>body_class_a</strong> (<em>subclass of Body</em>) &#8211; The body subclass to monitor contacts with...</li>
+<li><strong>body_class_b</strong> (<em>subclass of Body</em>) &#8211; this body subclass.</li>
+<li><strong>enable</strong> (<em>bool, optional</em>) &#8211; Enable contact monitoring, if not already enabled (defaults to
+True)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.World.monitor_mode">
+<code class="descname">monitor_mode</code><a class="headerlink" href="#pybox2d.World.monitor_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor mode</p>
+<p>See MonitorModeType</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.raycast_all">
+<code class="descname">raycast_all</code><span class="sig-paren">(</span><em>self</em>, <em>point1</em>, <em>point2</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.raycast_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast a ray from point1 to point2</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point1</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+<li><strong>point2</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first last"><strong>info</strong> (<em>RaycastInfo</em>) &#8211;
+All fixtures that lie on the ray between point1 and point2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.raycast_any">
+<code class="descname">raycast_any</code><span class="sig-paren">(</span><em>self</em>, <em>point1</em>, <em>point2</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.raycast_any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast a ray from point1 to point2</p>
+<p>Get the first fixture that lies between point1 and point2.
+This is not necessarily the closest fixture.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point1</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+<li><strong>point2</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>info</strong> &#8211;
+The first fixture that lies on the ray between point1 and point2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RaycastInfo(body, fixture, point, normal, fraction)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.raycast_closest">
+<code class="descname">raycast_closest</code><span class="sig-paren">(</span><em>self</em>, <em>point1</em>, <em>point2</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.raycast_closest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast a ray from point1 to point2</p>
+<p>Get the closest fixture to point1 that lies between point1 and point2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point1</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+<li><strong>point2</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>info</strong> &#8211;
+The first fixture that lies on the ray between point1 and point2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">RaycastInfo(body, fixture, point, normal, fraction)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.raycast_iterable">
+<code class="descname">raycast_iterable</code><span class="sig-paren">(</span><em>self</em>, <em>point1</em>, <em>point2</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.raycast_iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast a ray from point1 to point2</p>
+<p>Get the first fixture that lies between point1 and point2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point1</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+<li><strong>point2</strong> (<a class="reference internal" href="math.html#pybox2d.Vec2" title="pybox2d.Vec2"><em>Vec2</em></a>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><ul class="first last simple">
+<li><strong>info</strong> (<em>RaycastInfo(body, fixture, point, normal, fraction)</em>) &#8211;
+The first fixture that lies on the ray between point1 and point2</li>
+<li><strong>resp</strong> (<em>RaycastResponseWrapper</em>) &#8211;
+Control how the raycast proceeds by interacting with this object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.World.status">
+<code class="descname">status</code><a class="headerlink" href="#pybox2d.World.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Status of low-level things in the world</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>status_tuple</strong> &#8211;
+see WorldStatus for more information</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pybox2d.WorldStatus" title="pybox2d.WorldStatus">WorldStatus</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pybox2d.World.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>self</em>, <em>float time_step</em>, <em>int velocity_iterations</em>, <em>int position_iterations</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.World.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a time step.</p>
+<p>This performs collision detection, integration, and constraint
+solution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>time_step</strong> (<em>float</em>) &#8211; the amount of time to simulate, this should not vary.</li>
+<li><strong>velocity_iterations</strong> (<em>float</em>) &#8211; Number of iterations for the velocity constraint solver.</li>
+<li><strong>position_iterations</strong> &#8211; Number of iterations for the position constraint solver.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pybox2d.WorldStatus">
+<em class="property">class </em><code class="descclassname">pybox2d.</code><code class="descname">WorldStatus</code><span class="sig-paren">(</span><em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pybox2d.WorldStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>WorldStatus</p>
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.tree_height">
+<code class="descname">tree_height</code><a class="headerlink" href="#pybox2d.WorldStatus.tree_height" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>height of the broadphase dynamic tree</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.tree_balance">
+<code class="descname">tree_balance</code><a class="headerlink" href="#pybox2d.WorldStatus.tree_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>balance of the broadphase dynamic tree</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.tree_quality">
+<code class="descname">tree_quality</code><a class="headerlink" href="#pybox2d.WorldStatus.tree_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+<p>quality of the broadphase dynamic tree, where the smaller the value,
+the better (minimum is 1)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.proxy_count">
+<code class="descname">proxy_count</code><a class="headerlink" href="#pybox2d.WorldStatus.proxy_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>number of broadphase proxies</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.body_count">
+<code class="descname">body_count</code><a class="headerlink" href="#pybox2d.WorldStatus.body_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>total number of bodies in the world</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.joint_count">
+<code class="descname">joint_count</code><a class="headerlink" href="#pybox2d.WorldStatus.joint_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>total number of joints in the world</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pybox2d.WorldStatus.contact_count">
+<code class="descname">contact_count</code><a class="headerlink" href="#pybox2d.WorldStatus.contact_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>total number of contacts in the world, with 0 or more contact points</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">body_count</code></dt>
+<dd><p>body_count: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">contact_count</code></dt>
+<dd><p>contact_count: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">joint_count</code></dt>
+<dd><p>joint_count: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">proxy_count</code></dt>
+<dd><p>proxy_count: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">tree_balance</code></dt>
+<dd><p>tree_balance: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">tree_height</code></dt>
+<dd><p>tree_height: &#8216;int&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">tree_quality</code></dt>
+<dd><p>tree_quality: &#8216;float&#8217;</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">pybox2d&#8217;s documentation</a></li>
+      <li>Next: <a href="fixtures.html" title="next chapter">Shapes and Fixtures</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/world.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, kne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/world.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
