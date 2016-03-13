@@ -1,15 +1,9 @@
-from collections import namedtuple
 from defn.world cimport b2World
 from defn.joint cimport (b2Joint, b2JointDef, b2RevoluteJointDef)
 
 
-_WorldStatusTuple = namedtuple('WorldStatusTuple',
-                               'tree_height tree_balance tree_quality '
-                               'proxy_count body_count joint_count '
-                               'contact_count')
-
-class WorldStatusTuple(_WorldStatusTuple):
-    '''WorldStatusTuple
+cdef class WorldStatus(Base):
+    '''WorldStatus
 
     Attributes
     ----------
@@ -29,7 +23,24 @@ class WorldStatusTuple(_WorldStatusTuple):
     contact_count : int
         total number of contacts in the world, with 0 or more contact points
     '''
-    __slots__ = ()
+    cdef public int tree_height
+    cdef public int tree_balance
+    cdef public float tree_quality
+    cdef public int proxy_count
+    cdef public int body_count
+    cdef public int joint_count
+    cdef public int contact_count
+
+    def __init__(self, **kw):
+        for attr, value in kw.items():
+            setattr(self, attr, value)
+
+    cpdef _get_repr_info(self):
+        return [(attr, getattr(self, attr))
+                for attr in ('tree_height', 'tree_balance', 'tree_quality',
+                             'proxy_count', 'body_count', 'joint_count',
+                             'contact_count')
+                ]
 
 
 cdef class World:
@@ -367,8 +378,10 @@ cdef class World:
             specified.
         reference_angle : float, optional
             Reference angle in radians
-            If unspecified, reference_angle is automatically calculated to be
-                body_b.angle - body_a.angle
+            If unspecified, reference_angle is automatically calculated to be:
+
+            ``body_b.angle - body_a.angle``
+
         local_anchors : (anchor_a, anchor_b), Vec2, optional
             Local anchor points relative to (body_a, body_b).
             Required if 'anchor' is unspecified.
@@ -436,6 +449,7 @@ cdef class World:
         rod.
 
         Two options for initialization of the joint:
+
         1. set local_anchors (and optionally length)
         2. set anchors in world coordinates, length is calculated automatically
 
@@ -512,8 +526,9 @@ cdef class World:
         translational friction and angular friction.
 
         Two options for initialization of the joint:
-            1. set local_anchors for each body
-            2. set a single world anchor point
+
+        1. set local_anchors for each body
+        2. set a single world anchor point
 
         Parameters
         ----------
@@ -654,9 +669,10 @@ cdef class World:
         with respect to the ground.
 
         Two options for initialization:
-            1. Specify linear_offset and angular_offset manually
-            2. Specify neither, and calculate the current offsets between the
-               bodies
+
+        1. Specify linear_offset and angular_offset manually
+        2. Specify neither, and calculate the current offsets between the
+           bodies
 
         Parameters
         ----------
@@ -778,11 +794,13 @@ cdef class World:
         and a joint motor to drive the motion or to model joint friction.
 
         Two options for initialization:
+
         1. Specify (world) anchor and axis
         2. Specify local_anchors, local_axis_a
 
         If unspecified, reference_angle is automatically calculated to be
-            body_b.angle - body_a.angle
+
+        ``body_b.angle - body_a.angle``
 
         Parameters
         ----------
@@ -816,7 +834,7 @@ cdef class World:
             The desired motor speed in radians per second.
         reference_angle : float, optional
             The constrained angle between the bodies:
-                bodyB_angle - bodyA_angle
+            |   bodyB_angle - bodyA_angle
             Required if 'anchor' is unspecified.
         upper_translation : float, optional
             The upper translation limit, usually in meters.
@@ -891,6 +909,7 @@ cdef class World:
         ground_anchors is required.
 
         Initialization options:
+
         1. Specify anchors, and ratio
         2. Specify local_anchors, individual lengths, and ratio
 
@@ -1051,8 +1070,9 @@ cdef class World:
             softness with a value of 0.
         reference_angle : float, optional
             The bodyB angle minus bodyA angle in the reference state (radians).
-            If unspecified, reference_angle is automatically calculated to be
-                body_b.angle - body_a.angle
+            If unspecified, reference_angle is automatically calculated to be:
+
+            ``body_b.angle - body_a.angle``
 
         '''
         body_a, body_b = bodies
@@ -1103,6 +1123,7 @@ cdef class World:
         linear spring/damper. This joint is designed for vehicle suspensions.
 
         Initialization options:
+
         1. Set local_anchors and local_axis_a
         2. Set world anchor point and axis
 
@@ -1187,11 +1208,8 @@ cdef class World:
 
         Yields
         ------
-        info : RaycastInfo(body, fixture, point, normal, fraction)
+        info : RaycastInfo
             All fixtures that lie on the ray between point1 and point2
-            fixture: the fixture hit by the ray
-            point: the point of initial intersection
-            normal: the normal vector at the point of intersection
         '''
         for info, resp in self.raycast_iterable(point1, point2):
             yield info
@@ -1211,9 +1229,6 @@ cdef class World:
         -------
         info : RaycastInfo(body, fixture, point, normal, fraction)
             The first fixture that lies on the ray between point1 and point2
-            fixture: the fixture hit by the ray
-            point: the point of initial intersection
-            normal: the normal vector at the point of intersection
         '''
         info = None
         for info, resp in self.raycast_iterable(point1, point2):
@@ -1237,9 +1252,6 @@ cdef class World:
         -------
         info : RaycastInfo(body, fixture, point, normal, fraction)
             The first fixture that lies on the ray between point1 and point2
-            fixture: the fixture hit by the ray
-            point: the point of initial intersection
-            normal: the normal vector at the point of intersection
         '''
         info = None
         for info, resp in self.raycast_iterable(point1, point2):
@@ -1261,21 +1273,9 @@ cdef class World:
         ------
         info : RaycastInfo(body, fixture, point, normal, fraction)
             The first fixture that lies on the ray between point1 and point2
-            fixture: the fixture hit by the ray
-            point: the point of initial intersection
-            normal: the normal vector at the point of intersection
         resp : RaycastResponseWrapper
             Control how the raycast proceeds by interacting with this object.
 
-            Use resp.set(value), where value is:
-                -1.0: ignore this fixture and continue
-                 0.0: terminate the ray cast
-            fraction: clip the ray to this point
-                 1.0: don't clip the ray and continue
-
-            Alternatively, use the convenience methods of
-            RaycastResponseWrapper (ignore_fixture, continue_without_clipping,
-            etc.)
         '''
         return RaycastIterable(self, point1, point2)
 
@@ -1505,16 +1505,16 @@ cdef class World:
 
         Returns
         -------
-        status_tuple : WorldStatusTuple
-            see WorldStatusTuple for more information
+        status_tuple : WorldStatus
+            see WorldStatus for more information
         '''
         cdef const b2ContactManager *cm = &self.world.GetContactManager()
         cdef const b2BroadPhase *bp = &cm.m_broadPhase
-        return WorldStatusTuple(tree_height=bp.GetTreeHeight(),
-                                tree_balance=bp.GetTreeBalance(),
-                                tree_quality=bp.GetTreeQuality(),
-                                proxy_count=self.world.GetProxyCount(),
-                                body_count=self.world.GetBodyCount(),
-                                joint_count=self.world.GetJointCount(),
-                                contact_count=self.world.GetContactCount(),
-                                )
+        return WorldStatus(tree_height=bp.GetTreeHeight(),
+                           tree_balance=bp.GetTreeBalance(),
+                           tree_quality=bp.GetTreeQuality(),
+                           proxy_count=self.world.GetProxyCount(),
+                           body_count=self.world.GetBodyCount(),
+                           joint_count=self.world.GetJointCount(),
+                           contact_count=self.world.GetContactCount(),
+                           )

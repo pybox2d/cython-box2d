@@ -1,6 +1,5 @@
 from cpython.ref cimport PyObject, Py_INCREF, Py_DECREF
 import threading
-from collections import namedtuple
 from threading import Thread
 
 
@@ -24,42 +23,89 @@ cdef cppclass RayCastCallback(b2RayCastCallback):
 
 
 
-_RaycastTuple = namedtuple('RaycastTuple', 'body fixture point normal fraction')
-class RaycastTuple(_RaycastTuple):
-    '''RaycastTuple
+cdef class RaycastInfo(Base):
+    '''RaycastInfo
 
-    fixture: the fixture hit by the ray
-    point: the point of initial intersection
-    normal: the normal vector at the point of intersection
+    Attributes
+    ----------
+    fixture : Fixture
+        the fixture hit by the ray
+    body : Body
+        the body which contains the fixture
+    point : Vec2
+        the point of initial intersection
+    normal : Vec2
+        the normal vector at the point of intersection
+    fraction : float
+
     '''
-    __slots__ = ()
-    # ref: http://stackoverflow.com/questions/1606436
+    cdef public Fixture fixture
+    cdef public Body body
+    cdef public Vec2 point
+    cdef public Vec2 normal
+    cdef public float32 fraction
+
+    def __init__(self, fixture=None, body=None, point=None, normal=None,
+                 fraction=0.0):
+        self.fixture = fixture
+        self.body = body
+        self.point = point
+        self.normal = normal
+        self.fraction = fraction
+
+    cpdef _get_repr_info(self):
+        return [('fixture', self.fixture),
+                ('body', self.body),
+                ('point', self.point),
+                ('normal', self.normal),
+                ('fraction', self.fraction),
+                ]
 
 
 class RaycastResponseWrapper(Base):
-    '''You control how the ray cast proceeds by setting a float:
+    '''Raycast control response object
 
-        -1.0: ignore this fixture and continue
-         0.0: terminate the ray cast
-    fraction: clip the ray to this point
-         1.0: don't clip the ray and continue
+    You control how the ray cast proceeds by setting a floating point value:
+
+    +----------+-------------------------------------------+
+    | value    | Result                                    |
+    +==========+===========================================+
+    | -1.0     | ignore this fixture and continue          |
+    +----------+-------------------------------------------+
+    | 0.0      | terminate the ray cast                    |
+    +----------+-------------------------------------------+
+    | fraction | clip the ray to this point                |
+    +----------+-------------------------------------------+
+    | 1.0      | don't clip the ray and continue (default) |
+    +----------+-------------------------------------------+
+
+    Alternatively, see below for convenience methods to set these values.
+
+    Attributes
+    ----------
+    value : float
+        The response value
     '''
     def __init__(self):
         self.continue_without_clipping()
 
     def set(self, value):
+        '''Response: set the value specifically'''
         self.value = value
 
     def _get_repr_info(self):
         return [('value', self.value)]
 
     def ignore_fixture(self):
+        '''Response: ignore the fixture'''
         self.set(-1.0)
 
     def stop(self):
+        '''Response: stop the raycast'''
         self.set(0.0)
 
     def continue_without_clipping(self):
+        '''Response: continue without clipping'''
         self.set(1.0)
 
 
@@ -135,9 +181,9 @@ cdef class RaycastIterable:
                     break
 
                 response_wrapper = RaycastResponseWrapper()
-                yield (RaycastTuple(body=self.body, fixture=self.fixture,
-                                    point=self.point, normal=self.normal,
-                                    fraction=self.fraction),
+                yield (RaycastInfo(body=self.body, fixture=self.fixture,
+                                   point=self.point, normal=self.normal,
+                                   fraction=self.fraction),
                        response_wrapper)
 
                 self.fixture = None

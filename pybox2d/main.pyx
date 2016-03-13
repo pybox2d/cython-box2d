@@ -1,3 +1,6 @@
+# cython: embedsignature=True
+
+
 include "defn/common.pxd"
 include "defn/settings.pxd"
 include "defn/allocator.pxd"
