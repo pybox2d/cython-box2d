@@ -442,6 +442,8 @@ cdef class Body(Base):
     def apply_angular_impulse(self, float impulse, bool wake=True):
         '''Apply an angular impulse.
 
+        Parameters
+        ----------
         impulse : float
             impulse the angular impulse in units of kg*m*m/s
         wake : bool, optional
