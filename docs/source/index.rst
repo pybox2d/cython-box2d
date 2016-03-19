@@ -6,17 +6,17 @@ Contents:
 .. automodule:: pybox2d
     :show-inheritance:
 
+
 .. toctree::
     :maxdepth: 2
+
+    api_reference
+
+.. toctree::
+    :maxdepth: 1
     
-    world
-    fixtures
-    bodies
-    joints
-    raycasting
-    math
-    contacts
-    utilities
+    installation
+    getting_started
 
 
 
