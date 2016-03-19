@@ -275,7 +275,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   (master_doc, 'pybox2d', 'pybox2d Documentation',
-   author, 'pybox2d', 'One line description of project.',
+   author, 'pybox2d', '2D game physics for Python',
    'Miscellaneous'),
 ]
 
