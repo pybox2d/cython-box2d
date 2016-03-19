@@ -196,6 +196,56 @@ cdef class World:
         def __set__(self, auto_clear):
             self.world.SetAutoClearForces(auto_clear)
 
+    @property
+    def locked(self):
+        '''Is the world locked (in the middle of a time step).'''
+        return self.world.IsLocked()
+
+    def shift_origin(self, new_origin):
+        '''Shift the world origin.
+
+        Useful for large worlds.
+        The body shift formula is: position -= new_origin
+
+        Parameters
+        ----------
+        newOrigin : Vec2
+            the new origin with respect to the old origin
+        '''
+        self.world.ShiftOrigin(to_b2vec2(new_origin))
+
+    property sub_stepping:
+        '''Enable/disable single stepped continuous physics. For testing.'''
+        def __get__(self):
+            return self.world.GetSubStepping()
+
+        def __set__(self, sub_stepping):
+            self.world.SetSubStepping(sub_stepping)
+
+    property continuous_physics:
+        '''Enable/disable continuous physics. For testing.'''
+        def __get__(self):
+            return self.world.GetContinuousPhysics()
+
+        def __set__(self, continuous_physics):
+            self.world.SetContinuousPhysics(continuous_physics)
+
+    property warm_starting:
+        '''Enable/disable warm starting. For testing.'''
+        def __get__(self):
+            return self.world.GetWarmStarting()
+
+        def __set__(self, warm_starting):
+            self.world.SetWarmStarting(warm_starting)
+
+    property allow_sleeping:
+        '''Enable/disable sleep.'''
+        def __get__(self):
+            return self.world.GetAllowSleeping()
+
+        def __set__(self, allow_sleeping):
+            self.world.SetAllowSleeping(allow_sleeping)
+
     def create_body_from_def(self, BodyDef body_defn, *, body_class=None):
         '''Create a body from a BodyDef
 
