@@ -23,31 +23,32 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  requirements       to install required sphinx extensions via pip"
-	@echo "  html       to make standalone HTML files"
-	@echo "  dirhtml    to make HTML files named index.html in directories"
-	@echo "  singlehtml to make a single large HTML file"
-	@echo "  pickle     to make pickle files"
-	@echo "  json       to make JSON files"
-	@echo "  htmlhelp   to make HTML files and a HTML help project"
-	@echo "  qthelp     to make HTML files and a qthelp project"
-	@echo "  applehelp  to make an Apple Help Book"
-	@echo "  devhelp    to make HTML files and a Devhelp project"
-	@echo "  epub       to make an epub"
-	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  latexpdf   to make LaTeX files and run them through pdflatex"
-	@echo "  latexpdfja to make LaTeX files and run them through platex/dvipdfmx"
-	@echo "  text       to make text files"
-	@echo "  man        to make manual pages"
-	@echo "  texinfo    to make Texinfo files"
-	@echo "  info       to make Texinfo files and run them through makeinfo"
-	@echo "  gettext    to make PO message catalogs"
-	@echo "  changes    to make an overview of all changed/added/deprecated items"
-	@echo "  xml        to make Docutils-native XML files"
-	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
-	@echo "  linkcheck  to check all external links for integrity"
-	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
-	@echo "  coverage   to run coverage check of the documentation (if enabled)"
+	@echo "  requirements    to install required sphinx extensions via pip"
+	@echo "  html            to make standalone HTML files"
+	@echo "  publish-html    publish html to gh-pages"
+	@echo "  dirhtml         to make HTML files named index.html in directories"
+	@echo "  singlehtml      to make a single large HTML file"
+	@echo "  pickle          to make pickle files"
+	@echo "  json            to make JSON files"
+	@echo "  htmlhelp        to make HTML files and a HTML help project"
+	@echo "  qthelp          to make HTML files and a qthelp project"
+	@echo "  applehelp       to make an Apple Help Book"
+	@echo "  devhelp         to make HTML files and a Devhelp project"
+	@echo "  epub            to make an epub"
+	@echo "  latex           to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
+	@echo "  latexpdf        to make LaTeX files and run them through pdflatex"
+	@echo "  latexpdfja      to make LaTeX files and run them through platex/dvipdfmx"
+	@echo "  text            to make text files"
+	@echo "  man             to make manual pages"
+	@echo "  texinfo         to make Texinfo files"
+	@echo "  info            to make Texinfo files and run them through makeinfo"
+	@echo "  gettext         to make PO message catalogs"
+	@echo "  changes         to make an overview of all changed/added/deprecated items"
+	@echo "  xml             to make Docutils-native XML files"
+	@echo "  pseudoxml       to make pseudoxml-XML files for display purposes"
+	@echo "  linkcheck       to check all external links for integrity"
+	@echo "  doctest         to run all doctests embedded in the documentation (if enabled)"
+	@echo "  coverage        to run coverage check of the documentation (if enabled)"
 
 clean:
 	rm -rf $(BUILDDIR)/*
@@ -59,6 +60,18 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+publish-html:
+	make clean
+	mkdir -p build/html
+
+	git clone --single-branch --branch gh-pages https://github.com/pybox2d/cython_test build/html
+	make html
+
+	cd build/html && \
+		git add * && \
+		git commit -am 'rebuilt documentation' && \
+		git push origin gh-pages
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
