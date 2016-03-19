@@ -175,6 +175,27 @@ cdef class World:
 
         self.world.Step(time_step, velocity_iterations, position_iterations)
 
+    def clear_forces(self):
+        '''Manually clear the force buffer on all bodies.
+
+        By default, forces are cleared automatically after each call to Step.
+        The default behavior is modified by setting auto_clear_forces.  The
+        purpose of this function is to support sub-stepping. Sub-stepping is
+        often used to maintain a fixed sized time step under a variable
+        frame-rate.  When you perform sub-stepping you will disable auto
+        clearing of forces and instead call ClearForces after all sub-steps are
+        complete in one pass of your game loop.
+        '''
+        self.world.ClearForces()
+
+    property auto_clear_forces:
+        '''Automatic clearing of forces after each time step.'''
+        def __get__(self):
+            return self.world.GetAutoClearForces()
+
+        def __set__(self, auto_clear):
+            self.world.SetAutoClearForces(auto_clear)
+
     def create_body_from_def(self, BodyDef body_defn, *, body_class=None):
         '''Create a body from a BodyDef
 

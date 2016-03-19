@@ -10,7 +10,7 @@ cdef class BodyDef(Base):
         The world position of the body. Avoid creating bodies at the origin
         since this can lead to many overlapping shapes.
     angle : float, optional
-	    The world angle of the body in radians.
+        The world angle of the body in radians.
     angular_velocity : float, optional
         The angular velocity of the body.
     linear_velocity : float, optional
@@ -37,7 +37,7 @@ cdef class BodyDef(Base):
         considered on dynamic bodies.
         You should use this flag sparingly since it increases processing time.
     active : bool, optional
-	    Does this body start out active?
+        Does this body start out active?
     gravity_scale : float, optional
         Scale the gravity applied to this body.
     data : any, optional
@@ -190,7 +190,7 @@ cdef class BodyDef(Base):
             self.thisptr.bullet = bullet
 
     property active:
-	    '''Does this body start out active?'''
+        '''Does this body start out active?'''
         def __get__(self):
             return self.thisptr.active
 
@@ -223,7 +223,7 @@ cdef class BodyDef(Base):
             repr_info.append(('data', self.data))
 
         repr_info.extend([
-            ('type', self.type),
+            ('type', self.type_),
             ('position', self.position),
             ('angular_velocity', self.angular_velocity),
             ('linear_damping', self.linear_damping),
