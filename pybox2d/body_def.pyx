@@ -1,4 +1,50 @@
 cdef class BodyDef(Base):
+    '''Body Definition
+
+    Parameters
+    ----------
+    type_ : BodyType, optional
+        ('static', 'dynamic', 'kinematic')
+        Note: if a dynamic body would have zero mass, the mass is set to one.
+    position : Vec2, optional
+        The world position of the body. Avoid creating bodies at the origin
+        since this can lead to many overlapping shapes.
+    angle : float, optional
+	    The world angle of the body in radians.
+    angular_velocity : float, optional
+        The angular velocity of the body.
+    linear_velocity : float, optional
+        The linear velocity of the body's origin in world co-ordinates.
+    linear_damping : float, optional
+        Linear damping is use to reduce the linear velocity. The damping
+        parameter can be larger than 1.0 but the damping effect becomes
+        sensitive to the time step when the damping parameter is large.
+    angular_damping : float, optional
+        Angular damping is use to reduce the angular velocity. The damping
+        parameter can be larger than 1.0 but the damping effect becomes
+        sensitive to the time step when the damping parameter is large.
+    allow_sleep : bool, optional
+        Set this flag to false if this body should never fall asleep. Note that
+        this increases CPU usage.
+    awake : bool, optional
+        Is this body initially awake or sleeping?
+    fixed_rotation : bool, optional
+        Should this body be prevented from rotating? Useful for characters.
+    bullet : bool, optional
+        Is this a fast moving body that should be prevented from tunneling
+        through other moving bodies? Note that all bodies are prevented from
+        tunneling through kinematic and static bodies. This setting is only
+        considered on dynamic bodies.
+        You should use this flag sparingly since it increases processing time.
+    active : bool, optional
+	    Does this body start out active?
+    gravity_scale : float, optional
+        Scale the gravity applied to this body.
+    data : any, optional
+        Use this to store application specific body data.
+    fixtures : list or FixtureDef, optional
+        List of fixture to create on the body
+    '''
     cdef b2BodyDef *thisptr
     cdef public object data
     cdef public list fixtures
@@ -10,16 +56,20 @@ cdef class BodyDef(Base):
         del self.thisptr
 
     def __init__(self, type_='static', position=None, angle=0.0,
-                 angular_velocity=0.0, linear_damping=0.0, angular_damping=0.0,
+                 angular_velocity=0.0, linear_velocity=None,
+                 linear_damping=0.0, angular_damping=0.0,
                  allow_sleep=True, awake=True, fixed_rotation=False,
                  bullet=False, active=True, gravity_scale=1.0,
                  data=None, fixtures=None):
 
-        self.type = type_
+        self.type_ = type_
         if position is not None:
             self.position = position
 
         self.angular_velocity = angular_velocity
+        if linear_velocity is not None:
+            self.linear_velocity = linear_velocity
+
         self.linear_damping = linear_damping
         self.angular_damping = angular_damping
         self.allow_sleep = allow_sleep
@@ -36,6 +86,11 @@ cdef class BodyDef(Base):
         self.fixtures = fixtures
 
     property position:
+        '''The world position of the body.
+
+        Avoid creating bodies at the origin since this can lead to many
+        overlapping shapes.
+        '''
         def __get__(self):
             return to_vec2(self.thisptr.position)
 
@@ -43,6 +98,7 @@ cdef class BodyDef(Base):
             self.thisptr.position = to_b2vec2(position)
 
     property angle:
+        '''The world angle of the body in radians.'''
         def __get__(self):
             return self.thisptr.angle
 
@@ -50,6 +106,7 @@ cdef class BodyDef(Base):
             self.thisptr.angle = angle
 
     property linear_velocity:
+        '''The linear velocity of the body's origin in world co-ordinates.'''
         def __get__(self):
             return to_vec2(self.thisptr.linearVelocity)
 
@@ -57,6 +114,7 @@ cdef class BodyDef(Base):
             self.thisptr.linearVelocity = to_b2vec2(linear_velocity)
 
     property angular_velocity:
+        '''The angular velocity of the body.'''
         def __get__(self):
             return self.thisptr.angularVelocity
 
@@ -64,6 +122,11 @@ cdef class BodyDef(Base):
             self.thisptr.angularVelocity = angular_velocity
 
     property linear_damping:
+        '''Linear damping is use to reduce the linear velocity.
+
+        The damping parameter can be larger than 1.0 but the damping effect
+        becomes sensitive to the time step when the damping parameter is large.
+        '''
         def __get__(self):
             return self.thisptr.linearDamping
 
@@ -71,6 +134,11 @@ cdef class BodyDef(Base):
             self.thisptr.linearDamping = linear_damping
 
     property angular_damping:
+        '''Angular damping is use to reduce the angular velocity.
+
+        The damping parameter can be larger than 1.0 but the damping effect
+        becomes sensitive to the time step when the damping parameter is large.
+        '''
         def __get__(self):
             return self.thisptr.angularDamping
 
@@ -78,6 +146,10 @@ cdef class BodyDef(Base):
             self.thisptr.angularDamping = angular_damping
 
     property allow_sleep:
+        '''Set this flag to false if this body should never fall asleep.
+
+        Note that this increases CPU usage.
+        '''
         def __get__(self):
             return self.thisptr.allowSleep
 
@@ -85,6 +157,7 @@ cdef class BodyDef(Base):
             self.thisptr.allowSleep = allow_sleep
 
     property awake:
+        '''Is this body initially awake or sleeping?'''
         def __get__(self):
             return self.thisptr.awake
 
@@ -92,6 +165,10 @@ cdef class BodyDef(Base):
             self.thisptr.awake = awake
 
     property fixed_rotation:
+        '''Should this body be prevented from rotating?
+
+        Useful for characters.
+        '''
         def __get__(self):
             return self.thisptr.fixedRotation
 
@@ -99,6 +176,13 @@ cdef class BodyDef(Base):
             self.thisptr.fixedRotation = fixed_rotation
 
     property bullet:
+        '''Is this a fast moving body that should be prevented from tunneling?
+
+        Note that all bodies are prevented from tunneling through kinematic and
+        static bodies. This setting is only considered on dynamic bodies.
+
+        You should use this flag sparingly since it increases processing time.
+        '''
         def __get__(self):
             return self.thisptr.bullet
 
@@ -106,6 +190,7 @@ cdef class BodyDef(Base):
             self.thisptr.bullet = bullet
 
     property active:
+	    '''Does this body start out active?'''
         def __get__(self):
             return self.thisptr.active
 
@@ -113,13 +198,19 @@ cdef class BodyDef(Base):
             self.thisptr.active = active
 
     property gravity_scale:
+        '''Scale the gravity applied to this body.'''
         def __get__(self):
             return self.thisptr.gravityScale
 
         def __set__(self, gravity_scale):
             self.thisptr.gravityScale = gravity_scale
 
-    property type:
+    property type_:
+        '''Body type
+
+        ('static', 'dynamic', 'kinematic')
+        Note: if a dynamic body would have zero mass, the mass is set to one.
+        '''
         def __get__(self):
             return BodyType.to_string(self.thisptr.type)
 
