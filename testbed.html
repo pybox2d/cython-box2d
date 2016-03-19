@@ -1,0 +1,365 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Testbed &mdash; pybox2d dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pybox2d dev documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-testbed">
+<span id="the-testbed"></span><h1>The Testbed<a class="headerlink" href="#the-testbed" title="Permalink to this headline">¶</a></h1>
+<p>Once you have conquered the HelloWorld example, you should start looking at
+pybox2d&#8217;s testbed. The testbed is a unit-testing framework and demo
+environment. Here are some of the features:</p>
+<p><strong>NOTE</strong></p>
+<blockquote>
+<div>Most of these features are on the TODO list for the conversion to Cython.
+(sorry)</div></blockquote>
+<ul class="simple">
+<li>Camera with pan and zoom.</li>
+<li>Mouse picking of shapes attached to dynamic bodies.</li>
+<li>Extensible set of tests.</li>
+<li>GUI for selecting tests, parameter tuning, and debug drawing options.</li>
+<li>Pause and single step simulation.</li>
+<li>Text rendering.</li>
+</ul>
+<p>The testbed has many examples of pybox2d usage in the test cases and the
+framework itself. I encourage you to explore and tinker with the testbed as you
+learn pybox2d.</p>
+<p><img alt="The Testbed" src="_images/image002.png" /></p>
+</div>
+<div class="section" id="drawing">
+<span id="drawing"></span><h1>Drawing<a class="headerlink" href="#drawing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="debug-drawing">
+<span id="debug-drawing"></span><h2>Debug Drawing<a class="headerlink" href="#debug-drawing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="b2draw">
+<span id="b2draw"></span><h3>b2Draw<a class="headerlink" href="#b2draw" title="Permalink to this headline">¶</a></h3>
+<p>You can implement the b2Draw class to get detailed drawing of the physics
+world. Here are the available entities:</p>
+<ul class="simple">
+<li>shape outlines</li>
+<li>joint connectivity</li>
+<li>core shapes (for continuous collision)</li>
+<li>broad-phase axis-aligned bounding boxes (AABBs), including the world AABB</li>
+<li>polygon oriented bounding boxes (OBBs)</li>
+<li>broad-phase pairs (potential contacts)</li>
+<li>center of mass</li>
+</ul>
+<p>The pygame testbed draws physics entities using the debug draw facility and the
+contact listener, so it serves as the primary example of how to implement debug
+drawing as well as how to draw contact points.</p>
+<p>To use b2Draw, you must subclass it, much as in the destruction listener. If
+you want everything to be drawn properly, all of the following callback
+functions should be implemented.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyDraw</span><span class="p">(</span><span class="n">b2Draw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This debug draw class accepts callbacks from Box2D (which specifies what to draw)</span>
+<span class="sd">    and handles all of the rendering.</span>
+
+<span class="sd">    If you are writing your own game, you likely will not want to use debug drawing.</span>
+<span class="sd">    Debug drawing, as its name implies, is for debugging.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+        <span class="n">b2DrawExtended</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">StartDraw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when drawing starts.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">EndDraw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when drawing ends.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw a single point at point p given a pixel size and color.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawAABB</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aabb</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw a wireframe around the AABB with the given color.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawSegment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw the line segment from p1-p2 with the specified color.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawTransform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw the transform xf on the screen &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawCircle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">drawwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw a wireframe circle given the center, radius, axis of orientation and color.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawSolidCircle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw a solid circle given the center, radius, axis of orientation and color.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawPolygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw a wireframe polygon given the screen vertices (tuples) with the specified color.  &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">DrawSolidPolygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw a filled polygon given the screen vertices (tuples) with the specified color.  &quot;&quot;&quot;</span>
+
+</pre></div>
+</div>
+<p>and to use it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">draw</span> <span class="o">=</span> <span class="n">MyDraw</span><span class="p">()</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">World</span><span class="p">()</span>
+<span class="n">world</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="n">draw</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="b2drawextended-and-coordinate-system-conversions">
+<span id="b2drawextended-and-coordinate-system-conversions"></span><h3>b2DrawExtended and Coordinate System Conversions<a class="headerlink" href="#b2drawextended-and-coordinate-system-conversions" title="Permalink to this headline">¶</a></h3>
+<p>Since pygame does not offer automatic world to screen coordinate
+transformations (or vice-versa), a simple class was implemented to do these
+transformations in the underlying C++ library to increase the performance on
+the order of 10%. By default, the pygame backend uses this class. These
+conversions are also detailed in the Python code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">to_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert from world to screen coordinates.</span>
+<span class="sd">        In the class instance, we store a zoom factor, an offset indicating where</span>
+<span class="sd">        the view extents start at, and the screen size (in pixels).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flipX</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screenSize</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">x</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flipY</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screenSize</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">y</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Picking objects via the mouse (or converting from screen to world coordinates)
+is first done by the conversion in the FrameworkBase.ConvertScreenToWorld:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">ConvertScreenToWorld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a b2Vec2 indicating the world coordinates of screen (x,y)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">b2Vec2</span><span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewOffset</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewZoom</span><span class="p">,</span> 
+                      <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">screenSize</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewOffset</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewZoom</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note: The calling convention and naming is different (sorry).</p>
+</div>
+<div class="section" id="different-backends">
+<span id="different-backends"></span><h3>Different Backends<a class="headerlink" href="#different-backends" title="Permalink to this headline">¶</a></h3>
+<p>This debug drawing, unlike in the standard Box2D distribution, is provided by
+different backends. These backends depend on other Python libraries.</p>
+<p>For the current master branch of pybox2d (as of yet unreleased), you can run
+the examples by using:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> pybox2d
+$ python -m examples.web --backend<span class="o">=</span>pygame
+$ python -m examples.web --backend<span class="o">=</span>pyglet
+$ python -m examples.web --backend<span class="o">=</span>pyqt4
+$ python -m examples.web --backend<span class="o">=</span>opencv
+</pre></div>
+</div>
+<p>The pygame backend is used by default if none is specified. To see other command-line
+based options, use <code class="docutils literal"><span class="pre">--help</span></code>.</p>
+<p>For older versions of pybox2d, you can run the examples by using:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> pybox2d/examples
+$ python test_Web.py --backend<span class="o">=</span>pygame
+$ python test_Web.py --backend<span class="o">=</span>pyglet
+$ python test_Web.py --backend<span class="o">=</span>pyqt4
+$ python test_Web.py --backend<span class="o">=</span>opencv
+</pre></div>
+</div>
+<p>These backends have library-specific code in their respective x_framework.py.
+They are defined as children of the main FrameworkBase class, defined in
+framework.py. Further, when a testbed example is loaded, it is based on the
+&#8216;Framework&#8217; class. This is so that the test examples can be derived from the
+different backends without knowing the name of their own superclass.</p>
+<p>To implement your own framework, first look at the bottom of framework.py.
+Then, basing it off of the currently available frameworks would be advisable.
+At the very least, they must have the same structure and the functions listed
+as necessary implemented.</p>
+</div>
+</div>
+<div class="section" id="drawing-without-b2draw">
+<span id="drawing-without-b2draw"></span><h2>Drawing Without b2Draw<a class="headerlink" href="#drawing-without-b2draw" title="Permalink to this headline">¶</a></h2>
+<p>The pyqt4 backend gives an example of how to iterate through the bodies,
+joints, and so on in a world.  The basic outline is given here, but for further
+information, please see <a class="reference external" href="examples/pyqt4_framework.py#331">the qt4 framework</a></p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">DrawShape</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">selected</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw any type of shape.</span>
+
+<span class="sd">        To get rid of these isinstance checks, it&#39;s possible to</span>
+<span class="sd">        monkey patch each b2Shape to have a specific rendering</span>
+<span class="sd">        function. It&#39;s probably more Pythonic that way. Same deal</span>
+<span class="sd">        with the joints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">PolygonShape</span><span class="p">):</span>
+            <span class="n">DrawPolygonShape</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">b2EdgeShape</span><span class="p">):</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">b2Mul</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">shape</span><span class="o">.</span><span class="n">vertex1</span><span class="p">)</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="n">b2Mul</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">shape</span><span class="o">.</span><span class="n">vertex2</span><span class="p">)</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">b2CircleShape</span><span class="p">):</span>
+            <span class="n">DrawCircleShape</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">b2LoopShape</span><span class="p">):</span>
+            <span class="n">vertices</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">vertices</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">b2Mul</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">vertices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">v2</span> <span class="ow">in</span> <span class="n">vertices</span><span class="p">:</span>
+                <span class="n">v2</span> <span class="o">=</span> <span class="n">b2Mul</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+                <span class="n">DrawSegment</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+                <span class="n">v1</span> <span class="o">=</span> <span class="n">v2</span>
+
+    <span class="k">def</span> <span class="nf">DrawJoint</span><span class="p">(</span><span class="n">joint</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw any type of joint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bodyA</span><span class="p">,</span> <span class="n">bodyB</span> <span class="o">=</span> <span class="n">joint</span><span class="o">.</span><span class="n">bodyA</span><span class="p">,</span> <span class="n">joint</span><span class="o">.</span><span class="n">bodyB</span>
+        <span class="n">xf1</span><span class="p">,</span> <span class="n">xf2</span> <span class="o">=</span> <span class="n">bodyA</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">bodyB</span><span class="o">.</span><span class="n">transform</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">xf1</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">xf2</span><span class="o">.</span><span class="n">position</span>
+        <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">joint</span><span class="o">.</span><span class="n">anchorA</span><span class="p">,</span> <span class="n">joint</span><span class="o">.</span><span class="n">anchorB</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">b2DistanceJoint</span><span class="p">):</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">b2PulleyJoint</span><span class="p">):</span>
+            <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">joint</span><span class="o">.</span><span class="n">groundAnchorA</span><span class="p">,</span> <span class="n">joint</span><span class="o">.</span><span class="n">groundAnchorB</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">s2</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">b2MouseJoint</span><span class="p">):</span>
+            <span class="k">pass</span> <span class="c1"># don&#39;t draw it here</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+            <span class="n">DrawSegment</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ManualDraw</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This implements code normally present in the C++ version,</span>
+<span class="sd">        which calls the callbacks that you see in this class (DrawSegment,</span>
+<span class="sd">        DrawSolidCircle, etc.).</span>
+<span class="sd">        </span>
+<span class="sd">        This is implemented in Python as an example of how to do it, and also</span>
+<span class="sd">        a test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;active&#39;</span>    <span class="p">:</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+            <span class="s1">&#39;static&#39;</span>    <span class="p">:</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> 
+            <span class="s1">&#39;kinematic&#39;</span> <span class="p">:</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> 
+            <span class="s1">&#39;asleep&#39;</span>    <span class="p">:</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span> 
+            <span class="s1">&#39;default&#39;</span>   <span class="p">:</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span> 
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">drawShapes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">body</span> <span class="ow">in</span> <span class="n">world</span><span class="o">.</span><span class="n">bodies</span><span class="p">:</span>
+                <span class="n">transform</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">transform</span>
+                <span class="k">for</span> <span class="n">fixture</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">fixtures</span><span class="p">:</span>
+                    <span class="n">shape</span> <span class="o">=</span> <span class="n">fixture</span><span class="o">.</span><span class="n">shape</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">body</span><span class="o">.</span><span class="n">active</span><span class="p">:</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;active&#39;</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">body</span><span class="o">.</span><span class="n">type</span><span class="o">==</span><span class="n">b2_staticBody</span><span class="p">:</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;static&#39;</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">body</span><span class="o">.</span><span class="n">type</span><span class="o">==</span><span class="n">b2_kinematicBody</span><span class="p">:</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;kinematic&#39;</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="n">body</span><span class="o">.</span><span class="n">awake</span><span class="p">:</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;asleep&#39;</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
+                    
+                    <span class="n">DrawShape</span><span class="p">(</span><span class="n">fixture</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="p">(</span><span class="n">sel_shape</span><span class="o">==</span><span class="n">shape</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">drawJoints</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">joint</span> <span class="ow">in</span> <span class="n">world</span><span class="o">.</span><span class="n">joints</span><span class="p">:</span>
+                <span class="n">DrawJoint</span><span class="p">(</span><span class="n">joint</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">drawAABBs</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">b2Color</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+            <span class="n">cm</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">contactManager</span>
+            <span class="k">for</span> <span class="n">body</span> <span class="ow">in</span> <span class="n">world</span><span class="o">.</span><span class="n">bodies</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">body</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">transform</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">transform</span>
+                <span class="k">for</span> <span class="n">fixture</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">fixtures</span><span class="p">:</span>
+                    <span class="n">shape</span> <span class="o">=</span> <span class="n">fixture</span><span class="o">.</span><span class="n">shape</span>
+                    <span class="k">for</span> <span class="n">childIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="o">.</span><span class="n">childCount</span><span class="p">):</span>
+                        <span class="n">DrawAABB</span><span class="p">(</span><span class="n">shape</span><span class="o">.</span><span class="n">getAABB</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">childIndex</span><span class="p">),</span> <span class="n">color</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Testbed</a></li>
+<li><a class="reference internal" href="#drawing">Drawing</a><ul>
+<li><a class="reference internal" href="#debug-drawing">Debug Drawing</a><ul>
+<li><a class="reference internal" href="#b2draw">b2Draw</a></li>
+<li><a class="reference internal" href="#b2drawextended-and-coordinate-system-conversions">b2DrawExtended and Coordinate System Conversions</a></li>
+<li><a class="reference internal" href="#different-backends">Different Backends</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#drawing-without-b2draw">Drawing Without b2Draw</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/testbed.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/testbed.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
