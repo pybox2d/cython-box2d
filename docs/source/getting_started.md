@@ -551,7 +551,7 @@ Circles are solid. You cannot make a hollow circle. However, you can create
 chains of line segments using polygon shapes.
 
 ```
-circle = CircleShape(pos=(1, 2), radius=0.5)
+circle = CircleShape(center=(1, 2), radius=0.5)
 ```
 
 ## Polygon Shapes
