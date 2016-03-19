@@ -1,7 +1,6 @@
 from cpython.ref cimport PyObject, Py_INCREF, Py_DECREF
 from defn.world_callbacks cimport b2ContactListener
 from defn.collision cimport b2ManifoldType
-from collections import namedtuple
 
 
 

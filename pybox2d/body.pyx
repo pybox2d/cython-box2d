@@ -206,6 +206,7 @@ cdef class Body(Base):
         '''Create a fixture and attach a polygon shape to it
 
         There are two ways to specify the vertices:
+
         1. as the 'box' parameter, which specifies the half-width and
            half-height of the generated rectangle
         2. as a list of vertices
@@ -441,6 +442,8 @@ cdef class Body(Base):
     def apply_angular_impulse(self, float impulse, bool wake=True):
         '''Apply an angular impulse.
 
+        Parameters
+        ----------
         impulse : float
             impulse the angular impulse in units of kg*m*m/s
         wake : bool, optional
@@ -531,8 +534,8 @@ cdef class Body(Base):
         Note that creating or destroying fixtures can also alter the mass.
         This function has no effect if the body isn't dynamic.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         mass_data : (mass, center, inertia) or MassData
             Where:
             The mass of the shape, usually in kilograms.

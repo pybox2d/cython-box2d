@@ -1,6 +1,35 @@
 from collections import namedtuple
 
-MassData = namedtuple('MassData', 'mass center inertia')
+cdef class MassData(Base):
+    '''This holds the mass data computed for a shape.
+
+    Attributes
+    ----------
+    mass : float
+        The mass of the shape, usually in kilograms.
+    center : Vec2
+        The position of the shape's centroid relative to the shape's origin.
+    inertia : float
+        The rotational inertia of the shape about the local origin.
+    '''
+    cdef public float32 mass
+    cdef public Vec2 center
+    cdef public float32 inertia
+
+    def __init__(self, mass=0.0, center=None, inertia=0.0):
+        self.mass = mass
+        self.center = center
+        self.inertia = inertia
+
+    def __iter__(self):
+        '''Iterate over the values, as if this were a tuple'''
+        return (value for key, value in self._get_repr_info())
+
+    cpdef _get_repr_info(self):
+        return [('mass', self.mass),
+                ('center', self.center),
+                ('inertia', self.inertia)
+                ]
 
 
 cdef class Shape(Base):
@@ -10,7 +39,7 @@ cdef class Shape(Base):
     def __cinit__(self):
         self.shape = NULL
         self.owner = False
-    
+
     @property
     def valid(self):
         return (self.shape != NULL)
@@ -26,7 +55,7 @@ cdef class Shape(Base):
     # def compute_aabb(self, aabb, transform, child_index):
     # def raycast(self, output, input, transform, child_index):
     # def test_point(self, transform, point):
-    
+
     cdef invalidate(self):
         if not self.owner:
             self.shape = NULL

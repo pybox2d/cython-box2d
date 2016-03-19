@@ -1,9 +1,42 @@
 import collections
 
-FilterTuple = collections.namedtuple('FilterTuple',
-                                     'category_bits mask_bits group_index')
-default_filter = FilterTuple(category_bits=0x0001, mask_bits=0xFFFF,
-                             group_index=0)
+cdef class FilterInfo(Base):
+    '''Collision filtering information
+
+    Attributes
+    ----------
+    category_bits : uint16
+        The collision category bits. Normally you would just set one bit.
+    mask_bits : uint16
+        The collision mask bits. This states the categories that this shape
+        would accept for collision.
+    group_index : int16
+        Collision groups allow a certain group of objects to never collide
+        (negative) or always collide (positive). Zero means no collision group.
+        Non-zero group filtering always wins against the mask bits.
+    '''
+    cdef public uint16 category_bits
+    cdef public uint16 mask_bits
+    cdef public int16 group_index
+
+    def __init__(self, category_bits=0x0001, mask_bits=0xFFFF, group_index=0):
+        self.category_bits = category_bits
+        self.mask_bits = mask_bits
+        self.group_index = group_index
+
+    def __iter__(self):
+        '''Iterate over the values, as if this were a tuple'''
+        return (value for key, value in self._get_repr_info())
+
+    cpdef _get_repr_info(self):
+        return [('category_bits', self.category_bits),
+                ('mask_bits', self.mask_bits),
+                ('group_index', self.group_index)
+                ]
+
+
+default_filter = FilterInfo()
+
 
 cdef class FixtureDef(Base):
     cdef b2FixtureDef *thisptr
@@ -39,12 +72,12 @@ cdef class FixtureDef(Base):
 
     property filter_:
         def __get__(self):
-            return FilterTuple(self.thisptr.filter.categoryBits,
-                               self.thisptr.filter.maskBits,
-                               self.thisptr.filter.groupIndex)
+            return FilterInfo(category_bits=self.thisptr.filter.categoryBits,
+                              mask_bits=self.thisptr.filter.maskBits,
+                              group_index=self.thisptr.filter.groupIndex)
 
         def __set__(self, filter_info):
-            ft = FilterTuple(*filter_info)
+            ft = FilterInfo(*filter_info)
             self.thisptr.filter.categoryBits = ft.category_bits
             self.thisptr.filter.maskBits = ft.mask_bits
             self.thisptr.filter.groupIndex = ft.group_index
