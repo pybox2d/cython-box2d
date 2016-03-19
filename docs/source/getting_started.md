@@ -638,9 +638,10 @@ the contact normal and points. You need to provide a Manifold and the shape
 transforms and radii.
 
 ```python
-worldManifold = WorldManifold()
-worldManifold.Initialize(manifold, transformA, shapeA.radius, transformB, shapeB.radius)
-points = [worldManifold.points[i] for i in range(manifold.pointCount)]
+world_manifold = WorldManifold()
+world_manifold.initialize(manifold, transformA, shapeA.radius, transformB,
+                          shapeB.radius)
+points = [worldManifold.points[i] for i in range(manifold.point_count)]
 ```
 
 During simulation shapes may move and the manifolds may change. Points may be
@@ -1750,8 +1751,8 @@ body_a = fixture_a.body
 actor_a = body_a.data
 ```
 
-You can disable a contact. This only works inside the ContactListener.PreSolve
-event, discussed below.
+You can disable a contact. This only works inside the PreSolve event, discussed
+below.
 
 ## Accessing Contacts
 
@@ -1899,7 +1900,7 @@ def should_collide(shape1, shape2):
 ```
 
 At run-time you can create an instance of your contact filter and register it
-with World.SetContactFilter. The world will hold a reference to your contact
+with World.contact_filter. The world will hold a reference to your contact
 filter, so it is unnecessary to keep your own copy.
 
 ```python
@@ -1961,7 +1962,7 @@ simulation. But don't trade a small time step for a large iteration count. 60Hz
 and 10 iterations is far better than 30Hz and 20 iterations.
 
 After stepping, you should clear any forces you have applied to your bodies.
-This is done with the command World.ClearForces. This lets you take multiple
+This is done with the command World.clear_forces. This lets you take multiple
 sub-steps with the same force field.
 
 ```python
