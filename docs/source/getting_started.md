@@ -131,16 +131,16 @@ when you create a Body or a Joint, you need to call the factory functions
 on World. There are creation functions:
 
 ```python
-    from pybox2d import World, StaticBodyDef
-    world = World()
-    defn = StaticBodyDef(position=(0, 0))
-    body = world.create_body_from_def(defn)
+from pybox2d import World, StaticBodyDef
+world = World()
+defn = StaticBodyDef(position=(0, 0))
+body = world.create_body_from_def(defn)
 ```
 
 And there are corresponding destruction functions:
 
 ```python
-    world.destroy_body(body)
+world.destroy_body(body)
 ```
 
 When you create a body or joint, you have the option of providing a definition
@@ -152,16 +152,16 @@ Since fixtures must be parented to a body, they are created and destroyed using
 a factory method on Body:
 
 ```python
-    shape = CircleShape(radius=1.0)
-    defn = FixtureDef(shape=shape, density=2.0)
-    fixture = body.create_fixture_from_def(defn)
-    body.destroy_fixture(fixture)
+shape = CircleShape(radius=1.0)
+defn = FixtureDef(shape=shape, density=2.0)
+fixture = body.create_fixture_from_def(defn)
+body.destroy_fixture(fixture)
 ```
 
 There is also shortcut to create a fixture directly from the shape and density.
 
 ```python
-    fixture = body.create_fixture(shape=shape, density=1.0)
+fixture = body.create_fixture(shape=shape, density=1.0)
 ```
 
 Factories do not retain references to the definitions. So you can create and
@@ -177,21 +177,21 @@ exists allowing you to forego these definitions.
 The following are equivalent:
 
 ```python
-    shape = EdgeShape()
-    shape.vertices = [(-40, 0), (40, 0)]
-    body = world.create_static_body()
-    body.position = (1, 0)
+shape = EdgeShape()
+shape.vertices = [(-40, 0), (40, 0)]
+body = world.create_static_body()
+body.position = (1, 0)
 ```
 
 and
 
 ```python
-    body = world.create_static_body(position=(1, 0))
-    body.create_edge_fixture(vertices=[(-40, 0), (40, 0)])
+body = world.create_static_body(position=(1, 0))
+body.create_edge_fixture(vertices=[(-40, 0), (40, 0)])
 ```
 
 World has the following creation functions available. Be sure to read their
-docstrings (i.e., help(World.CreateDynamicBody) ) for further information.
+docstrings (i.e., help(World.create_dynamic_body) ) for further information.
 
 [[Bodies]]
 ```python
@@ -880,8 +880,8 @@ each other, but players and monsters should collide. This is done with masking
 bits. For example:
 
 ```python
-playerDef = FixtureDef(categoryBits=0x0002, maskBits=0x0004, ...)
-monsterDef = FixtureDef(categoryBits=0x0004, maskBits=0x0002, ...)
+player_def = FixtureDef(category_bits=0x0002, mask_bits=0x0004, ...)
+monster_def = FixtureDef(category_bits=0x0004, mask_bits=0x0002, ...)
 ```
 
 Collision groups let you specify an integral group index. You can have all
@@ -891,10 +891,10 @@ somehow related, like the parts of a bicycle. In the following example,
 fixture1 and fixture2 always collide, but fixture3 and fixture4 never collide.
 
 ```python
-fixture1Def.filter.groupIndex = 2
-fixture2Def.filter.groupIndex = 2
-fixture3Def.filter.groupIndex = -8
-fixture4Def.filter.groupIndex = -8
+fixturedef_1.filter = FilterInfo(group_index=2)
+fixturedef_2.filter = FilterInfo(group_index=2)
+fixturedef_3.filter = FilterInfo(group_index=-8)
+fixturedef_4.filter = FilterInfo(group_index=-8)
 ```
 
 Collisions between fixtures of different group indices are filtered according
@@ -1139,14 +1139,17 @@ Bodies are created and destroyed using a body factory provided by the world
 class. This lets the world create the body with an efficient allocator and add
 the body to the world data structure.
 
-Bodies can be dynamic or static depending on the mass properties. Both body
+Bodies can be dynamic or static depending on the mass properties. All body
 types use the same creation and destruction methods.
 
 ```python
-dynamicBody = my_world.CreateDynamicBody(bodyDef)
+dynamic_body = my_world.create_dynamic_body()
 # ... do stuff ...
-my_world.DestroyBody(dynamicBody)
-dynamicBody = None
+my_world.destroy_body(dynamic_body)
+# try to access the body after destruction, and it will raise RuntimeError:
+#   dynamic_body.position
+# so it's best to clear references to it after:
+dynamic_body = None
 ```
 
 Static bodies do not move under the influence of other bodies. You may manually
@@ -1806,32 +1809,32 @@ time-step. The pre-solve event may be fired multiple times per time step per
 contact due to continuous collision detection.
 
 ```python
-    def contact_pre_solve(self, contact, old_manifold):
-        """
-        This is a critical function when there are many contacts in the world.
-        It should be optimized as much as possible.
-        """
+def contact_pre_solve(self, contact, old_manifold):
+    """
+    This is a critical function when there are many contacts in the world.
+    It should be optimized as much as possible.
+    """
 
-        world_manifold = contact.world_manifold
-        if world_manifold.normal.y < -0.5:
-            contact.enabled = False
+    world_manifold = contact.world_manifold
+    if world_manifold.normal.y < -0.5:
+        contact.enabled = False
 ```
 
 The pre-solve event is also a good place to determine the point state and the
 approach velocity of collisions.
 
 ```python
-    def pre_solve(self, contact, old_manifold):
-        world_manifold = contact.world_manifold
-        state1, state2 = get_point_states(old_manifold, contact.manifold)
-        if state2 == 'add':
-            body_a, body_b = contact.bodies
-            point = world_manifold.points[0]
-            va = body_a.get_world_vector(body_a.linear_velocity)
-            vb = body_B.get_world_vector(body_b.linear_velocity)
-            approach_velocity = (vb - va).dot(world_manifold.normal)
-            if approach_velocity > 1.0:
-                play_collision_sound()
+def pre_solve(self, contact, old_manifold):
+    world_manifold = contact.world_manifold
+    state1, state2 = get_point_states(old_manifold, contact.manifold)
+    if state2 == 'add':
+        body_a, body_b = contact.bodies
+        point = world_manifold.points[0]
+        va = body_a.get_world_vector(body_a.linear_velocity)
+        vb = body_B.get_world_vector(body_b.linear_velocity)
+        approach_velocity = (vb - va).dot(world_manifold.normal)
+        if approach_velocity > 1.0:
+            play_collision_sound()
 ```
 
 ### Post-Solve Event
