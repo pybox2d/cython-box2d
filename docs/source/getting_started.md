@@ -984,7 +984,7 @@ the body definition. This means you can recycle a body definition to create
 multiple bodies.
 
 Let's go over some of the key members of the body definition. Please note that
-all of these can be passed via the kwargs of the Create*Body() functions.
+all of these can be passed via the kwargs of the create_*_body() functions.
 
 ### Body Type
 
@@ -1301,20 +1301,17 @@ up an old issue:
 Here's an example of the lifetime of a revolute joint:
 
 ```python
-joint = world.CreateRevoluteJoint(
-    bodyA=my_body1,
-    bodyB=my_body2,
-    anchor=my_body1.world_center)
-
+joint = world.create_revolute_joint((my_body1, my_body2),
+                                    anchor=my_body1.world_center)
 # ... do stuff ...
 
-world.DestroyJoint(joint)
-joint = None
+world.destroy_joint(joint)
+print(joint.angle)   # raises RuntimeError
 ```
 
-It is always good to nullify your references after they are destroyed. This will
-make the program crash in a controlled manner if you try to reuse the
-reference.
+It is always good to remove references to joints after they are destroyed.
+pybox2d ensures that your objects are still valid, but attempting to interact
+with an already-destroyed joint will raise a RuntimeError.
 
 **Caution**
 
@@ -1324,8 +1321,7 @@ reference.
 
 This precaution is not always necessary. You may organize your game engine so
 that joints are always destroyed before the attached bodies. In this case you
-don't need to implement the listener class. See the section on Implicit
-Destruction for details.
+don't need to implement the listener class.
 
 ## Using Joints
 
@@ -1336,11 +1332,8 @@ can use to create a rich simulation.
 First of all, you can get the bodies, anchor points, and user data from a
 joint.
 
-* joint.bodyA (read-only)
-* joint.bodyB
-* joint.anchorA (read-only)
-* joint.anchorB
-* joint.userData (read-write)
+* joint.bodies (read-only)
+* joint.anchors (read-only)
 
 All joints have a reaction force and torque. This the reaction force applied to
 body 2 at the anchor point. You can use reaction forces to break joints or
@@ -1348,8 +1341,8 @@ trigger other game events. These functions may do some computations, so don't
 call them if you don't need the result.
 
 ```python
-joint.GetReactionForce(inverse_dt)
-joint.GetReactionTorque(inverse_dt)
+joint.get_reaction_force(inverse_dt)
+joint.get_reaction_torque(inverse_dt)
 ```
 
 ## Distance Joint
@@ -1367,11 +1360,10 @@ Here is an example of a distance joint definition. In this case we decide to
 allow the bodies to collide.
 
 ```python
-world.CreateDistanceJoint(bodyA=my_body1,
-	bodyB=my_body2,
-	anchorA=worldAnchorOnBody1,
-	anchorB=worldAnchorOnBody2,
-	collideConnected=True)
+world.create_distance_joint((my_body1, my_body2),
+                             anchors=(world_anchor_on_body1,
+                                      world_anchor_on_body2),
+                             collide_connected=True)
 ```
 
 The distance joint can also be made soft, like a spring-damper connection. See
@@ -1388,8 +1380,8 @@ The damping ratio is non-dimensional and is typically between 0 and 1, but can
 be larger. At 1, the damping is critical (all oscillations should vanish).
 
 ```python
-jointDef.frequencyHz = 4.0
-jointDef.dampingRatio = 0.5
+joint.frequency_hz = 4.0
+joint.damping_ratio = 0.5
 ```
 
 ## Revolute Joint
@@ -1408,7 +1400,8 @@ In this example, two bodies are connected by a revolute joint at the first
 body's center of mass.
 
 ```python
-world.CreateRevoluteJoint(bodyA=my_body1, bodyB=my_body2, anchor=my_body1.world_center)
+world.create_revolute_joint((my_body1, my_body2), 
+                            anchor=my_body1.world_center)
 ```
 
 The revolute joint angle is positive when body2 rotates CCW about the angle
@@ -1444,16 +1437,13 @@ Here's a revision of the revolute joint definition above; this time the joint
 has a limit and a motor enabled. The motor is setup to simulate joint friction.
 
 ```python
-rj = world.CreateRevoluteJoint(
-    bodyA=my_body1, 
-    bodyB=my_body2, 
+rj = world.create_revolute_joint(
+    (my_body1, my_body2),
     anchor=my_body1.world_center,
-    lowerAngle = -0.5 ** pi, # -90 degrees
-    upperAngle = 0.25 ** pi, #  45 degrees
-    enableLimit = True,
-    maxMotorTorque = 10.0,
-    motorSpeed = 0.0,
-    enableMotor = True,
+    angle_limit=(math.radians(-90), math.radians(45)),
+    max_motor_torque=10.0,
+    motor_speed=0.0,
+    motor=True,
     )
 ```
 
@@ -1462,14 +1452,14 @@ You can access a revolute joint's angle, speed, and motor torque.
 ```python
 rj.angle (read-only)
 rj.speed
-rj.GetMotorTorque(inverse_dt)
+rj.get_motor_torque(inverse_dt)
 ```
 
 You also update the motor parameters each step.
 
 ```python
-rj.motorSpeed (read-write)
-rj.maxMotorTorque = 0 # (write-only)
+rj.motor_speed (read-write)
+rj.max_motor_torque = 0
 ```
 
 Joint motors have some interesting abilities. You can update the joint speed
@@ -1477,20 +1467,15 @@ every time step so you can make the joint move back-and-forth like a sine-wave
 or according to whatever function you want.
 
 ```python
-from math import cos
-# ... Game Loop Begin ...
-my_joint.motorSpeed = cos(0.5 ** time)
-# ... Game Loop End ...
+my_joint.motor_speed = math.cos(0.5 * time_value)
 ```
 
 You can also use joint motors to track a desired joint angle. For example:
 
 ```python
-# ... Game Loop Begin ...
-angleError = my_joint.angle - angleTarget
+angle_error = my_joint.angle - angle_target
 gain = 0.1
-my_joint.SetMotorSpeed(-gain ** angleError)
-# ... Game Loop End ...
+my_joint.motor_speed = -gain * angle_error
 ```
 
 Generally your gain parameter should not be too large. Otherwise your joint may become unstable.
@@ -1509,17 +1494,16 @@ provides an example prismatic joint definition with a joint limit and a
 friction motor:
 
 ```python
-pj = world.CreatePrismaticJoint(
-        bodyA=my_body1, 
-        bodyB=my_body2, 
+pj = world.create_prismatic_joint(
+        bodies=(my_body1, my_body2), 
         anchor=my_body1.world_center,
         axis=(1, 0),
-        lowerTranslation=-5.0,
-        upperTranslation=2.5,
-        enableLimit=True,
-        motorForce=1.0,
-        motorSpeed=0.0,
-        enableMotor=True,
+        lower_translation=-5.0,
+        upper_translation=2.5,
+        enable_limit=True,
+        motor_force=1.0,
+        motor_speed=0.0,
+        enable_motor=True,
     )
 ```
 
@@ -1536,8 +1520,8 @@ relevant properties:
 
 * pj.translation (read-only)
 * pj.speed (read-only)
-* pj.motorSpeed (read-write)
-* pj.motorForce (read-write)
+* pj.motor_speed (read-write)
+* pj.motor_force (read-write)
 
 ## Pulley Joint
 
@@ -1575,21 +1559,16 @@ control.
 Here is an example pulley definition:
 
 ```python
-pj = world.CreatePulleyJoint(
-        bodyA=my_body1, 
-        bodyB=my_body2, 
-        groundAnchorA=my_body1.world_center,
-        groundAnchorB=my_body2.world_center,
-        anchorA=(p1.x, p1.y + 10.0),
-        anchorB=(p2.x, p2.y + 12.0),
+pj = world.create_pulley_joint(
+        bodies=(my_body1, my_body2),
+        ground_anchors=(my_body1.world_center, my_body2.world_center),
+        anchors=((p1.x, p1.y + 10.0), (p2.x, p2.y + 12.0)),
         ratio=1.0,
-        maxLengthA=18,
-        maxLengthB=20,
     )
 
 # Pulley joints provide the current lengths.
-pj.length1
-pj.length2
+pj.current_lengths
+pj.lengths
 ```
 
 ## Gear Joint
@@ -1619,13 +1598,9 @@ coordinate1 + ratio * coordinate2 == constant
 Here is an example gear joint:
 
 ```python
-pj = world.CreateGearJoint(
-        bodyA=my_body1, 
-        bodyB=my_body2, 
-        joint1=myRevoluteJoint,
-        joint2=myPrismaticJoint,
-        ratio = 2.0 * pi / myLength
-    )
+pj = world.create_gear_joint(joints=(my_revolute_joint, my_prismatic_joint),
+                             ratio=2.0 * pi / my_length,
+                             )
 ```
 
 Note that the gear joint depends on two other joints. This creates a fragile
@@ -1750,7 +1725,7 @@ Contact objects are not created by the user. However, you are able to access
 the contact class and interact with it.
 
 You can access the raw contact manifold or the world manifold:
-`contact.manifold and contact.worldManifold`.
+`contact.manifold and contact.world_manifold`.
 
 The latter uses the current positions of the bodies to compute world positions
 of the contact points.  You can potentially modify the manifold, but this is
@@ -1807,34 +1782,7 @@ You can also access contacts using the contact listener that is described below.
 
 ## Contact Listener
 
-You can receive contact data by implementing ContactListener. The contact
-listener supports several events: begin, end, pre-solve, and post-solve.
-
-```python
-class myContactListener(ContactListener):
-    def __init__(self):
-        ContactListener.__init__(self)
-    def BeginContact(self, contact):
-        pass
-    def EndContact(self, contact):
-        pass
-    def PreSolve(self, contact, oldManifold):
-        pass
-    def PostSolve(self, contact, impulse):
-        pass
-
-world = World(contactListener=myContactListener(), ...)
-```
-
-**Caution**
-
-> Do not keep a reference to the pointers sent to ContactListener. Instead make
-> a deep copy of the contact point data into your own buffer. The example below
-> shows one way of doing this.
-
-At run-time you can create an instance of the listener and register it with
-World.SetContactListener. Be sure your listener remains in scope while the
-world object exists.
+TODO: document contact listeners with filtering by body class
 
 ### Begin Contact Event
 
@@ -1858,14 +1806,14 @@ time-step. The pre-solve event may be fired multiple times per time step per
 contact due to continuous collision detection.
 
 ```python
-    def PreSolve(self, contact, old_manifold):
+    def contact_pre_solve(self, contact, old_manifold):
         """
         This is a critical function when there are many contacts in the world.
         It should be optimized as much as possible.
         """
 
-        worldManifold = contact.worldManifold
-        if worldManifold.normal.y < -0.5:
+        world_manifold = contact.world_manifold
+        if world_manifold.normal.y < -0.5:
             contact.enabled = False
 ```
 
@@ -1873,18 +1821,17 @@ The pre-solve event is also a good place to determine the point state and the
 approach velocity of collisions.
 
 ```python
-    def PreSolve(self, contact, old_manifold):
-        worldManifold = contact.worldManifold
-        state1, state2 = b2GetPointStates(old_manifold, contact.manifold)
+    def pre_solve(self, contact, old_manifold):
+        world_manifold = contact.world_manifold
+        state1, state2 = get_point_states(old_manifold, contact.manifold)
         if state2 == 'add':
-            bodyA = contact.fixtureA.body
-            bodyB = contact.fixtureB.body
-            point = worldManifold.points[0]
-            vA = bodyA.GetLinearVelocityFromWorldPoint(point)
-            vB = bodyB.GetLinearVelocityFromWorldPoint(point)
-            approachVelocity = (vB - vA).dot(worldManifold.normal)
-            if approachVelocity > 1.0:
-                MyPlayCollisionSound()
+            body_a, body_b = contact.bodies
+            point = world_manifold.points[0]
+            va = body_a.get_world_vector(body_a.linear_velocity)
+            vb = body_B.get_world_vector(body_b.linear_velocity)
+            approach_velocity = (vb - va).dot(world_manifold.normal)
+            if approach_velocity > 1.0:
+                play_collision_sound()
 ```
 
 ### Post-Solve Event
@@ -1912,36 +1859,13 @@ safe from orphaned pointers.
 This code from the CollisionProcessing test shows how to handle orphaned bodies
 when processing the contact buffer. Here is an excerpt. Be sure to read the
 comments in the listing. This code assumes that all contact points have been
-buffered in the ContactPoint array m_points.
+buffered in the ContactPoint array.
 
 ```python
-        # We are going to destroy some bodies according to contact
-        # points. We must buffer the bodies that should be destroyed
-        # because they may belong to multiple contact points.
-        nuke = [] 
-
-		# Traverse the contact results. Destroy bodies that
-        # are touching heavier bodies.
-        body_pairs = [(p['fixtureA'].body, p['fixtureB'].body) for p in self.points]
-        
-        for body1, body2 in body_pairs:
-            mass1, mass2 = body1.mass, body2.mass
-        
-            if mass1 > 0.0 and mass2 > 0.0:
-                if mass2 > mass1:
-                    nuke_body = body1
-                else:
-                    nuke_body = body2
-        
-                if nuke_body not in nuke:
-                    nuke.append(nuke_body)
-        
-        # Destroy the bodies, skipping duplicates.
-        for b in nuke:
-            print("Nuking:", b)
-            self.world.DestroyBody(b)
-        
-        nuke = None
+# We are going to destroy some bodies according to contact
+# points. We must buffer the bodies that should be destroyed
+# because they may belong to multiple contact points.
+ (TODO) 
 ```
 
 ## Contact Filtering
@@ -1959,19 +1883,16 @@ The default implementation of ShouldCollide uses the FilterData defined in
 [[Fixtures]].
 
 ```python
-class MyContactFilter(ContactFilter):
-    def __init__(self):
-        ContactFilter.__init__(self)
+def should_collide(shape1, shape2):
+    # Implements the default behavior of ContactFilter in Python
+    filter1 = shape1.filter_data
+    filter2 = shape2.filter_data
+    if filter1.group_index == filter2.group_index and filter1.group_index != 0:
+        return filter1.group_index > 0
 
-    def ShouldCollide(self, shape1, shape2):
-        # Implements the default behavior of ContactFilter in Python
-        filter1 = shape1.filterData
-        filter2 = shape2.filterData
-        if filter1.groupIndex == filter2.groupIndex and filter1.groupIndex != 0:
-            return filter1.groupIndex > 0
- 
-        collides = (filter1.maskBits & filter2.categoryBits) != 0 and (filter1.categoryBits & filter2.maskBits) != 0
-        return collides
+    collides = ((filter1.mask_bits & filter2.category_bits) != 0 and
+                (filter1.category_bits & filter2.mask_bits) != 0)
+    return collides
 ```
 
 At run-time you can create an instance of your contact filter and register it
@@ -1979,7 +1900,7 @@ with World.SetContactFilter. The world will hold a reference to your contact
 filter, so it is unnecessary to keep your own copy.
 
 ```python
-world.SetContactFilter(MyContactFilter())
+world.contact_filter = should_collide
 ```
 
 # World Class
@@ -1998,7 +1919,7 @@ Boolean indicating if bodies can sleep. The defaults of (0, -10) and allowing
 sleep will be used if neither are specified.
 
 ```python
-world = World(gravity=(0,-10), doSleep=True)
+world = World(gravity=(0, -10))
 ```
 
 ### Using a World
@@ -2013,9 +1934,9 @@ The world class is used to drive the simulation. You specify a time step and a
 velocity and position iteration count. For example:
 
 ```python
-timeStep = 1.0 / 60
+time_step = 1.0 / 60
 vel_iters, pos_iters = 6, 2
-world.Step(timeStep, vel_iters, pos_iters)
+world.step(time_step, vel_iters, pos_iters)
 ```
 
 After the time step you can examine your bodies and joints for information.
@@ -2041,7 +1962,7 @@ This is done with the command World.ClearForces. This lets you take multiple
 sub-steps with the same force field.
 
 ```python
-world.ClearForces()
+world.clear_forces()
 ```
 
 ### Exploring the World
@@ -2075,23 +1996,15 @@ the following code finds all the fixtures that potentially intersect a
 specified AABB and wakes up all of the associated bodies.
 
 ```python
-class myQueryCallback(QueryCallback):
-    def __init__(self): 
-        QueryCallback.__init__(self)
-
-    def ReportFixture(self, fixture):
-        body = fixture.body
-        body.awake = True
-
-        # Continue the query by returning True
-        return True
-
+# TODO
 # Make a small box.
 aabb = AABB(lowerBound=p-(0.001, 0.001), upperBound=p+(0.001, 0.001))
+for fixture in world.query_aabb(aabb):
+    body = fixture.body
+    body.awake = True
 
-# Query the world for overlapping shapes.
-query = myQueryCallback()
-world.QueryAABB(query, aabb)
+    # Continue the query by returning True
+    return True
 ```
 
 You cannot make any assumptions about the order of the callbacks.
